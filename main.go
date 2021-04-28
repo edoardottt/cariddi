@@ -9,7 +9,6 @@ import (
 
 //main
 func main() {
-	output.Beautify()
 	input := input.ScanInput()
 	var finalResult []string
 	for _, inp := range input {
