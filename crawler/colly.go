@@ -9,16 +9,20 @@ import (
 //Crawler
 func Crawler(target string) []string {
 	var result []string
-	// Instantiate default collector
+	// Instantiate  collector
 	c := colly.NewCollector(
 		colly.AllowedDomains(target),
+		colly.Async(true),
 	)
 
+	c.OnHTML("*", func(e *colly.HTMLElement) {
+
+	})
+
+	c.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 2})
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		// Print link
-		fmt.Printf("Link found: %q -> %s\n", e.Text, link)
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		c.Visit(e.Request.AbsoluteURL(link))
@@ -33,5 +37,6 @@ func Crawler(target string) []string {
 	// Start scraping on target
 	c.Visit("http://" + target)
 	c.Visit("https://" + target)
+	c.Wait()
 	return result
 }
