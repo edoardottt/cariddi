@@ -16,6 +16,6 @@ func main() {
 		result = crawler.Crawler(inp)
 		finalResult = append(finalResult, result...)
 	}
-	output.PrintOutput(finalResult)
+	output.PrintSimpleOutput(finalResult)
 	scanner.Scan()
 }
