@@ -1,0 +1,29 @@
+REPO=github.com/edoardottt/cariddi
+
+fmt:
+	@gofmt -s ./*; \
+	echo "Done."
+
+remod:
+	rm -rf go.*
+	go mod init ${REPO}
+	go get
+	echo "Done."
+
+update:
+	@go get -u; \
+	go mod tidy -v; \
+	echo "Done."
+
+linux:
+	@go build -o ./cariddi
+	mv ./cariddi /usr/bin/
+	echo "Done."
+
+unlinux:
+	rm -rf /usr/bin/cariddi
+	echo "Done."
+
+test:
+	@go test -v -race ./... ; \
+	echo "Done."
