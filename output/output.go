@@ -2,7 +2,9 @@ package output
 
 import "fmt"
 
-//Output
-func Output() {
-	fmt.Println("output")
+//PrintOutput
+func PrintOutput(out []string) {
+	for _, elem := range out {
+		fmt.Println(elem)
+	}
 }

@@ -2,18 +2,16 @@ package crawler
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/gocolly/colly"
 )
 
 //Crawler
-func Crawler(target string) {
+func Crawler(target string) []string {
+	var result []string
 	// Instantiate default collector
 	c := colly.NewCollector(
-		colly.URLFilters(
-			regexp.MustCompile(".*" + target + "*"),
-		),
+		colly.AllowedDomains(target),
 	)
 
 	// On every a element which has href attribute call callback
@@ -24,6 +22,7 @@ func Crawler(target string) {
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		c.Visit(e.Request.AbsoluteURL(link))
+		result = append(result, e.Request.AbsoluteURL(link))
 	})
 
 	// Before making a request print "Visiting ..."
@@ -33,4 +32,6 @@ func Crawler(target string) {
 
 	// Start scraping on target
 	c.Visit("http://" + target)
+	c.Visit("https://" + target)
+	return result
 }

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/edoardottt/cariddi/crawler"
 	"github.com/edoardottt/cariddi/input"
 	"github.com/edoardottt/cariddi/output"
@@ -11,11 +9,14 @@ import (
 
 //main
 func main() {
-	fmt.Println("cariddi")
 	input := input.ScanInput()
+	var finalResult []string
 	for _, inp := range input {
-		crawler.Crawler(inp)
+		var result []string
+		result = crawler.Crawler(inp)
+		finalResult = append(finalResult, result...)
 	}
 	output.Beautify()
+	output.PrintOutput(finalResult)
 	scanner.Scan()
 }
