@@ -9,6 +9,7 @@ import (
 
 //main
 func main() {
+	output.Beautify()
 	input := input.ScanInput()
 	var finalResult []string
 	for _, inp := range input {
@@ -16,7 +17,6 @@ func main() {
 		result = crawler.Crawler(inp)
 		finalResult = append(finalResult, result...)
 	}
-	output.Beautify()
 	output.PrintOutput(finalResult)
 	scanner.Scan()
 }
