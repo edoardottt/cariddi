@@ -17,6 +17,7 @@ var extensions = map[string]string{
 	"yaml":       "2",
 	"properties": "2",
 	"toml":       "2",
+	"zip":        "3",
 	"doc":        "3",
 	"docx":       "3",
 	"odt":        "3",
@@ -31,5 +32,4 @@ var extensions = map[string]string{
 	"html":       "6",
 	"htm":        "6",
 	"pdf":        "7",
-	"css":        "10",
 }
