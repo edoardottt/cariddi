@@ -81,17 +81,21 @@ var regexes = map[string]Secret{
 		"(?i)linkedin(.{0,20})?(?-i)[0-9a-z]{12}",
 		"?",
 	},
+    Secret{
+		"LinkedIn Secret Key",
+		"LinkedIn Secret Key",
+		"(?i)linkedin(.{0,20})?[0-9a-z]{16}",
+		"?",
+	},
+	Secret{
+		"Slack",
+		"Slack",
+		"xox[baprs]-([0-9a-zA-Z]{10,48})?",
+		"?",
+	},
 }
 
 /*
-    description = "LinkedIn Secret Key"
-    regex = '''(?i)linkedin(.{0,20})?[0-9a-z]{16}'''
-    tags = ["secret", "LinkedIn"]
-[[rules]]
-    description = "Slack"
-    regex = '''xox[baprs]-([0-9a-zA-Z]{10,48})?'''
-    tags = ["key", "Slack"]
-[[rules]]
     description = "Asymmetric Private Key"
     regex = '''-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY( BLOCK)?-----'''
     tags = ["key", "AsymmetricPrivateKey"]
