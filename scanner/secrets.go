@@ -63,22 +63,27 @@ var regexes = map[string]Secret{
 		"gho_[0-9a-zA-Z]{36}",
 		"?",
 	},
+    Secret{
+		"Github App Token",
+		"Github App Token",
+		"(ghu|ghs)_[0-9a-zA-Z]{36}",
+		"?",
+	},
+	Secret{
+		"Github Refresh Token",
+		"Github Refresh Token",
+		"ghr_[0-9a-zA-Z]{76}",
+		"?",
+	},
+	Secret{
+		"LinkedIn Client ID",
+		"LinkedIn Client ID",
+		"(?i)linkedin(.{0,20})?(?-i)[0-9a-z]{12}",
+		"?",
+	},
 }
 
 /*
-[[rules]]
-    description = "Github App Token"
-    regex = '''(ghu|ghs)_[0-9a-zA-Z]{36}'''
-    tags = ["key", "Github"]
-[[rules]]
-    description = "Github Refresh Token"
-    regex = '''ghr_[0-9a-zA-Z]{76}'''
-    tags = ["key", "Github"]
-[[rules]]
-    description = "LinkedIn Client ID"
-    regex = '''(?i)linkedin(.{0,20})?(?-i)[0-9a-z]{12}'''
-    tags = ["client", "LinkedIn"]
-[[rules]]
     description = "LinkedIn Secret Key"
     regex = '''(?i)linkedin(.{0,20})?[0-9a-z]{16}'''
     tags = ["secret", "LinkedIn"]
