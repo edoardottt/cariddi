@@ -183,27 +183,34 @@ var regexes = map[string]Secret{
 		"dt0[a-zA-Z]{1}[0-9]{2}\.[A-Z0-9]{24}\.[A-Z0-9]{64}",
 		"?",
 	},
+    Secret{
+		"Shopify shared secret",
+		"Shopify shared secret",
+		"shpss_[a-fA-F0-9]{32}",
+		"?",
+	},
+    Secret{
+		"Shopify access token",
+		"Shopify access token",
+		"shpat_[a-fA-F0-9]{32}",
+		"?",
+	},
+	Secret{
+		"Shopify custom app access token",
+		"Shopify custom app access token",
+		"shpca_[a-fA-F0-9]{32}",
+		"?",
+	},
+    Secret{
+		"Shopify private app access token",
+		"Shopify private app access token",
+		"shppa_[a-fA-F0-9]{32}",
+		"?",
+	},
+	Secret{
+		"PyPI upload token",
+		"PyPI upload token",
+		"pypi-AgEIcHlwaS5vcmc[A-Za-z0-9-_]{50,1000}",
+		"?",
+	},
 }
-
-/*
-    description = "Shopify shared secret"
-    regex = '''shpss_[a-fA-F0-9]{32}'''
-    tags = ["key", "Shopify"]
-[[rules]]
-    description = "Shopify access token"
-    regex = '''shpat_[a-fA-F0-9]{32}'''
-    tags = ["key", "Shopify"]
-[[rules]]
-    description = "Shopify custom app access token"
-    regex = '''shpca_[a-fA-F0-9]{32}'''
-    tags = ["key", "Shopify"]
-[[rules]]
-    description = "Shopify private app access token"
-    regex = '''shppa_[a-fA-F0-9]{32}'''
-    tags = ["key", "Shopify"]
-[[rules]]
-    description = "PyPI upload token"
-    regex = '''pypi-AgEIcHlwaS5vcmc[A-Za-z0-9-_]{50,1000}'''
-    tags = ["key", "pypi"]
-
-*/
