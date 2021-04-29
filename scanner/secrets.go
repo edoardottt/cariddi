@@ -93,45 +93,63 @@ var regexes = map[string]Secret{
 		"xox[baprs]-([0-9a-zA-Z]{10,48})?",
 		"?",
 	},
+    Secret{
+		"Asymmetric Private Key",
+		"Asymmetric Private Key",
+		"-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY( BLOCK)?-----",
+		"?",
+	},
+    Secret{
+		"Google API key",
+		"Google API key",
+		"AIza[0-9A-Za-z\\-_]{35}",
+		"?",
+	},
+	Secret{
+		"Google (GCP) Service Account",
+		"Slack",
+		`"type": "service_account"`,
+		"?",
+	},
+    Secret{
+		"Heroku API key",
+		"Heroku API key",
+		"(?i)heroku(.{0,20})?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+		"?",
+	},
+    Secret{
+		"MailChimp API key",
+		"MailChimp API key",
+		"(?i)(mailchimp|mc)(.{0,20})?[0-9a-f]{32}-us[0-9]{1,2}",
+		"?",
+	},
+	Secret{
+		"Mailgun API key",
+		"Mailgun API key",
+		"((?i)(mailgun|mg)(.{0,20})?)?key-[0-9a-z]{32}",
+		"?",
+	},
+    Secret{
+		"PayPal Braintree access token",
+		"PayPal Braintree access token",
+		"access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}",
+		"?",
+	},
+    Secret{
+		"Picatic API key",
+		"Picatic API key",
+		"sk_live_[0-9a-z]{32}",
+		"?",
+	},
+	Secret{
+		"SendGrid API Key",
+		"SendGrid API Key",
+		"SG\.[\w_]{16,32}\.[\w_]{16,64}",
+		"?",
+	},
 }
 
 /*
-    description = "Asymmetric Private Key"
-    regex = '''-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY( BLOCK)?-----'''
-    tags = ["key", "AsymmetricPrivateKey"]
-[[rules]]
-    description = "Google API key"
-    regex = '''AIza[0-9A-Za-z\\-_]{35}'''
-    tags = ["key", "Google"]
-[[rules]]
-    description = "Google (GCP) Service Account"
-    regex = '''"type": "service_account"'''
-    tags = ["key", "Google"]
-[[rules]]
-    description = "Heroku API key"
-    regex = '''(?i)heroku(.{0,20})?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'''
-    tags = ["key", "Heroku"]
-[[rules]]
-    description = "MailChimp API key"
-    regex = '''(?i)(mailchimp|mc)(.{0,20})?[0-9a-f]{32}-us[0-9]{1,2}'''
-    tags = ["key", "Mailchimp"]
-[[rules]]
-    description = "Mailgun API key"
-    regex = '''((?i)(mailgun|mg)(.{0,20})?)?key-[0-9a-z]{32}'''
-    tags = ["key", "Mailgun"]
-[[rules]]
-    description = "PayPal Braintree access token"
-    regex = '''access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}'''
-    tags = ["key", "Paypal"]
-[[rules]]
-    description = "Picatic API key"
-    regex = '''sk_live_[0-9a-z]{32}'''
-    tags = ["key", "Picatic"]
-[[rules]]
-    description = "SendGrid API Key"
-    regex = '''SG\.[\w_]{16,32}\.[\w_]{16,64}'''
-    tags = ["key", "SendGrid"]
-[[rules]]
     description = "Slack Webhook"
     regex = '''https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8,12}/[a-zA-Z0-9_]{24}'''
     tags = ["key", "slack"]
