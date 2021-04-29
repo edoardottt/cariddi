@@ -20,6 +20,13 @@ func Crawler(target string) []string {
 			1.1. Declare regexes in the first part of the function.
 			1.2. Print the entire page and see what actually is `page` string.
 			1.3  Test with a custom website and see if actually it works properly.
+
+			OR
+
+			use the requests file to take the body...
+
+			Let's see
+
 			//scan for secrets here
 			c.OnHTML("*", func(e *colly.HTMLElement) {
 				page := e.Attr("html")
