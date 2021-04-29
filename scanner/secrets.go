@@ -147,33 +147,45 @@ var regexes = map[string]Secret{
 		"SG\.[\w_]{16,32}\.[\w_]{16,64}",
 		"?",
 	},
+    Secret{
+		"Slack Webhook",
+		"Slack Webhook",
+		"https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8,12}/[a-zA-Z0-9_]{24}",
+		"?",
+	},
+    Secret{
+		"Stripe API key",
+		"Stripe API key",
+		"(?i)stripe(.{0,20})?[sr]k_live_[0-9a-zA-Z]{24}",
+		"?",
+	},
+	Secret{
+		"Square access token",
+		"Square access token",
+		"sq0atp-[0-9A-Za-z\-_]{22}",
+		"?",
+	},
+    Secret{
+		"Square OAuth secret",
+		"Square OAuth secret",
+		"sq0csp-[0-9A-Za-z\\-_]{43}",
+		"?",
+	},
+    Secret{
+		"Twilio API key",
+		"Twilio API key",
+		"(?i)twilio(.{0,20})?SK[0-9a-f]{32}",
+		"?",
+	},
+	Secret{
+		"Dynatrace token",
+		"Dynatrace token",
+		"dt0[a-zA-Z]{1}[0-9]{2}\.[A-Z0-9]{24}\.[A-Z0-9]{64}",
+		"?",
+	},
 }
 
 /*
-    description = "Slack Webhook"
-    regex = '''https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8,12}/[a-zA-Z0-9_]{24}'''
-    tags = ["key", "slack"]
-[[rules]]
-    description = "Stripe API key"
-    regex = '''(?i)stripe(.{0,20})?[sr]k_live_[0-9a-zA-Z]{24}'''
-    tags = ["key", "Stripe"]
-[[rules]]
-    description = "Square access token"
-    regex = '''sq0atp-[0-9A-Za-z\-_]{22}'''
-    tags = ["key", "square"]
-[[rules]]
-    description = "Square OAuth secret"
-    regex = '''sq0csp-[0-9A-Za-z\\-_]{43}'''
-    tags = ["key", "square"]
-[[rules]]
-    description = "Twilio API key"
-    regex = '''(?i)twilio(.{0,20})?SK[0-9a-f]{32}'''
-    tags = ["key", "twilio"]
-[[rules]]
-    description = "Dynatrace ttoken"
-    regex = '''dt0[a-zA-Z]{1}[0-9]{2}\.[A-Z0-9]{24}\.[A-Z0-9]{64}'''
-    tags = ["key", "Dynatrace"]
-[[rules]]
     description = "Shopify shared secret"
     regex = '''shpss_[a-fA-F0-9]{32}'''
     tags = ["key", "Shopify"]
