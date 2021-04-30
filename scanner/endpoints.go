@@ -22,6 +22,7 @@ func GetJuicyParameters() []string {
 		"admin_id",
 		"uid",
 		"exec",
+		"cmd",
 	}
 	return juicyParameters
 }
