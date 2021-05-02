@@ -5,7 +5,12 @@ func Scan() {
 
 }
 
-//isEmail
-func isEmail(inp string) bool {
+//isEmailUrl
+func isEmailUrl(inp string) bool {
 	return inp[:7] == "mailto:"
+}
+
+//isFtpUrl
+func isFtpUrl(inp string) bool {
+	return inp[:4] == "ftp:"
 }
