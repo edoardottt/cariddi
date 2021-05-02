@@ -28,7 +28,8 @@ func GetRequest(target string) (string, error) {
 //PostRequest performs a POST request and return
 //a string (the body of the response)
 //the map in the input should contains the data fields and values
-//in this way for example: email: test@example.com, password: stupid_pwd
+//in this way for example:
+//{ email: test@example.com, password: stupid_pwd }
 func PostRequest(target string, data map[string]string) (string, error) {
 	postBody, _ := json.Marshal(data)
 	responseBody := bytes.NewBuffer(postBody)
