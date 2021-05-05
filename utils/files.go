@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -61,8 +62,25 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 	return filename
 }
 
-//ReplaceBadCharacterOutput
+//ReplaceBadCharacterOutput --> from / to -
 func ReplaceBadCharacterOutput(input string) string {
 	result := strings.ReplaceAll(input, "/", "-")
 	return result
+}
+
+//ReadFile reads a file line per line
+//and returns a slice of strings.
+func ReadFile(inputFile string) []string {
+	file, err := os.Open(inputFile)
+	if err != nil {
+		log.Fatalf("failed to open %s ", inputFile)
+	}
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+	var text []string
+	for scanner.Scan() {
+		text = append(text, scanner.Text())
+	}
+	file.Close()
+	return text
 }

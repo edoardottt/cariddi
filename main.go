@@ -11,7 +11,7 @@ import (
 
 //main
 func main() {
-	targets := input.ScanInput()
+	targets := input.ScanTargets()
 	flags := input.ScanFlag()
 	var finalResult []string
 	for _, inp := range targets {
