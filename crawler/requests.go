@@ -50,7 +50,7 @@ func PostRequest(target string, data map[string]string) (string, error) {
 }
 
 //HeadRequest performs a HEAD request and return
-//a string (the body of the response)
+//a string (the headers of the response)
 func HeadRequest(target string) (string, error) {
 	resp, err := http.Head(target)
 	if err != nil {
