@@ -23,6 +23,8 @@ func ScanFlag() Input {
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line) to use custom regexes for secrets hunting.")
 
+	flag.Parse()
+
 	result := Input{
 		*verbosePtr,
 		*versionPtr,
