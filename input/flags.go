@@ -6,6 +6,8 @@ import "flag"
 type Input struct {
 	Verbose     bool
 	Version     bool
+	Help        bool
+	Examples    bool
 	Html        string
 	Txt         string
 	Secrets     bool
@@ -18,6 +20,8 @@ func ScanFlag() Input {
 
 	verbosePtr := flag.Bool("v", false, "Verbose mode.")
 	versionPtr := flag.Bool("version", false, "Print the version.")
+	helpPtr := flag.Bool("help", false, "Print the version.")
+	examplesPtr := flag.Bool("examples", false, "Print the version.")
 	outputHtmlPtr := flag.String("oh", "", "Write the output into an HTML file.")
 	outputTxtPtr := flag.String("ot", "", "Write the output into a TXT file.")
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
@@ -28,6 +32,8 @@ func ScanFlag() Input {
 	result := Input{
 		*verbosePtr,
 		*versionPtr,
+		*helpPtr,
+		*examplesPtr,
 		*outputHtmlPtr,
 		*outputTxtPtr,
 		*secretsPtr,
