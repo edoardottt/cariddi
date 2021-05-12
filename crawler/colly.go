@@ -3,11 +3,16 @@ package crawler
 import (
 	"fmt"
 
+	"github.com/edoardottt/cariddi/input"
 	"github.com/gocolly/colly"
 )
 
 //Crawler
 func Crawler(target string) []string {
+
+	//clean target input
+	target = input.RemoveHeaders(target)
+
 	var result []string
 	// Instantiate  collector
 	c := colly.NewCollector(
@@ -53,6 +58,7 @@ func Crawler(target string) []string {
 	})
 
 	// Before making a request print "Visiting ..."
+	// THEN AFTER TESTS COMMENT THIS.
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting", r.URL.String())
 	})

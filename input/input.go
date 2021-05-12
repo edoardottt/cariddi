@@ -20,3 +20,22 @@ func ScanTargets() []string {
 	}
 	return result
 }
+
+//RemovePort
+func RemovePort(input string) string {
+	res := strings.Index(input, ":")
+	if res >= 0 {
+		return input[:res-1]
+	}
+	return input
+}
+
+//RemoveHeaders
+func RemoveHeaders(input string) string {
+	res := strings.Index(input, "://")
+	if res >= 0 {
+		return input[res+3:]
+	} else {
+		return input
+	}
+}
