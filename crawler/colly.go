@@ -20,7 +20,7 @@ func Crawler(target string, delayTime int, concurrency int) []string {
 		colly.AllowedDomains(target),
 		colly.Async(true),
 		colly.URLFilters(
-			regexp.MustCompile("(http://|https://|ftp://)"+target+"*"),
+			regexp.MustCompile("(http://|https://|ftp://|)"+target+"*"),
 		),
 	)
 
