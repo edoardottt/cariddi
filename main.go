@@ -35,10 +35,13 @@ func main() {
 		os.Exit(0)
 	}
 
+	// ----------- TODO: check flags.dataPost --------------
+	data, _ := input.CheckDataPost(flags.DataPost)
+
 	var finalResult []string
 	for _, inp := range targets {
 		var result []string
-		result = crawler.Crawler(inp, flags.Delay, flags.Concurrency)
+		result = crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, flags.SecretsFile, data)
 		finalResult = append(finalResult, result...)
 	}
 	output.PrintSimpleOutput(finalResult)

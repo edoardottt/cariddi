@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/edoardottt/cariddi/input"
+	"github.com/edoardottt/cariddi/scanner"
 	"github.com/gocolly/colly"
 )
 
 //Crawler
-func Crawler(target string, delayTime int, concurrency int) []string {
+func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, dataPost map[string]string) []string {
 
 	//clean target input
 	target = input.RemoveHeaders(target)
@@ -67,10 +68,12 @@ func Crawler(target string, delayTime int, concurrency int) []string {
 		//result = append(result, e.Request.AbsoluteURL(link))
 	})
 
-	// Before making a request print "Visiting ..."
-	// THEN AFTER TESTS COMMENT THIS.
 	c.OnRequest(func(r *colly.Request) {
 		//fmt.Println("Visiting", r.URL.String())
+		// HERE SCAN FOR SECRETS
+		if secrets {
+			huntSecrets(secretsFile, r.URL.String(), dataPost)
+		}
 		result = append(result, r.URL.String())
 	})
 
@@ -79,4 +82,38 @@ func Crawler(target string, delayTime int, concurrency int) []string {
 	c.Visit("http://" + target)
 	c.Wait()
 	return result
+}
+
+//huntSecrets
+func huntSecrets(secretsFile string, target string, data map[string]string) []scanner.Secret {
+	if secretsFile == "" {
+		body := RetrieveBody(target, data)
+		secrets := SecretsMatch(body)
+		return secrets
+	}
+	return scanner.GetRegexes()
+}
+
+//RetrieveBody
+func RetrieveBody(target string, data map[string]string) string {
+	sb, err := GetRequest(target)
+	if err == nil && sb != "" {
+		return sb
+	}
+	sb, err = PostRequest(target, data)
+	if err == nil && sb != "" {
+		return sb
+	}
+	return ""
+}
+
+//SecretsMatch
+func SecretsMatch(body string) []scanner.Secret {
+	var secrets []scanner.Secret
+	for _, secret := range scanner.GetRegexes() {
+		if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
+			secrets = append(secrets, secret)
+		}
+	}
+	return secrets
 }
