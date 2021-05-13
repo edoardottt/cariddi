@@ -44,5 +44,4 @@ func main() {
 	output.PrintSimpleOutput(finalResult)
 	scanner.Scan()
 	fmt.Println(flags)
-
 }
