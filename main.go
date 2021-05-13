@@ -38,7 +38,7 @@ func main() {
 	var finalResult []string
 	for _, inp := range targets {
 		var result []string
-		result = crawler.Crawler(inp)
+		result = crawler.Crawler(inp, flags.Delay, flags.Concurrency)
 		finalResult = append(finalResult, result...)
 	}
 	output.PrintSimpleOutput(finalResult)

@@ -1,14 +1,15 @@
 package crawler
 
 import (
-	"fmt"
+	"regexp"
+	"time"
 
 	"github.com/edoardottt/cariddi/input"
 	"github.com/gocolly/colly"
 )
 
 //Crawler
-func Crawler(target string) []string {
+func Crawler(target string, delayTime int, concurrency int) []string {
 
 	//clean target input
 	target = input.RemoveHeaders(target)
@@ -18,6 +19,9 @@ func Crawler(target string) []string {
 	c := colly.NewCollector(
 		colly.AllowedDomains(target),
 		colly.Async(true),
+		colly.URLFilters(
+			regexp.MustCompile("(http://|https://|ftp://)"+target+"*"),
+		),
 	)
 
 	/*
@@ -47,25 +51,32 @@ func Crawler(target string) []string {
 			})
 	*/
 
-	c.Limit(&colly.LimitRule{DomainGlob: "*", Parallelism: 2})
+	c.Limit(
+		&colly.LimitRule{
+			DomainGlob:  target,
+			Parallelism: concurrency,
+			Delay:       time.Duration(delayTime) * time.Second,
+		},
+	)
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		c.Visit(e.Request.AbsoluteURL(link))
-		result = append(result, e.Request.AbsoluteURL(link))
+		//result = append(result, e.Request.AbsoluteURL(link))
 	})
 
 	// Before making a request print "Visiting ..."
 	// THEN AFTER TESTS COMMENT THIS.
 	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL.String())
+		//fmt.Println("Visiting", r.URL.String())
+		result = append(result, r.URL.String())
 	})
 
 	// Start scraping on target
-	c.Visit("http://" + target)
 	c.Visit("https://" + target)
+	c.Visit("http://" + target)
 	c.Wait()
 	return result
 }

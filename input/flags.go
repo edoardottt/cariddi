@@ -6,6 +6,8 @@ import "flag"
 type Input struct {
 	Verbose     bool
 	Version     bool
+	Delay       int
+	Concurrency int
 	Help        bool
 	Examples    bool
 	Html        string
@@ -20,6 +22,8 @@ func ScanFlag() Input {
 
 	verbosePtr := flag.Bool("v", false, "Verbose mode.")
 	versionPtr := flag.Bool("version", false, "Print the version.")
+	delayPtr := flag.Int("delay", 0, "Delay between a page crawled and another.")
+	concurrencyPtr := flag.Int("c", 20, "Concurrency level (20 is default).")
 	helpPtr := flag.Bool("help", false, "Print the version.")
 	examplesPtr := flag.Bool("examples", false, "Print the version.")
 	outputHtmlPtr := flag.String("oh", "", "Write the output into an HTML file.")
@@ -32,6 +36,8 @@ func ScanFlag() Input {
 	result := Input{
 		*verbosePtr,
 		*versionPtr,
+		*delayPtr,
+		*concurrencyPtr,
 		*helpPtr,
 		*examplesPtr,
 		*outputHtmlPtr,
