@@ -1,10 +1,12 @@
 package crawler
 
 import (
+	"net/url"
 	"regexp"
 	"time"
 
 	"github.com/edoardottt/cariddi/input"
+	"github.com/edoardottt/cariddi/output"
 	"github.com/edoardottt/cariddi/scanner"
 	"github.com/gocolly/colly"
 )
@@ -72,7 +74,10 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 		//fmt.Println("Visiting", r.URL.String())
 		// HERE SCAN FOR SECRETS
 		if secrets {
-			huntSecrets(secretsFile, r.URL.String(), dataPost)
+			secretsSlice := huntSecrets(secretsFile, r.URL.String(), dataPost)
+			for _, elem := range secretsSlice {
+				output.EncapsulateCustomGreen(elem.Name, "Found in "+r.URL.String()+" "+elem.Regex+" matched!")
+			}
 		}
 		result = append(result, r.URL.String())
 	})
@@ -116,4 +121,10 @@ func SecretsMatch(body string) []scanner.Secret {
 		}
 	}
 	return secrets
+}
+
+//isLinkOkay
+func isLinkOkay(input string) bool {
+	_, err := url.Parse(input)
+	return err == nil
 }

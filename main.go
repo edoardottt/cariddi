@@ -38,6 +38,10 @@ func main() {
 	// ----------- TODO: check flags.dataPost --------------
 	data, _ := input.CheckDataPost(flags.DataPost)
 
+	// ----------- TODO: check ALL input -------------------
+
+	output.Beautify()
+
 	var finalResult []string
 	for _, inp := range targets {
 		var result []string

@@ -1,6 +1,8 @@
 package input
 
-import "flag"
+import (
+	"flag"
+)
 
 //Input
 type Input struct {
@@ -10,6 +12,7 @@ type Input struct {
 	Concurrency int
 	Help        bool
 	Examples    bool
+	Plain       bool
 	Html        string
 	Txt         string
 	DataPost    string
@@ -27,6 +30,7 @@ func ScanFlag() Input {
 	concurrencyPtr := flag.Int("c", 20, "Concurrency level (20 is default).")
 	helpPtr := flag.Bool("h", false, "Print the version.")
 	examplesPtr := flag.Bool("examples", false, "Print the version.")
+	plainPtr := flag.Bool("plain", false, "Print only the results.")
 	outputHtmlPtr := flag.String("oh", "", "Write the output into an HTML file.")
 	outputTxtPtr := flag.String("ot", "", "Write the output into a TXT file.")
 	dataPostPtr := flag.String("post", "", "Set the data to perform the POST requests.")
@@ -42,6 +46,7 @@ func ScanFlag() Input {
 		*concurrencyPtr,
 		*helpPtr,
 		*examplesPtr,
+		*plainPtr,
 		*outputHtmlPtr,
 		*outputTxtPtr,
 		*dataPostPtr,
