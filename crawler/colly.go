@@ -27,33 +27,6 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 		),
 	)
 
-	/*
-		1. IF secrets flag enabled -> OK
-			1.1. Declare regexes in the first part of the function.
-			1.2. Print the entire page and see what actually is `page` string.
-			1.3  Test with a custom website and see if actually it works properly.
-
-			OR
-
-			use the requests file to take the body...
-
-			Let's see
-
-			//scan for secrets here
-			c.OnHTML("*", func(e *colly.HTMLElement) {
-				page := e.Attr("html")
-				for _, regex := range scanner.GetRegexes() {
-					matched, err := regexp.MatchString(`a.b`, page)
-					if err != nil {
-						panic(err.Error())
-					}
-					if matched {
-						print(regex.Name)
-					}
-				}
-			})
-	*/
-
 	c.Limit(
 		&colly.LimitRule{
 			DomainGlob:  target,
@@ -67,11 +40,9 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		c.Visit(e.Request.AbsoluteURL(link))
-		//result = append(result, e.Request.AbsoluteURL(link))
 	})
 
 	c.OnRequest(func(r *colly.Request) {
-		//fmt.Println("Visiting", r.URL.String())
 		// HERE SCAN FOR SECRETS
 		if secrets {
 			secretsSlice := huntSecrets(secretsFile, r.URL.String(), dataPost)
