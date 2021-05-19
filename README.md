@@ -6,6 +6,7 @@ https://yourbasic.org/golang/multiline-string/
 
 https://github.com/zricethezav/gitleaks/blob/master/config/default.go
 
+see also for secrets: https://github.com/tomnomnom/gf/tree/master/examples
 
 License 📝
 -------
