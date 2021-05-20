@@ -52,12 +52,7 @@ func main() {
 
 	// IF TXT OUTPUT
 	if flags.Txt != "" {
-
-		// if secrets flag enabled save also secrets
-		if flags.Secrets {
-
-		}
-
+		output.TxtOutput(flags, finalResult, finalSecret)
 	}
 
 	// IF HTML OUTPUT
