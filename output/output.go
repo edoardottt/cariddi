@@ -59,7 +59,7 @@ func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.S
 		utils.CreateOutputFolder()
 	}
 
-	ResultFilename := utils.CreateOutputFile(flags.Html, "html")
+	ResultFilename := utils.CreateOutputFile(flags.Html, "", "html")
 
 	BannerHTML(ResultFilename)
 
@@ -67,16 +67,16 @@ func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.S
 	if flags.Secrets {
 		HeaderHTML("Secrets found", ResultFilename)
 		for _, elem := range finalSecret {
-			AppendOutputToHTML(elem.Secret.Name+" Found in "+elem.Url+" "+elem.Secret.Regex, "", ResultFilename)
+			AppendOutputToHTML(elem.Secret.Name+" Found in "+elem.Url+" "+elem.Secret.Regex, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
 
 	HeaderHTML("Results", ResultFilename)
 	for _, elem := range finalResult {
-		AppendOutputToHTML(elem, "", ResultFilename)
+		AppendOutputToHTML(elem, "", ResultFilename, true)
 	}
 	FooterHTML(ResultFilename)
 
-	BannerFooterHTM(ResultFilename)
+	BannerFooterHTML(ResultFilename)
 }

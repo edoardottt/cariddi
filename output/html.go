@@ -22,25 +22,32 @@ func BannerHTML(filename string) {
 }
 
 //AppendOutputToHtml
-func AppendOutputToHTML(output string, status string, filename string) {
+func AppendOutputToHTML(output string, status string, filename string, isLink bool) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
 	defer file.Close()
-	var statusColor string
-	if status != "" {
-		if string(status[0]) == "2" || string(status[0]) == "3" {
-			statusColor = "<p style='color:green;display:inline'>" + status + "</p>"
+	if isLink {
+		var statusColor string
+		if status != "" {
+			if string(status[0]) == "2" || string(status[0]) == "3" {
+				statusColor = "<p style='color:green;display:inline'>" + status + "</p>"
+			} else {
+				statusColor = "<p style='color:red;display:inline'>" + status + "</p>"
+			}
 		} else {
-			statusColor = "<p style='color:red;display:inline'>" + status + "</p>"
+			statusColor = status
+		}
+
+		if _, err := file.WriteString("<li><a target='_blank' href='" + output + "'>" + output + "</a> " + statusColor + "</li>"); err != nil {
+			log.Fatal(err)
 		}
 	} else {
-		statusColor = status
-	}
-	if _, err := file.WriteString("<li><a target='_blank' href='" + output + "'>" + output + "</a> " + statusColor + "</li>"); err != nil {
-		log.Fatal(err)
+		if _, err := file.WriteString("<li>" + output + "</li>"); err != nil {
+			log.Fatal(err)
+		}
 	}
 	file.Close()
 }
