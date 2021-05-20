@@ -6,24 +6,24 @@ import (
 	"time"
 
 	"github.com/edoardottt/cariddi/input"
-	"github.com/edoardottt/cariddi/output"
 	"github.com/edoardottt/cariddi/scanner"
 	"github.com/gocolly/colly"
 )
 
 //Crawler
-func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, dataPost map[string]string) []string {
+func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, plain bool, dataPost map[string]string) ([]string, []scanner.SecretMatched) {
 
 	//clean target input
 	target = input.RemoveHeaders(target)
 
-	var result []string
+	var Finalresult []string
+	var Finalsecrets []scanner.SecretMatched
 	// Instantiate  collector
 	c := colly.NewCollector(
 		colly.AllowedDomains(target),
 		colly.Async(true),
 		colly.URLFilters(
-			regexp.MustCompile("(http://|https://|ftp://|)"+target+"*"),
+			regexp.MustCompile(target+"*"),
 		),
 	)
 
@@ -56,17 +56,19 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 		if secrets {
 			secretsSlice := huntSecrets(secretsFile, r.URL.String(), dataPost)
 			for _, elem := range secretsSlice {
-				output.EncapsulateCustomGreen(elem.Name, "Found in "+r.URL.String()+" "+elem.Regex+" matched!")
+
+				secretFound := scanner.SecretMatched{Secret: elem, Url: r.URL.String()}
+				Finalsecrets = append(Finalsecrets, secretFound)
 			}
 		}
-		result = append(result, r.URL.String())
+		Finalresult = append(Finalresult, r.URL.String())
 	})
 
 	// Start scraping on target
 	c.Visit("http://" + target)
 	c.Visit("https://" + target)
 	c.Wait()
-	return result
+	return Finalresult, Finalsecrets
 }
 
 //huntSecrets
@@ -76,6 +78,9 @@ func huntSecrets(secretsFile string, target string, data map[string]string) []sc
 		secrets := SecretsMatch(body)
 		return secrets
 	}
+
+	// HERE ---> ELSE SECRETS FILE !
+
 	return scanner.GetRegexes()
 }
 

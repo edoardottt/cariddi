@@ -8,6 +8,11 @@ type Secret struct {
 	Poc         string
 }
 
+type SecretMatched struct {
+	Secret Secret
+	Url    string
+}
+
 func GetRegexes() []Secret {
 	var regexes = []Secret{
 		{
