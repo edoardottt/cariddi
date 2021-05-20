@@ -19,9 +19,9 @@ func CreateOutputFolder() {
 }
 
 //CreateOutputFile
-func CreateOutputFile(target string, subcommand string, format string) string {
+func CreateOutputFile(target string, format string) string {
 	target = ReplaceBadCharacterOutput(target)
-	filename := "output-cariddi" + "/" + target + "." + subcommand + "." + format
+	filename := "output-cariddi" + "/" + target + "." + format
 	_, err := os.Stat(filename)
 
 	if os.IsNotExist(err) {

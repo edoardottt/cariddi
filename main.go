@@ -57,12 +57,7 @@ func main() {
 
 	// IF HTML OUTPUT
 	if flags.Html != "" {
-
-		// if secrets flag enabled save also secrets
-		if flags.Secrets {
-
-		}
-
+		output.HtmlOutput(flags, finalResult, finalSecret)
 	}
 
 	// if needed print secrets

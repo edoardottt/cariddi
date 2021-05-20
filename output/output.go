@@ -44,3 +44,39 @@ func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.Se
 		AppendOutputToTxt(elem, ResultFilename)
 	}
 }
+
+//HtmlOutput it's the wrapper around all the html things.
+//Actually it manages everything related to HTML output.
+func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.SecretMatched) {
+	exists, err := utils.ElementExists("output-cariddi")
+
+	if err != nil {
+		fmt.Println("Error while creating the output directory.")
+		os.Exit(1)
+	}
+
+	if !exists {
+		utils.CreateOutputFolder()
+	}
+
+	ResultFilename := utils.CreateOutputFile(flags.Html, "html")
+
+	BannerHTML(ResultFilename)
+
+	// if secrets flag enabled save also secrets
+	if flags.Secrets {
+		HeaderHTML("Secrets found", ResultFilename)
+		for _, elem := range finalSecret {
+			AppendOutputToHTML(elem.Secret.Name+" Found in "+elem.Url+" "+elem.Secret.Regex, "", ResultFilename)
+		}
+		FooterHTML(ResultFilename)
+	}
+
+	HeaderHTML("Results", ResultFilename)
+	for _, elem := range finalResult {
+		AppendOutputToHTML(elem, "", ResultFilename)
+	}
+	FooterHTML(ResultFilename)
+
+	BannerFooterHTM(ResultFilename)
+}

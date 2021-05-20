@@ -6,10 +6,11 @@ import (
 )
 
 //bannerHTML
-func bannerHTML(target string, filename string) {
+func BannerHTML(filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
+		os.Exit(1)
 	}
 	defer file.Close()
 	file.WriteString("<html><body><div style='" + "background-color:#4adeff;color:white" + "'><h1>Cariddi</h1>")
@@ -17,15 +18,15 @@ func bannerHTML(target string, filename string) {
 	file.WriteString("<li><a href='" + "https://github.com/edoardottt/cariddi'" + ">github.com/edoardottt/cariddi</a></li>")
 	file.WriteString("<li>edoardottt, <a href='" + "https://www.edoardoottavianelli.it'" + ">edoardoottavianelli.it</a></li>")
 	file.WriteString("<li>Released under <a href='" + "http://www.gnu.org/licenses/gpl-3.0.html'" + ">GPLv3 License</a></li></ul></div>")
-	file.WriteString("<h4>target: " + target + "</h4>")
 	file.Close()
 }
 
-//appendOutputToHtml
-func appendOutputToHTML(output string, status string, filename string) {
+//AppendOutputToHtml
+func AppendOutputToHTML(output string, status string, filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
+		os.Exit(1)
 	}
 	defer file.Close()
 	var statusColor string
@@ -44,11 +45,12 @@ func appendOutputToHTML(output string, status string, filename string) {
 	file.Close()
 }
 
-//headerHtml
-func headerHTML(header string, filename string) {
+//HeaderHtml
+func HeaderHTML(header string, filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
+		os.Exit(1)
 	}
 	if _, err := file.WriteString("<h3>" + header + "</h3><ul>"); err != nil {
 		log.Fatal(err)
@@ -56,11 +58,12 @@ func headerHTML(header string, filename string) {
 	file.Close()
 }
 
-//footerHTML
-func footerHTML(filename string) {
+//FooterHTML
+func FooterHTML(filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
+		os.Exit(1)
 	}
 	defer file.Close()
 	if _, err := file.WriteString("</ul>"); err != nil {
@@ -69,8 +72,8 @@ func footerHTML(filename string) {
 	file.Close()
 }
 
-//bannerFooterHTML
-func bannerFooterHTML(filename string) {
+//BannerFooterHTML
+func BannerFooterHTML(filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
