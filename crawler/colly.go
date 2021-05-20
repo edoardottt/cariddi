@@ -34,9 +34,18 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 			Delay:       time.Duration(delayTime) * time.Second,
 		},
 	)
+
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		c.Visit(e.Request.AbsoluteURL(link))
+	})
+
+	// On every a script element which has src attribute call callback
+	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
+		link := e.Attr("src")
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		c.Visit(e.Request.AbsoluteURL(link))
@@ -54,8 +63,8 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	})
 
 	// Start scraping on target
-	c.Visit("https://" + target)
 	c.Visit("http://" + target)
+	c.Visit("https://" + target)
 	c.Wait()
 	return result
 }
