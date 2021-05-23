@@ -42,6 +42,8 @@ func main() {
 
 	output.Beautify()
 
+	input.CheckFlags(flags)
+
 	var finalResult []string
 	var finalSecret []scanner.SecretMatched
 	for _, inp := range targets {
