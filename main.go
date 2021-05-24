@@ -92,6 +92,7 @@ func main() {
 
 	// if needed print secrets
 	if !flags.Plain && len(finalSecret) != 0 {
+		finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, "Found in "+elem.Url+" "+elem.Secret.Regex+" matched!")
 		}

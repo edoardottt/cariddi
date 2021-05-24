@@ -244,3 +244,16 @@ func GetRegexes() []Secret {
 	}
 	return regexes
 }
+
+//RemoveDuplicateSecrets
+func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
+	keys := make(map[string]bool)
+	list := []SecretMatched{}
+	for _, entry := range input {
+		if _, value := keys[entry.Url]; !value {
+			keys[entry.Url] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
