@@ -24,59 +24,65 @@ package scanner
 
 //FileType
 type FileType struct {
-	extension string
-	severity  int
-	alert     bool
+	Extension string
+	Severity  int
+}
+
+//FileTypeMatched
+type FileTypeMatched struct {
+	Filetype FileType
+	Url      string
 }
 
 func GetExtensions() []FileType {
 	//extensions contains a list of known extensions
 	//and the TYPICAL (also say `in general`) associated severity.
 	var extensions = []FileType{
-		{"key", 1, true},
-		{"env", 1, true},
-		{"pem", 1, true},
-		{"git", 1, true},
-		{"ovpn", 1, true},
-		{"log", 1, true},
-		{"secret", 1, true},
-		{"secrets", 1, true},
-		{"access", 1, true},
-		{"bak", 1, true},
-		{"dat", 1, true},
-		{"db", 1, true},
-		{"properties", 2, true},
-		{"dtd", 2, true},
-		{"conf", 2, true},
-		{"config", 2, true},
-		{"configs", 2, true},
-		{"sh", 3, true},
-		{"py", 3, true},
-		{"xml", 3, true},
-		{"yml", 3, true},
-		{"yaml", 3, true},
-		{"toml", 3, true},
-		{"php4", 3, true},
-		{"json", 3, true},
-		{"zip", 3, true},
-		{"doc", 3, false},
-		{"docx", 3, false},
-		{"dochtml", 3, false},
-		{"csv", 3, false},
-		{"odt", 3, false},
-		{"xls", 3, false},
-		{"xlsx", 3, false},
-		{"txt", 3, false},
-		{"ts", 4, false},
-		{"js", 4, false},
-		{"php", 5, false},
-		{"asp", 5, false},
-		{"jsp", 5, false},
-		{"phtml", 5, false},
-		{"php5", 5, false},
-		{"html", 6, false},
-		{"htm", 6, false},
-		{"pdf", 7, false},
+		{"key", 1},
+		{"env", 1},
+		{"pem", 1},
+		{"git", 1},
+		{"ovpn", 1},
+		{"log", 1},
+		{"secret", 1},
+		{"secrets", 1},
+		{"access", 1},
+		{"bak", 1},
+		{"dat", 1},
+		{"db", 1},
+		{"sql", 1},
+		{"properties", 2},
+		{"dtd", 2},
+		{"conf", 2},
+		{"config", 2},
+		{"configs", 2},
+		{"sh", 3},
+		{"py", 3},
+		{"txt", 3},
+		{"xml", 3},
+		{"yml", 3},
+		{"yaml", 3},
+		{"toml", 3},
+		{"php4", 3},
+		{"json", 3},
+		{"zip", 3},
+		{"doc", 3},
+		{"docx", 3},
+		{"dochtml", 3},
+		{"csv", 3},
+		{"odt", 3},
+		{"xls", 3},
+		{"xlsx", 3},
+		{"ts", 4},
+		{"js", 4},
+		{"php", 5},
+		{"asp", 5},
+		{"jsp", 5},
+		{"phtml", 5},
+		{"php5", 5},
+		{"html", 6},
+		{"htm", 6},
+		{"pdf", 7},
 	}
 
 	return extensions
