@@ -34,7 +34,7 @@ import (
 )
 
 //Crawler
-func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, plain bool, endpoints bool, endpointsFile string, fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
+func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string, fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	//clean target input
 	target = input.RemoveHeaders(target)
@@ -119,49 +119,54 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 }
 
 //huntSecrets
-func huntSecrets(secretsFile string, target string, body string) []scanner.Secret {
-	if secretsFile == "" {
-		secrets := SecretsMatch(body)
-		return secrets
-	}
-
-	// HERE ---> ELSE SECRETS FILE !
-
-	return scanner.GetRegexes()
+func huntSecrets(secretsFile []string, target string, body string) []scanner.Secret {
+	secrets := SecretsMatch(body, secretsFile)
+	return secrets
 }
 
 //SecretsMatch
-func SecretsMatch(body string) []scanner.Secret {
+func SecretsMatch(body string, secretsFile []string) []scanner.Secret {
 	var secrets []scanner.Secret
-	for _, secret := range scanner.GetRegexes() {
-		if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
-			secrets = append(secrets, secret)
+	if len(secretsFile) == 0 {
+		for _, secret := range scanner.GetRegexes() {
+			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
+				secrets = append(secrets, secret)
+			}
+		}
+	} else {
+		for _, secret := range secretsFile {
+			if matched, err := regexp.Match(secret, []byte(body)); err == nil && matched {
+				secrets = append(secrets, scanner.Secret{Name: "CustomFromFile", Description: "", Regex: secret, Poc: ""})
+			}
 		}
 	}
 	return secrets
 }
 
 //huntEndpoints
-func huntEndpoints(endpointsFile string, target string) []scanner.EndpointMatched {
-	if endpointsFile == "" {
-		endpoints := EndpointsMatch(target)
-		return endpoints
-	}
-
-	// HERE ---> ELSE SECRETS FILE !
-
-	return nil
+func huntEndpoints(endpointsFile []string, target string) []scanner.EndpointMatched {
+	endpoints := EndpointsMatch(target, endpointsFile)
+	return endpoints
 }
 
 //EndpointsMatch
-func EndpointsMatch(target string) []scanner.EndpointMatched {
+func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMatched {
 	var endpoints []scanner.EndpointMatched
 	matched := []string{}
-	for _, parameter := range scanner.GetJuicyParameters() {
-		if strings.Contains(target, parameter) {
-			matched = append(matched, parameter)
+	if len(endpointsFile) == 0 {
+		for _, parameter := range scanner.GetJuicyParameters() {
+			if strings.Contains(target, parameter) {
+				matched = append(matched, parameter)
+			}
+			endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
 		}
-		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
+	} else {
+		for _, parameter := range endpointsFile {
+			if strings.Contains(target, parameter) {
+				matched = append(matched, parameter)
+			}
+			endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
+		}
 	}
 	return endpoints
 }

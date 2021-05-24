@@ -29,6 +29,7 @@ import (
 	"github.com/edoardottt/cariddi/input"
 	"github.com/edoardottt/cariddi/output"
 	"github.com/edoardottt/cariddi/scanner"
+	"github.com/edoardottt/cariddi/utils"
 )
 
 //main
@@ -65,12 +66,22 @@ func main() {
 	// ----------- TODO: check ALL input -------------------
 	input.CheckFlags(flags)
 
+	var endpointsFileSlice []string
+	if flags.EndpointsFile != "" {
+		endpointsFileSlice = utils.ReadFile(flags.EndpointsFile)
+	}
+
+	var secretsFileSlice []string
+	if flags.SecretsFile != "" {
+		secretsFileSlice = utils.ReadFile(flags.SecretsFile)
+	}
+
 	var finalResult []string
 	var finalSecret []scanner.SecretMatched
 	var finalEndpoints []scanner.EndpointMatched
 	var finalExtensions []scanner.FileTypeMatched
 	for _, inp := range targets {
-		result, secrets, endpoints, extensions := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, flags.SecretsFile, flags.Plain, flags.Endpoints, flags.EndpointsFile, flags.Extensions)
+		result, secrets, endpoints, extensions := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice, flags.Extensions)
 		finalResult = append(finalResult, result...)
 		finalSecret = append(finalSecret, secrets...)
 		finalEndpoints = append(finalEndpoints, endpoints...)
