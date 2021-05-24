@@ -17,12 +17,12 @@ update:
 
 linux:
 	@go build -o ./cariddi
-	sudo mv ./cariddi /usr/bin/
-	echo "Done."
+	@sudo mv ./cariddi /usr/bin/
+	@echo "Done."
 
 unlinux:
-	sudo rm -rf /usr/bin/cariddi
-	echo "Done."
+	@sudo rm -rf /usr/bin/cariddi
+	@echo "Done."
 
 test:
 	@go test -v -race ./... ; \
