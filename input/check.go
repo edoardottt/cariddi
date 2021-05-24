@@ -61,4 +61,11 @@ func CheckFlags(flags Input) {
 			os.Exit(1)
 		}
 	}
+
+	if flags.Extensions != 0 {
+		if 1 <= flags.Extensions && flags.Extensions <= 7 {
+			fmt.Println("The extension value must go from 1 (juicy) to 7 (not juicy).")
+			os.Exit(1)
+		}
+	}
 }

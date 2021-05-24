@@ -42,6 +42,7 @@ type Input struct {
 	SecretsFile   string
 	Endpoints     bool
 	EndpointsFile string
+	Extensions    int
 }
 
 //ScanFlag defines all the switches taken
@@ -57,6 +58,7 @@ func ScanFlag() Input {
 	plainPtr := flag.Bool("plain", false, "Print only the results.")
 	outputHtmlPtr := flag.String("oh", "", "Write the output into an HTML file.")
 	outputTxtPtr := flag.String("ot", "", "Write the output into a TXT file.")
+
 	//dataPostPtr := flag.String("post", "", "Set the data to perform the POST requests.")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
@@ -64,6 +66,8 @@ func ScanFlag() Input {
 
 	endpointsPtr := flag.Bool("e", false, "Hunt for juicy endpoints.")
 	endpointsFilePtr := flag.String("ef", "", "Use an external file (txt, one per line) to use custom parameters for endpoints hunting.")
+
+	extensionsPtr := flag.Int("ext", 0, "Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).")
 
 	flag.Parse()
 
@@ -82,6 +86,7 @@ func ScanFlag() Input {
 		*secretsFilePtr,
 		*endpointsPtr,
 		*endpointsFilePtr,
+		*extensionsPtr,
 	}
 
 	return result
