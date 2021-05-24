@@ -22,6 +22,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
+type EndpointMatched struct {
+	Parameters []string
+	Url        string
+}
+
 //GetJuicyParameters
 func GetJuicyParameters() []string {
 	var juicyParameters = []string{

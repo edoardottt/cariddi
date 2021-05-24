@@ -23,7 +23,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/edoardottt/cariddi/crawler"
@@ -38,9 +37,11 @@ func main() {
 	targets := input.ScanTargets()
 	flags := input.ScanFlag()
 
-	fmt.Println("FLAGS:")
-	fmt.Println(flags)
-	fmt.Println("--------------")
+	/*
+		fmt.Println("FLAGS:")
+		fmt.Println(flags)
+		fmt.Println("--------------")
+	*/
 
 	if flags.Version {
 		output.Beautify()
@@ -59,18 +60,17 @@ func main() {
 
 	output.Beautify()
 
-	// ----------- TODO: check flags.dataPost --------------
-	data, _ := input.CheckDataPost(flags.DataPost)
-
 	// ----------- TODO: check ALL input -------------------
 	input.CheckFlags(flags)
 
 	var finalResult []string
 	var finalSecret []scanner.SecretMatched
+	var finalEndpoints []scanner.EndpointMatched
 	for _, inp := range targets {
-		result, secrets := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, flags.SecretsFile, flags.Plain, data)
+		result, secrets, endpoints := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, flags.SecretsFile, flags.Plain, flags.Endpoints, flags.EndpointsFile)
 		finalResult = append(finalResult, result...)
 		finalSecret = append(finalSecret, secrets...)
+		finalEndpoints = append(finalEndpoints, endpoints...)
 	}
 
 	// IF TXT OUTPUT
@@ -83,14 +83,26 @@ func main() {
 		output.HtmlOutput(flags, finalResult, finalSecret)
 	}
 
+	// if needed print urls
+	if !flags.Plain {
+		output.PrintSimpleOutput(finalResult)
+	}
+
 	// if needed print secrets
 	if !flags.Plain {
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, "Found in "+elem.Url+" "+elem.Secret.Regex+" matched!")
 		}
 	}
-	// if needed print urls
+
+	// if needed print secrets
 	if !flags.Plain {
-		output.PrintSimpleOutput(finalResult)
+		for _, elem := range finalEndpoints {
+			finalString := ""
+			for _, parameter := range elem.Parameters {
+				finalString += parameter
+			}
+			output.EncapsulateCustomGreen(finalString, " Found in "+elem.Url+" matched!")
+		}
 	}
 }

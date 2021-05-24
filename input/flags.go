@@ -28,7 +28,7 @@ import (
 
 //Input
 type Input struct {
-	Verbose     bool
+	//Verbose     bool
 	Version     bool
 	Delay       int
 	Concurrency int
@@ -37,16 +37,18 @@ type Input struct {
 	Plain       bool
 	Html        string
 	Txt         string
-	DataPost    string
-	Secrets     bool
-	SecretsFile string
+	//DataPost    string
+	Secrets       bool
+	SecretsFile   string
+	Endpoints     bool
+	EndpointsFile string
 }
 
 //ScanFlag defines all the switches taken
 //as input and return them.
 func ScanFlag() Input {
 
-	verbosePtr := flag.Bool("v", false, "Verbose mode.")
+	//verbosePtr := flag.Bool("v", false, "Verbose mode.")
 	versionPtr := flag.Bool("version", false, "Print the version.")
 	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")
 	concurrencyPtr := flag.Int("c", 20, "Concurrency level (20 is default).")
@@ -55,14 +57,18 @@ func ScanFlag() Input {
 	plainPtr := flag.Bool("plain", false, "Print only the results.")
 	outputHtmlPtr := flag.String("oh", "", "Write the output into an HTML file.")
 	outputTxtPtr := flag.String("ot", "", "Write the output into a TXT file.")
-	dataPostPtr := flag.String("post", "", "Set the data to perform the POST requests.")
+	//dataPostPtr := flag.String("post", "", "Set the data to perform the POST requests.")
+
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line) to use custom regexes for secrets hunting.")
+
+	endpointsPtr := flag.Bool("e", false, "Hunt for juicy endpoints.")
+	endpointsFilePtr := flag.String("ef", "", "Use an external file (txt, one per line) to use custom parameters for endpoints hunting.")
 
 	flag.Parse()
 
 	result := Input{
-		*verbosePtr,
+		//*verbosePtr,
 		*versionPtr,
 		*delayPtr,
 		*concurrencyPtr,
@@ -71,9 +77,11 @@ func ScanFlag() Input {
 		*plainPtr,
 		*outputHtmlPtr,
 		*outputTxtPtr,
-		*dataPostPtr,
+		//*dataPostPtr,
 		*secretsPtr,
 		*secretsFilePtr,
+		*endpointsPtr,
+		*endpointsFilePtr,
 	}
 
 	return result

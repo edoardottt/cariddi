@@ -25,6 +25,7 @@ package crawler
 import (
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/edoardottt/cariddi/input"
@@ -33,13 +34,15 @@ import (
 )
 
 //Crawler
-func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, plain bool, dataPost map[string]string) ([]string, []scanner.SecretMatched) {
+func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, plain bool, endpoints bool, endpointsFile string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched) {
 
 	//clean target input
 	target = input.RemoveHeaders(target)
 
 	var Finalresult []string
 	var Finalsecrets []scanner.SecretMatched
+	var Finalendpoints []scanner.EndpointMatched
+
 	// Instantiate  collector
 	c := colly.NewCollector(
 		colly.AllowedDomains(target),
@@ -76,12 +79,17 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	c.OnRequest(func(r *colly.Request) {
 		// HERE SCAN FOR SECRETS
 		if secrets {
-			secretsSlice := huntSecrets(secretsFile, r.URL.String(), dataPost)
+			secretsSlice := huntSecrets(secretsFile, r.URL.String())
 			for _, elem := range secretsSlice {
 
 				secretFound := scanner.SecretMatched{Secret: elem, Url: r.URL.String()}
 				Finalsecrets = append(Finalsecrets, secretFound)
 			}
+		}
+		// HERE SCAN FOR ENDPOINTS
+		if endpoints {
+			endpointsSlice := huntEndpoints(endpointsFile, r.URL.String())
+			Finalendpoints = append(Finalendpoints, endpointsSlice...)
 		}
 		Finalresult = append(Finalresult, r.URL.String())
 	})
@@ -90,13 +98,13 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	c.Visit("http://" + target)
 	c.Visit("https://" + target)
 	c.Wait()
-	return Finalresult, Finalsecrets
+	return Finalresult, Finalsecrets, Finalendpoints
 }
 
 //huntSecrets
-func huntSecrets(secretsFile string, target string, data map[string]string) []scanner.Secret {
+func huntSecrets(secretsFile string, target string) []scanner.Secret {
 	if secretsFile == "" {
-		body := RetrieveBody(target, data)
+		body := RetrieveBody(target)
 		secrets := SecretsMatch(body)
 		return secrets
 	}
@@ -104,19 +112,6 @@ func huntSecrets(secretsFile string, target string, data map[string]string) []sc
 	// HERE ---> ELSE SECRETS FILE !
 
 	return scanner.GetRegexes()
-}
-
-//RetrieveBody
-func RetrieveBody(target string, data map[string]string) string {
-	sb, err := GetRequest(target)
-	if err == nil && sb != "" {
-		return sb
-	}
-	sb, err = PostRequest(target, data)
-	if err == nil && sb != "" {
-		return sb
-	}
-	return ""
 }
 
 //SecretsMatch
@@ -128,6 +123,41 @@ func SecretsMatch(body string) []scanner.Secret {
 		}
 	}
 	return secrets
+}
+
+//huntEndpoints
+func huntEndpoints(endpointsFile string, target string) []scanner.EndpointMatched {
+	if endpointsFile == "" {
+		body := RetrieveBody(target)
+		endpoints := EndpointsMatch(body, target)
+		return endpoints
+	}
+
+	// HERE ---> ELSE SECRETS FILE !
+
+	return nil
+}
+
+//EndpointsMatch
+func EndpointsMatch(body string, target string) []scanner.EndpointMatched {
+	var endpoints []scanner.EndpointMatched
+	matched := []string{}
+	for _, parameter := range scanner.GetJuicyParameters() {
+		if strings.Contains(body, parameter) {
+			matched = append(matched, parameter)
+		}
+		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
+	}
+	return endpoints
+}
+
+//RetrieveBody
+func RetrieveBody(target string) string {
+	sb, err := GetRequest(target)
+	if err == nil && sb != "" {
+		return sb
+	}
+	return ""
 }
 
 //isLinkOkay
