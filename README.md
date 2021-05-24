@@ -161,6 +161,12 @@ A special thanks to:
   - [x] Build an Input Struct and use it as parameter
 
   - [x] Output color
+
+  - [x] Endpoints (parameters) scan
+
+  - [x] Secrets scan
+
+  - [x] Extensions scan
   
   - [x] TXT output
   
