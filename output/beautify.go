@@ -34,7 +34,7 @@ func Beautify() {
 	banner2 := "   ___ __ _ _ __(_) __| | __| (_)\n"
 	banner3 := "  / __/ _` | '__| |/ _` |/ _` | |\n"
 	banner4 := " | (_| (_| | |  | | (_| | (_| | |\n"
-	banner5 := "  \\___\\__,_|_|  |_|\\__,_|\\__,_|_| v1.0\n"
+	banner5 := "  \\___\\__,_|_|  |_|\\__,_|\\__,_|_| v0.dev\n"
 	banner6 := ""
 	banner7 := " > github.com/edoardottt/cariddi\n"
 	banner8 := " > edoardoottavianelli.it\n"
