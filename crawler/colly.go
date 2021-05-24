@@ -59,6 +59,7 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 			Delay:       time.Duration(delayTime) * time.Second,
 		},
 	)
+	c.AllowURLRevisit = false
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
@@ -76,28 +77,28 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 		c.Visit(e.Request.AbsoluteURL(link))
 	})
 
-	c.OnRequest(func(r *colly.Request) {
+	c.OnResponse(func(r *colly.Response) {
 		// HERE SCAN FOR SECRETS
 		if secrets {
 			// DON'T SCAN THE URLS SCANNED BEFORE
-			secretsSlice := huntSecrets(secretsFile, r.URL.String())
+			secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
 			for _, elem := range secretsSlice {
 
-				secretFound := scanner.SecretMatched{Secret: elem, Url: r.URL.String()}
+				secretFound := scanner.SecretMatched{Secret: elem, Url: r.Request.URL.String()}
 				Finalsecrets = append(Finalsecrets, secretFound)
 			}
 		}
 		// HERE SCAN FOR ENDPOINTS
 		if endpoints {
 			// DON'T SCAN THE URLS SCANNED BEFORE
-			endpointsSlice := huntEndpoints(endpointsFile, r.URL.String())
+			endpointsSlice := huntEndpoints(endpointsFile, r.Request.URL.String())
 			for _, elem := range endpointsSlice {
 				if len(elem.Parameters) != 0 {
 					Finalendpoints = append(Finalendpoints, elem)
 				}
 			}
 		}
-		Finalresult = append(Finalresult, r.URL.String())
+		Finalresult = append(Finalresult, r.Request.URL.String())
 	})
 
 	// Start scraping on target
@@ -108,9 +109,8 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 }
 
 //huntSecrets
-func huntSecrets(secretsFile string, target string) []scanner.Secret {
+func huntSecrets(secretsFile string, target string, body string) []scanner.Secret {
 	if secretsFile == "" {
-		body := RetrieveBody(target)
 		secrets := SecretsMatch(body)
 		return secrets
 	}
