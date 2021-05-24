@@ -27,5 +27,24 @@ import "fmt"
 //PrintExamples
 func PrintExamples() {
 	Beautify()
-	fmt.Println("The examples go here.")
+	fmt.Println(`
+	cat urls | cariddi -version (Print the version)
+
+	cat urls | cariddi -h (Print the help)
+	
+	cat urls | cariddi -e (Hunt for secrets)
+	
+	cat urls | cariddi -d 2 (2 seconds between a page crawled and another)
+	
+	cat urls | cariddi -c 200 (Set the concurrency level to 200)
+	
+	cat urls | cariddi -s (Hunt for juicy endpoints)
+	
+	cat urls | cariddi -plain (Print only useful things)
+	
+	cat urls | cariddi -ot target_name (Results in txt file)
+	
+	cat urls | cariddi -oh target_name (Results in html file)
+	
+	cat urls | cariddi -ext 2 (Hunt for juicy (level 2 of 7) files)`)
 }
