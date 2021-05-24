@@ -47,7 +47,7 @@
   </sub>
   <br>
   <!--Tweet button-->
-  <a href="https://twitter.com/intent/tweet?text=Cariddi%20-%20Take%20a%20list%20of%20domains%20and%20scan%20for%20endpoints%2C%20secrets%2C%20api%20keys%2C%20tokens%20and%20more...%20%23linux%20%23infosec%20%23bugbounty%20%23security%20%23golang%20%23github%20%23oss%20https%3A//github.com/edoardottt/cariddi" target="_blank">Share on Twitter!
+  <a href="https://twitter.com/intent/tweet?text=Take%20a%20list%20of%20domains%20and%20scan%20for%20endpoints%2C%20secrets%2C%20api%20keys%2C%20file%20extensions%2C%20tokens%20and%20more...%20%23linux%20%23infosec%20%23bugbounty%20%23security%20%23golang%20%23github%20%23oss%20https%3A//github.com/edoardottt/cariddi" target="_blank">Share on Twitter!
   </a>
 </p>
 <p align="center">
