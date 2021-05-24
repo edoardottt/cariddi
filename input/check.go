@@ -68,4 +68,20 @@ func CheckFlags(flags Input) {
 			os.Exit(1)
 		}
 	}
+
+	if flags.EndpointsFile != "" {
+		if !flags.Endpoints {
+			fmt.Println("You can't define an endpoint file and not the endpoint search.")
+			fmt.Println("If you want to scan for custom parameters enter both -e and -ef {filename}.")
+			os.Exit(1)
+		}
+	}
+
+	if flags.SecretsFile != "" {
+		if !flags.Secrets {
+			fmt.Println("You can't define a secrets file and not the secrets search.")
+			fmt.Println("If you want to scan for custom regexes enter both -s and -sf {filename}.")
+			os.Exit(1)
+		}
+	}
 }
