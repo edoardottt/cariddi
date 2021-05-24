@@ -51,7 +51,7 @@ func ScanFlag() Input {
 	//verbosePtr := flag.Bool("v", false, "Verbose mode.")
 	versionPtr := flag.Bool("version", false, "Print the version.")
 	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")
-	concurrencyPtr := flag.Int("c", 20, "Concurrency level (20 is default).")
+	concurrencyPtr := flag.Int("c", 20, "Concurrency level.")
 	helpPtr := flag.Bool("h", false, "Print the help.")
 	examplesPtr := flag.Bool("examples", false, "Print the examples.")
 	plainPtr := flag.Bool("plain", false, "Print only the results.")
