@@ -22,8 +22,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package utils
 
-//removeDuplicateValues
-func removeDuplicateValues(intSlice []string) []string {
+//RemoveDuplicateValues
+func RemoveDuplicateValues(intSlice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
 	for _, entry := range intSlice {

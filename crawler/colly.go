@@ -79,6 +79,7 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	c.OnRequest(func(r *colly.Request) {
 		// HERE SCAN FOR SECRETS
 		if secrets {
+			// DON'T SCAN THE URLS SCANNED BEFORE
 			secretsSlice := huntSecrets(secretsFile, r.URL.String())
 			for _, elem := range secretsSlice {
 
@@ -88,8 +89,13 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 		}
 		// HERE SCAN FOR ENDPOINTS
 		if endpoints {
+			// DON'T SCAN THE URLS SCANNED BEFORE
 			endpointsSlice := huntEndpoints(endpointsFile, r.URL.String())
-			Finalendpoints = append(Finalendpoints, endpointsSlice...)
+			for _, elem := range endpointsSlice {
+				if len(elem.Parameters) != 0 {
+					Finalendpoints = append(Finalendpoints, elem)
+				}
+			}
 		}
 		Finalresult = append(Finalresult, r.URL.String())
 	})
@@ -128,8 +134,7 @@ func SecretsMatch(body string) []scanner.Secret {
 //huntEndpoints
 func huntEndpoints(endpointsFile string, target string) []scanner.EndpointMatched {
 	if endpointsFile == "" {
-		body := RetrieveBody(target)
-		endpoints := EndpointsMatch(body, target)
+		endpoints := EndpointsMatch(target)
 		return endpoints
 	}
 
@@ -139,11 +144,11 @@ func huntEndpoints(endpointsFile string, target string) []scanner.EndpointMatche
 }
 
 //EndpointsMatch
-func EndpointsMatch(body string, target string) []scanner.EndpointMatched {
+func EndpointsMatch(target string) []scanner.EndpointMatched {
 	var endpoints []scanner.EndpointMatched
 	matched := []string{}
 	for _, parameter := range scanner.GetJuicyParameters() {
-		if strings.Contains(body, parameter) {
+		if strings.Contains(target, parameter) {
 			matched = append(matched, parameter)
 		}
 		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
