@@ -27,5 +27,28 @@ import "fmt"
 //PrintHelp
 func PrintHelp() {
 	Beautify()
-	fmt.Println("The help goes here.")
+	fmt.Println(`Usage of cariddi:
+	-c int
+		  Concurrency level. (default 20)
+	-d int
+		  Delay between a page crawled and another.
+	-e	Hunt for juicy endpoints.
+	-ef string
+		  Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
+	-examples
+		  Print the examples.
+	-ext int
+		  Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
+	-h	Print the help.
+	-oh string
+		  Write the output into an HTML file.
+	-ot string
+		  Write the output into a TXT file.
+	-plain
+		  Print only the results.
+	-s	Hunt for secrets.
+	-sf string
+		  Use an external file (txt, one per line) to use custom regexes for secrets hunting.
+	-version
+		  Print the version.`)
 }
