@@ -132,6 +132,8 @@ Examples 💡
   - `cat urls | cariddi -ot target_name` (Results in txt file)
   - `cat urls | cariddi -oh target_name` (Results in html file)
   - `cat urls | cariddi -ext 2` (Hunt for juicy (level 2 of 7) files)
+  - `cat urls | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
+  - `cat urls | cariddi -s -sf secrets_file` (Hunt for custom secrets)
 
   - For Windows see [here](https://stackoverflow.com/questions/14574170/how-do-i-use-a-pipe-to-redirect-the-output-of-one-command-to-the-input-of-anothe) 
 
