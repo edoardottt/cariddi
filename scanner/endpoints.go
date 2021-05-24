@@ -54,3 +54,16 @@ func GetJuicyParameters() []string {
 	}
 	return juicyParameters
 }
+
+//RemovDuplicateEndpoints
+func RemovDuplicateEndpoints(input []EndpointMatched) []EndpointMatched {
+	keys := make(map[string]bool)
+	list := []EndpointMatched{}
+	for _, entry := range input {
+		if _, value := keys[entry.Url]; !value {
+			keys[entry.Url] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}

@@ -1,6 +1,6 @@
 /*
 ==========
-Cariddi
+Cariddi v0.dev
 ==========
 
 This program is free software: you can redistribute it and/or modify
@@ -58,7 +58,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	output.Beautify()
+	if !flags.Plain {
+		output.Beautify()
+	}
 
 	// ----------- TODO: check ALL input -------------------
 	input.CheckFlags(flags)
@@ -89,14 +91,15 @@ func main() {
 	}
 
 	// if needed print secrets
-	if !flags.Plain {
+	if !flags.Plain && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, "Found in "+elem.Url+" "+elem.Secret.Regex+" matched!")
 		}
 	}
 
-	// if needed print secrets
-	if !flags.Plain {
+	// if needed print endpoints
+	if !flags.Plain && len(finalEndpoints) != 0 {
+		finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
 		for _, elem := range finalEndpoints {
 			finalString := ""
 			for _, parameter := range elem.Parameters {
