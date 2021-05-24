@@ -8,7 +8,7 @@
   </a>
   <!-- workflows -->
   <a href="https://edoardoottavianelli.it">
-    <img src="https://github.com/edoardottt/cariddi/workflows/Go/badge.svg?branch=master" alt="workflows" />
+    <img src="https://github.com/edoardottt/cariddi/workflows/Go/badge.svg?branch=main" alt="workflows" />
   </a>
   <!-- ubuntu-build -->
   <a href="https://edoardoottavianelli.it">
