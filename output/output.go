@@ -113,6 +113,28 @@ func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.S
 		FooterHTML(ResultFilename)
 	}
 
+	// if endpoints flag enabled save also endpoints
+	if flags.Endpoints {
+		HeaderHTML("Endpoints found", ResultFilename)
+		for _, elem := range finalEndpoints {
+			finalString := ""
+			for _, parameter := range elem.Parameters {
+				finalString += parameter
+			}
+			AppendOutputToHTML(finalString+" Found in "+elem.Url, "", ResultFilename, false)
+		}
+		FooterHTML(ResultFilename)
+	}
+
+	// if extensions flag enabled save also extensions
+	if 1 <= flags.Extensions && flags.Extensions <= 7 {
+		HeaderHTML("Extensions found", ResultFilename)
+		for _, elem := range finalExtensions {
+			AppendOutputToHTML(elem.Filetype.Extension+" Found in "+elem.Url, "", ResultFilename, false)
+		}
+		FooterHTML(ResultFilename)
+	}
+
 	HeaderHTML("Results", ResultFilename)
 	for _, elem := range finalResult {
 		AppendOutputToHTML(elem, "", ResultFilename, true)

@@ -74,7 +74,7 @@ func AppendOutputToHTML(output string, status string, filename string, isLink bo
 	file.Close()
 }
 
-//HeaderHtml
+//HeaderHTML
 func HeaderHTML(header string, filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
