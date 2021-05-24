@@ -34,7 +34,7 @@ import (
 )
 
 //Crawler
-func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, plain bool, endpoints bool, endpointsFile string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched) {
+func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile string, plain bool, endpoints bool, endpointsFile string, fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	//clean target input
 	target = input.RemoveHeaders(target)
@@ -42,6 +42,7 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	var Finalresult []string
 	var Finalsecrets []scanner.SecretMatched
 	var Finalendpoints []scanner.EndpointMatched
+	var FinalExtensions []scanner.FileTypeMatched
 
 	// Instantiate  collector
 	c := colly.NewCollector(
@@ -98,6 +99,15 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 				}
 			}
 		}
+		// HERE SCAN FOR EXTENSIONS
+		if 1 < fileType && fileType < 7 {
+			// DON'T SCAN THE URLS SCANNED BEFORE
+			extension := huntExtensions(r.Request.URL.String(), fileType)
+			if extension.Url != "" {
+				FinalExtensions = append(FinalExtensions, extension)
+			}
+		}
+
 		Finalresult = append(Finalresult, r.Request.URL.String())
 	})
 
@@ -105,7 +115,7 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	c.Visit("http://" + target)
 	c.Visit("https://" + target)
 	c.Wait()
-	return Finalresult, Finalsecrets, Finalendpoints
+	return Finalresult, Finalsecrets, Finalendpoints, FinalExtensions
 }
 
 //huntSecrets
@@ -154,6 +164,25 @@ func EndpointsMatch(target string) []scanner.EndpointMatched {
 		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
 	}
 	return endpoints
+}
+
+//huntExtensions
+func huntExtensions(target string, severity int) scanner.FileTypeMatched {
+	var extension scanner.FileTypeMatched
+	copyTarget := target
+	for _, ext := range scanner.GetExtensions() {
+		if ext.Severity <= severity {
+			firstIndex := strings.Index(target, "?")
+			if firstIndex > -1 {
+				target = target[:firstIndex]
+			}
+			i := strings.LastIndex(target, ".")
+			if i >= 0 && target[i:] == "."+ext.Extension {
+				extension = scanner.FileTypeMatched{Filetype: ext, Url: copyTarget}
+			}
+		}
+	}
+	return extension
 }
 
 //RetrieveBody

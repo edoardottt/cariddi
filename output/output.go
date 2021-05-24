@@ -40,14 +40,13 @@ func PrintSimpleOutput(out []string) {
 
 //TxtOutput it's the wrapper around all the txt things.
 //Actually it manages everything related to TXT output.
-func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.SecretMatched) {
-	exists, err := utils.ElementExists("output-cariddi")
+func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
 
+	exists, err := utils.ElementExists("output-cariddi")
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
 		os.Exit(1)
 	}
-
 	if !exists {
 		utils.CreateOutputFolder()
 	}
@@ -60,6 +59,26 @@ func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.Se
 		}
 	}
 
+	// if endpoints flag enabled save also endpoints
+	if flags.Endpoints {
+		EndpointFilename := utils.CreateOutputFile(flags.Txt, "endpoints", "txt")
+		for _, elem := range finalEndpoints {
+			finalString := ""
+			for _, parameter := range elem.Parameters {
+				finalString += parameter
+			}
+			AppendOutputToTxt(finalString+" Found in "+elem.Url, EndpointFilename)
+		}
+	}
+
+	// if extensions flag enabled save also secrets
+	if 1 < flags.Extensions && flags.Extensions < 7 {
+		ExtensionsFilename := utils.CreateOutputFile(flags.Txt, "extensions", "txt")
+		for _, elem := range finalExtensions {
+			AppendOutputToTxt(elem.Filetype.Extension+" Found in "+elem.Url, ExtensionsFilename)
+		}
+	}
+
 	ResultFilename := utils.CreateOutputFile(flags.Txt, "results", "txt")
 
 	for _, elem := range finalResult {
@@ -69,7 +88,7 @@ func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.Se
 
 //HtmlOutput it's the wrapper around all the html things.
 //Actually it manages everything related to HTML output.
-func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.SecretMatched) {
+func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
 	exists, err := utils.ElementExists("output-cariddi")
 
 	if err != nil {

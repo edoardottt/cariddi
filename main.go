@@ -68,31 +68,34 @@ func main() {
 	var finalResult []string
 	var finalSecret []scanner.SecretMatched
 	var finalEndpoints []scanner.EndpointMatched
+	var finalExtensions []scanner.FileTypeMatched
 	for _, inp := range targets {
-		result, secrets, endpoints := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, flags.SecretsFile, flags.Plain, flags.Endpoints, flags.EndpointsFile)
+		result, secrets, endpoints, extensions := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, flags.SecretsFile, flags.Plain, flags.Endpoints, flags.EndpointsFile, flags.Extensions)
 		finalResult = append(finalResult, result...)
 		finalSecret = append(finalSecret, secrets...)
 		finalEndpoints = append(finalEndpoints, endpoints...)
+		finalExtensions = append(finalExtensions, extensions...)
 	}
+
+	finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
+	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
+	finalExtensions = scanner.RemoveDuplicateExtensions(finalExtensions)
 
 	// IF TXT OUTPUT
 	if flags.Txt != "" {
-		output.TxtOutput(flags, finalResult, finalSecret)
+		output.TxtOutput(flags, finalResult, finalSecret, finalEndpoints, finalExtensions)
 	}
 
 	// IF HTML OUTPUT
 	if flags.Html != "" {
-		output.HtmlOutput(flags, finalResult, finalSecret)
+		output.HtmlOutput(flags, finalResult, finalSecret, finalEndpoints, finalExtensions)
 	}
 
 	// if needed print urls
-	if !flags.Plain {
-		output.PrintSimpleOutput(finalResult)
-	}
+	output.PrintSimpleOutput(finalResult)
 
 	// if needed print secrets
 	if !flags.Plain && len(finalSecret) != 0 {
-		finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, "Found in "+elem.Url+" "+elem.Secret.Regex+" matched!")
 		}
@@ -100,13 +103,19 @@ func main() {
 
 	// if needed print endpoints
 	if !flags.Plain && len(finalEndpoints) != 0 {
-		finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
 		for _, elem := range finalEndpoints {
 			finalString := ""
 			for _, parameter := range elem.Parameters {
 				finalString += parameter
 			}
-			output.EncapsulateCustomGreen(finalString, " Found in "+elem.Url+" matched!")
+			output.EncapsulateCustomGreen(finalString, "Found in "+elem.Url+" matched!")
+		}
+	}
+
+	// if needed print extensions
+	if !flags.Plain && len(finalExtensions) != 0 {
+		for _, elem := range finalExtensions {
+			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.Url+" matched!")
 		}
 	}
 }

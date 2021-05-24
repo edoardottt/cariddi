@@ -63,28 +63,19 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 		}
 		f.Close()
 	} else {
-		// The file already exists, check what the user want.
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("The output file already esists, do you want to overwrite? (Y/n): ")
-		text, _ := reader.ReadString('\n')
-		answer := strings.ToLower(text)
-		answer = strings.TrimSpace(answer)
+		// The file already exists, overwrite.
 
-		if answer == "y" || answer == "yes" || answer == "" {
-			f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
-			if err != nil {
-				fmt.Println("Can't create output file.")
-				os.Exit(1)
-			}
-			err = f.Truncate(0)
-			if err != nil {
-				fmt.Println("Can't create output file.")
-				os.Exit(1)
-			}
-			f.Close()
-		} else {
+		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println("Can't create output file.")
 			os.Exit(1)
 		}
+		err = f.Truncate(0)
+		if err != nil {
+			fmt.Println("Can't create output file.")
+			os.Exit(1)
+		}
+		f.Close()
 	}
 	return filename
 }
