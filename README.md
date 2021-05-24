@@ -102,6 +102,8 @@ Usage of cariddi:
     	Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
   -examples
     	Print the examples.
+  -ext int
+    	Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
   -h	Print the help.
   -oh string
     	Write the output into an HTML file.
