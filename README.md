@@ -130,6 +130,8 @@ Examples 💡
   - `cat urls | cariddi -ot target_name` (Results in txt file)
   - `cat urls | cariddi -oh target_name` (Results in html file)
 
+  - For Windows see [here](https://stackoverflow.com/questions/14574170/how-do-i-use-a-pipe-to-redirect-the-output-of-one-command-to-the-input-of-anothe) 
+
 Contributing 🛠
 -------
 
