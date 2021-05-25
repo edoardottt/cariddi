@@ -22,11 +22,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package utils
 
-//RemoveDuplicateValues
-func RemoveDuplicateValues(intSlice []string) []string {
+//RemoveDuplicateValues removes duplicates rom a string slice
+func RemoveDuplicateValues(strSlice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
-	for _, entry := range intSlice {
+	for _, entry := range strSlice {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true
 			list = append(list, entry)

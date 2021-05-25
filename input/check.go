@@ -28,14 +28,14 @@ import (
 	"strings"
 )
 
-//CheckDataPost
+//CheckDataPost > TODO
 func CheckDataPost(input string) (map[string]string, error) {
 
 	// ===== TODO =======
 	return map[string]string{}, nil
 }
 
-//CheckOutputFile
+//CheckOutputFile >
 func CheckOutputFile(input string) bool {
 	invalid := []string{"\\", "/", "'", "\""}
 	for _, elem := range invalid {
@@ -46,7 +46,7 @@ func CheckOutputFile(input string) bool {
 	return true
 }
 
-//CheckFlags
+//CheckFlags checks the flags inserted
 func CheckFlags(flags Input) {
 	if flags.Txt != "" {
 		if !CheckOutputFile(flags.Txt) {

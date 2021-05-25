@@ -22,18 +22,19 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//FileType
+//FileType struct
 type FileType struct {
 	Extension string
 	Severity  int
 }
 
-//FileTypeMatched
+//FileTypeMatched struct
 type FileTypeMatched struct {
 	Filetype FileType
 	Url      string
 }
 
+//GetExtensions returns the useful extensions
 func GetExtensions() []FileType {
 	//extensions contains a list of known extensions
 	//and the TYPICAL (also say `in general`) associated severity.
@@ -88,7 +89,7 @@ func GetExtensions() []FileType {
 	return extensions
 }
 
-//RemoveDuplicateExtensions
+//RemoveDuplicateExtensions removes duplicates from Extensions found
 func RemoveDuplicateExtensions(input []FileTypeMatched) []FileTypeMatched {
 	keys := make(map[string]bool)
 	list := []FileTypeMatched{}

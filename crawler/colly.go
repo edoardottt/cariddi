@@ -35,7 +35,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-//Crawler
+//Crawler it's the actual crawler core
 func Crawler(target string, txt string, html string, delayTime int, concurrency int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
@@ -132,13 +132,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	return Finalsecrets, Finalendpoints, FinalExtensions
 }
 
-//huntSecrets
+//huntSecrets hunts for secrets
 func huntSecrets(secretsFile []string, target string, body string) []scanner.Secret {
 	secrets := SecretsMatch(body, secretsFile)
 	return secrets
 }
 
-//SecretsMatch
+//SecretsMatch checks if a body matches some secrets
 func SecretsMatch(body string, secretsFile []string) []scanner.Secret {
 	var secrets []scanner.Secret
 	if len(secretsFile) == 0 {
@@ -157,13 +157,13 @@ func SecretsMatch(body string, secretsFile []string) []scanner.Secret {
 	return secrets
 }
 
-//huntEndpoints
+//huntEndpoints hunts for juicy endpoints
 func huntEndpoints(endpointsFile []string, target string) []scanner.EndpointMatched {
 	endpoints := EndpointsMatch(target, endpointsFile)
 	return endpoints
 }
 
-//EndpointsMatch
+//EndpointsMatch check if an endpoint matches a juicy parameter
 func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMatched {
 	var endpoints []scanner.EndpointMatched
 	matched := []string{}
@@ -185,7 +185,7 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 	return endpoints
 }
 
-//huntExtensions
+//huntExtensions hunts for extensions
 func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 	var extension scanner.FileTypeMatched
 	copyTarget := target
@@ -204,7 +204,7 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 	return extension
 }
 
-//RetrieveBody
+//RetrieveBody retrieves the body of a url
 func RetrieveBody(target string) string {
 	sb, err := GetRequest(target)
 	if err == nil && sb != "" {
@@ -213,7 +213,7 @@ func RetrieveBody(target string) string {
 	return ""
 }
 
-//isLinkOkay
+//isLinkOkay checks if a link is buit in a proper way
 func isLinkOkay(input string) bool {
 	_, err := url.Parse(input)
 	return err == nil

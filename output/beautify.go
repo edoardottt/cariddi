@@ -28,7 +28,7 @@ import (
 	"github.com/fatih/color"
 )
 
-//Beautify
+//Beautify prints the banner
 func Beautify() {
 	banner1 := "                 _     _     _ _ \n"
 	banner2 := "   ___ __ _ _ __(_) __| | __| (_)\n"

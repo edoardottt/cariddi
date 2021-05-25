@@ -30,7 +30,7 @@ import (
 	"strings"
 )
 
-//CreateOutputFolder
+//CreateOutputFolder >
 func CreateOutputFolder() {
 	//Create a folder/directory at a full qualified path
 	err := os.Mkdir("output-cariddi", 0755)
@@ -40,7 +40,7 @@ func CreateOutputFolder() {
 	}
 }
 
-//CreateOutputFile
+//CreateOutputFile >
 func CreateOutputFile(target string, subcommand string, format string) string {
 	target = ReplaceBadCharacterOutput(target)
 	var filename string

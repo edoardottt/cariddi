@@ -27,7 +27,7 @@ import (
 	"os"
 )
 
-//AppendOutputToTxt
+//AppendOutputToTxt >
 func AppendOutputToTxt(output string, filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {

@@ -26,7 +26,7 @@ import (
 	"flag"
 )
 
-//Input
+//Input struct
 type Input struct {
 	//Verbose     bool
 	Version     bool

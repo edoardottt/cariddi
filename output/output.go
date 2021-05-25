@@ -31,7 +31,7 @@ import (
 	"github.com/edoardottt/cariddi/utils"
 )
 
-//PrintSimpleOutput
+//PrintSimpleOutput prints line by line
 func PrintSimpleOutput(out []string) {
 	for _, elem := range out {
 		fmt.Println(elem)

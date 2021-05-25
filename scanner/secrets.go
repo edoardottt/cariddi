@@ -22,7 +22,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//Secret
+//Secret struct
 type Secret struct {
 	Name        string
 	Description string
@@ -30,11 +30,13 @@ type Secret struct {
 	Poc         string
 }
 
+//SecretMatched struct
 type SecretMatched struct {
 	Secret Secret
 	Url    string
 }
 
+//GetRegexes returns all the regexes
 func GetRegexes() []Secret {
 	var regexes = []Secret{
 		{
@@ -245,7 +247,7 @@ func GetRegexes() []Secret {
 	return regexes
 }
 
-//RemoveDuplicateSecrets
+//RemoveDuplicateSecrets removes duplicates from secrets found
 func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
 	keys := make(map[string]bool)
 	list := []SecretMatched{}

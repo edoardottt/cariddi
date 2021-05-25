@@ -28,7 +28,7 @@ import (
 	"github.com/fatih/color"
 )
 
-//EncapsulateGreen
+//EncapsulateGreen >
 func EncapsulateGreen(inp string) {
 	// Create a custom print function for convenience
 	green := color.New(color.FgGreen).PrintfFunc()
@@ -36,7 +36,7 @@ func EncapsulateGreen(inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateRed
+//EncapsulateRed >
 func EncapsulateRed(inp string) {
 	// Create a custom print function for convenience
 	red := color.New(color.FgRed).PrintfFunc()
@@ -44,7 +44,7 @@ func EncapsulateRed(inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateYellow
+//EncapsulateYellow >
 func EncapsulateYellow(inp string) {
 	// Create a custom print function for convenience
 	yellow := color.New(color.FgYellow).PrintfFunc()
@@ -52,7 +52,7 @@ func EncapsulateYellow(inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateGreen
+//EncapsulateGreen >
 func EncapsulateCustomGreen(alert string, inp string) {
 	// Create a custom print function for convenience
 	green := color.New(color.FgGreen).PrintfFunc()
@@ -60,7 +60,7 @@ func EncapsulateCustomGreen(alert string, inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateRed
+//EncapsulateRed >
 func EncapsulateCustomRed(alert string, inp string) {
 	// Create a custom print function for convenience
 	red := color.New(color.FgRed).PrintfFunc()
@@ -68,7 +68,7 @@ func EncapsulateCustomRed(alert string, inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateYellow
+//EncapsulateYellow >
 func EncapsulateCustomYellow(alert string, inp string) {
 	// Create a custom print function for convenience
 	yellow := color.New(color.FgYellow).PrintfFunc()

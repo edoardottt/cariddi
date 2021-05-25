@@ -22,12 +22,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
+//EndpointMatched struct
 type EndpointMatched struct {
 	Parameters []string
 	Url        string
 }
 
-//GetJuicyParameters
+//GetJuicyParameters returns juicy parameters
 func GetJuicyParameters() []string {
 	var juicyParameters = []string{
 		"apikey",
@@ -55,7 +56,7 @@ func GetJuicyParameters() []string {
 	return juicyParameters
 }
 
-//RemovDuplicateEndpoints
+//RemovDuplicateEndpoints removes duplicate endpoints found
 func RemovDuplicateEndpoints(input []EndpointMatched) []EndpointMatched {
 	keys := make(map[string]bool)
 	list := []EndpointMatched{}

@@ -28,7 +28,7 @@ import (
 	"strings"
 )
 
-//ScanInput return the array of elements
+//ScanTargets return the array of elements
 //taken as input on stdin.
 func ScanTargets() []string {
 
@@ -43,7 +43,7 @@ func ScanTargets() []string {
 	return result
 }
 
-//RemovePort
+//RemovePort removes port from target (:80...)
 func RemovePort(input string) string {
 	res := strings.Index(input, ":")
 	if res >= 0 {
@@ -52,7 +52,7 @@ func RemovePort(input string) string {
 	return input
 }
 
-//RemoveProtocol
+//RemoveProtocol removes protocol from target (something://...)
 func RemoveProtocol(input string) string {
 	res := strings.Index(input, "://")
 	if res >= 0 {

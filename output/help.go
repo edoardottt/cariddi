@@ -24,7 +24,7 @@ package output
 
 import "fmt"
 
-//PrintHelp
+//PrintHelp prints the help.
 func PrintHelp() {
 	Beautify()
 	fmt.Println(`Usage of cariddi:
