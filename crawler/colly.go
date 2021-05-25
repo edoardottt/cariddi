@@ -23,25 +23,25 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+	"fmt"
 	"net/url"
 	"regexp"
 	"strings"
 	"time"
 
 	"github.com/edoardottt/cariddi/input"
+	"github.com/edoardottt/cariddi/output"
 	"github.com/edoardottt/cariddi/scanner"
 	"github.com/gocolly/colly"
 )
 
 //Crawler
-func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
-	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
+func Crawler(target string, txt string, html string, delayTime int, concurrency int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
+	fileType int) ([]scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	//clean target input
 	target = input.RemoveProtocol(target)
 
-	results := make(map[string]bool)
-	var Finalresult []string
 	var Finalsecrets []scanner.SecretMatched
 	var Finalendpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
@@ -81,38 +81,42 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		//if not in map:
-		if _, ok := results[r.Request.URL.String()]; !ok {
 
-			Finalresult = append(Finalresult, r.Request.URL.String())
-			results[r.Request.URL.String()] = true
+		fmt.Println(r.Request.URL.String())
 
-			//if endpoints or secrets or filetype: scan
-			if endpoints || secrets || (1 <= fileType && fileType <= 7) {
-				// HERE SCAN FOR SECRETS
-				if secrets {
-					secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-					for _, elem := range secretsSlice {
+		// results on txt/html files
+		if txt != "" {
+			output.AppendOutputToTxt(r.Request.URL.String(), txt)
+		}
+		if html != "" {
+			output.AppendOutputToHTML(r.Request.URL.String(), "", html, true)
+		}
 
-						secretFound := scanner.SecretMatched{Secret: elem, Url: r.Request.URL.String()}
-						Finalsecrets = append(Finalsecrets, secretFound)
+		//if endpoints or secrets or filetype: scan
+		if endpoints || secrets || (1 <= fileType && fileType <= 7) {
+			// HERE SCAN FOR SECRETS
+			if secrets {
+				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
+				for _, elem := range secretsSlice {
+
+					secretFound := scanner.SecretMatched{Secret: elem, Url: r.Request.URL.String()}
+					Finalsecrets = append(Finalsecrets, secretFound)
+				}
+			}
+			// HERE SCAN FOR ENDPOINTS
+			if endpoints {
+				endpointsSlice := huntEndpoints(endpointsFile, r.Request.URL.String())
+				for _, elem := range endpointsSlice {
+					if len(elem.Parameters) != 0 {
+						Finalendpoints = append(Finalendpoints, elem)
 					}
 				}
-				// HERE SCAN FOR ENDPOINTS
-				if endpoints {
-					endpointsSlice := huntEndpoints(endpointsFile, r.Request.URL.String())
-					for _, elem := range endpointsSlice {
-						if len(elem.Parameters) != 0 {
-							Finalendpoints = append(Finalendpoints, elem)
-						}
-					}
-				}
-				// HERE SCAN FOR EXTENSIONS
-				if 1 <= fileType && fileType <= 7 {
-					extension := huntExtensions(r.Request.URL.String(), fileType)
-					if extension.Url != "" {
-						FinalExtensions = append(FinalExtensions, extension)
-					}
+			}
+			// HERE SCAN FOR EXTENSIONS
+			if 1 <= fileType && fileType <= 7 {
+				extension := huntExtensions(r.Request.URL.String(), fileType)
+				if extension.Url != "" {
+					FinalExtensions = append(FinalExtensions, extension)
 				}
 			}
 		}
@@ -122,7 +126,10 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	c.Visit("http://" + target)
 	c.Visit("https://" + target)
 	c.Wait()
-	return Finalresult, Finalsecrets, Finalendpoints, FinalExtensions
+	if html != "" {
+		output.FooterHTML(html)
+	}
+	return Finalsecrets, Finalendpoints, FinalExtensions
 }
 
 //huntSecrets

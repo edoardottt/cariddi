@@ -40,7 +40,7 @@ func PrintSimpleOutput(out []string) {
 
 //TxtOutput it's the wrapper around all the txt things.
 //Actually it manages everything related to TXT output.
-func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
+func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
 
 	exists, err := utils.ElementExists("output-cariddi")
 	if err != nil {
@@ -79,16 +79,12 @@ func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.Se
 		}
 	}
 
-	ResultFilename := utils.CreateOutputFile(flags.Txt, "results", "txt")
-
-	for _, elem := range finalResult {
-		AppendOutputToTxt(elem, ResultFilename)
-	}
 }
 
 //HtmlOutput it's the wrapper around all the html things.
 //Actually it manages everything related to HTML output.
-func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
+func HtmlOutput(flags input.Input, ResultFilename string, finalSecret []scanner.SecretMatched,
+	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
 	exists, err := utils.ElementExists("output-cariddi")
 
 	if err != nil {
@@ -99,10 +95,6 @@ func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.S
 	if !exists {
 		utils.CreateOutputFolder()
 	}
-
-	ResultFilename := utils.CreateOutputFile(flags.Html, "", "html")
-
-	BannerHTML(ResultFilename)
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {
@@ -134,12 +126,6 @@ func HtmlOutput(flags input.Input, finalResult []string, finalSecret []scanner.S
 		}
 		FooterHTML(ResultFilename)
 	}
-
-	HeaderHTML("Results", ResultFilename)
-	for _, elem := range finalResult {
-		AppendOutputToHTML(elem, "", ResultFilename, true)
-	}
-	FooterHTML(ResultFilename)
 
 	BannerFooterHTML(ResultFilename)
 }

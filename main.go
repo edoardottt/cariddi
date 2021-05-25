@@ -70,16 +70,27 @@ func main() {
 		secretsFileSlice = utils.ReadFile(flags.SecretsFile)
 	}
 
-	var finalResult []string
 	var finalSecret []scanner.SecretMatched
 	var finalEndpoints []scanner.EndpointMatched
 	var finalExtensions []scanner.FileTypeMatched
+
+	// output files
+	var ResultTxt = ""
+	if flags.Txt != "" {
+		ResultTxt = utils.CreateOutputFile(flags.Txt, "results", "txt")
+	}
+	var ResultHtml = ""
+	if flags.Html != "" {
+		ResultHtml = utils.CreateOutputFile(flags.Html, "", "html")
+		output.BannerHTML(ResultHtml)
+		output.HeaderHTML("Results", ResultHtml)
+	}
+
 	for _, inp := range targets {
 
-		result, secrets, endpoints, extensions := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets,
+		secrets, endpoints, extensions := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay, flags.Concurrency, flags.Secrets,
 			secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice, flags.Extensions)
 
-		finalResult = append(finalResult, result...)
 		finalSecret = append(finalSecret, secrets...)
 		finalEndpoints = append(finalEndpoints, endpoints...)
 		finalExtensions = append(finalExtensions, extensions...)
@@ -91,16 +102,13 @@ func main() {
 
 	// IF TXT OUTPUT
 	if flags.Txt != "" {
-		output.TxtOutput(flags, finalResult, finalSecret, finalEndpoints, finalExtensions)
+		output.TxtOutput(flags, finalSecret, finalEndpoints, finalExtensions)
 	}
 
 	// IF HTML OUTPUT
 	if flags.Html != "" {
-		output.HtmlOutput(flags, finalResult, finalSecret, finalEndpoints, finalExtensions)
+		output.HtmlOutput(flags, ResultHtml, finalSecret, finalEndpoints, finalExtensions)
 	}
-
-	// if needed print urls
-	output.PrintSimpleOutput(finalResult)
 
 	// if needed print secrets
 	if !flags.Plain && len(finalSecret) != 0 {
