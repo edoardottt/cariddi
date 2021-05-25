@@ -72,7 +72,7 @@ func TxtOutput(flags input.Input, finalResult []string, finalSecret []scanner.Se
 	}
 
 	// if extensions flag enabled save also secrets
-	if 1 < flags.Extensions && flags.Extensions < 7 {
+	if 1 <= flags.Extensions && flags.Extensions <= 7 {
 		ExtensionsFilename := utils.CreateOutputFile(flags.Txt, "extensions", "txt")
 		for _, elem := range finalExtensions {
 			AppendOutputToTxt(elem.Filetype.Extension+" Found in "+elem.Url, ExtensionsFilename)

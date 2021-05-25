@@ -38,12 +38,6 @@ func main() {
 	targets := input.ScanTargets()
 	flags := input.ScanFlag()
 
-	/*
-		fmt.Println("FLAGS:")
-		fmt.Println(flags)
-		fmt.Println("--------------")
-	*/
-
 	if flags.Version {
 		output.Beautify()
 		os.Exit(0)
@@ -81,7 +75,10 @@ func main() {
 	var finalEndpoints []scanner.EndpointMatched
 	var finalExtensions []scanner.FileTypeMatched
 	for _, inp := range targets {
-		result, secrets, endpoints, extensions := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice, flags.Extensions)
+
+		result, secrets, endpoints, extensions := crawler.Crawler(inp, flags.Delay, flags.Concurrency, flags.Secrets,
+			secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice, flags.Extensions)
+
 		finalResult = append(finalResult, result...)
 		finalSecret = append(finalSecret, secrets...)
 		finalEndpoints = append(finalEndpoints, endpoints...)

@@ -100,7 +100,7 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 			}
 		}
 		// HERE SCAN FOR EXTENSIONS
-		if 1 < fileType && fileType < 7 {
+		if 1 <= fileType && fileType <= 7 {
 			// DON'T SCAN THE URLS SCANNED BEFORE
 			extension := huntExtensions(r.Request.URL.String(), fileType)
 			if extension.Url != "" {
