@@ -34,11 +34,13 @@ import (
 )
 
 //Crawler
-func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string, fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
+func Crawler(target string, delayTime int, concurrency int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
+	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	//clean target input
-	target = input.RemoveHeaders(target)
+	target = input.RemoveProtocol(target)
 
+	results := make(map[string]bool)
 	var Finalresult []string
 	var Finalsecrets []scanner.SecretMatched
 	var Finalendpoints []scanner.EndpointMatched
@@ -79,36 +81,41 @@ func Crawler(target string, delayTime int, concurrency int, secrets bool, secret
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		// HERE SCAN FOR SECRETS
-		if secrets {
-			// DON'T SCAN THE URLS SCANNED BEFORE
-			secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-			for _, elem := range secretsSlice {
+		//if not in map:
+		if _, ok := results[r.Request.URL.String()]; !ok {
 
-				secretFound := scanner.SecretMatched{Secret: elem, Url: r.Request.URL.String()}
-				Finalsecrets = append(Finalsecrets, secretFound)
-			}
-		}
-		// HERE SCAN FOR ENDPOINTS
-		if endpoints {
-			// DON'T SCAN THE URLS SCANNED BEFORE
-			endpointsSlice := huntEndpoints(endpointsFile, r.Request.URL.String())
-			for _, elem := range endpointsSlice {
-				if len(elem.Parameters) != 0 {
-					Finalendpoints = append(Finalendpoints, elem)
+			Finalresult = append(Finalresult, r.Request.URL.String())
+			results[r.Request.URL.String()] = true
+
+			//if endpoints or secrets or filetype: scan
+			if endpoints || secrets || (1 <= fileType && fileType <= 7) {
+				// HERE SCAN FOR SECRETS
+				if secrets {
+					secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
+					for _, elem := range secretsSlice {
+
+						secretFound := scanner.SecretMatched{Secret: elem, Url: r.Request.URL.String()}
+						Finalsecrets = append(Finalsecrets, secretFound)
+					}
+				}
+				// HERE SCAN FOR ENDPOINTS
+				if endpoints {
+					endpointsSlice := huntEndpoints(endpointsFile, r.Request.URL.String())
+					for _, elem := range endpointsSlice {
+						if len(elem.Parameters) != 0 {
+							Finalendpoints = append(Finalendpoints, elem)
+						}
+					}
+				}
+				// HERE SCAN FOR EXTENSIONS
+				if 1 <= fileType && fileType <= 7 {
+					extension := huntExtensions(r.Request.URL.String(), fileType)
+					if extension.Url != "" {
+						FinalExtensions = append(FinalExtensions, extension)
+					}
 				}
 			}
 		}
-		// HERE SCAN FOR EXTENSIONS
-		if 1 <= fileType && fileType <= 7 {
-			// DON'T SCAN THE URLS SCANNED BEFORE
-			extension := huntExtensions(r.Request.URL.String(), fileType)
-			if extension.Url != "" {
-				FinalExtensions = append(FinalExtensions, extension)
-			}
-		}
-
-		Finalresult = append(Finalresult, r.Request.URL.String())
 	})
 
 	// Start scraping on target
