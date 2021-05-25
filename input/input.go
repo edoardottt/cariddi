@@ -57,7 +57,6 @@ func RemoveProtocol(input string) string {
 	res := strings.Index(input, "://")
 	if res >= 0 {
 		return input[res+3:]
-	} else {
-		return input
 	}
+	return input
 }

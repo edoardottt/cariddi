@@ -52,7 +52,7 @@ func EncapsulateYellow(inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateGreen >
+//EncapsulateCustomGreen >
 func EncapsulateCustomGreen(alert string, inp string) {
 	// Create a custom print function for convenience
 	green := color.New(color.FgGreen).PrintfFunc()
@@ -60,7 +60,7 @@ func EncapsulateCustomGreen(alert string, inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateRed >
+//EncapsulateCustomRed >
 func EncapsulateCustomRed(alert string, inp string) {
 	// Create a custom print function for convenience
 	red := color.New(color.FgRed).PrintfFunc()
@@ -68,7 +68,7 @@ func EncapsulateCustomRed(alert string, inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateYellow >
+//EncapsulateCustomYellow >
 func EncapsulateCustomYellow(alert string, inp string) {
 	// Create a custom print function for convenience
 	yellow := color.New(color.FgYellow).PrintfFunc()

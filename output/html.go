@@ -27,7 +27,7 @@ import (
 	"os"
 )
 
-//bannerHTML appends the initial banner to html file
+//BannerHTML appends the initial banner to html file
 func BannerHTML(filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
@@ -43,7 +43,7 @@ func BannerHTML(filename string) {
 	file.Close()
 }
 
-//AppendOutputToHtml appends the output to html file
+//AppendOutputToHTML appends the output to html file
 func AppendOutputToHTML(output string, status string, filename string, isLink bool) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
