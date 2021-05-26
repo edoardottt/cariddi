@@ -26,6 +26,8 @@ import (
 	"bufio"
 	"os"
 	"strings"
+
+	"github.com/edoardottt/cariddi/utils"
 )
 
 //ScanTargets return the array of elements
@@ -38,9 +40,9 @@ func ScanTargets() []string {
 	sc := bufio.NewScanner(os.Stdin)
 	for sc.Scan() {
 		domain := strings.ToLower(sc.Text())
-		result = append(result, domain)
+		result = append(result, RemoveProtocol(domain))
 	}
-	return result
+	return utils.RemoveDuplicateValues(result)
 }
 
 //RemovePort removes port from target (:80...)
