@@ -135,7 +135,7 @@ Examples 💡
   - `cat urls | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
   - `cat urls | cariddi -s -sf secrets_file` (Hunt for custom secrets)
 
-  - For Windows see [here](https://stackoverflow.com/questions/14574170/how-do-i-use-a-pipe-to-redirect-the-output-of-one-command-to-the-input-of-anothe) 
+  - For Windows use `powershell.exe -Command "cat urls | .\cariddi.exe"`
 
 Contributing 🛠
 -------
