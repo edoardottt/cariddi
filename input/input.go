@@ -40,7 +40,7 @@ func ScanTargets() []string {
 	sc := bufio.NewScanner(os.Stdin)
 	for sc.Scan() {
 		domain := strings.ToLower(sc.Text())
-		if domain != "" {
+		if len(domain) > 2 {
 			result = append(result, RemoveProtocol(domain))
 		}
 	}
