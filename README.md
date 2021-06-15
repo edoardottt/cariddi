@@ -156,6 +156,8 @@ A special thanks to:
   
   - [ ] Proxy support
 
+  - [x] Ignore specific types of urls
+
   - [x] Plain output (print only results)
   
   - [x] HTML output
