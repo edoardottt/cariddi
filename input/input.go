@@ -40,7 +40,9 @@ func ScanTargets() []string {
 	sc := bufio.NewScanner(os.Stdin)
 	for sc.Scan() {
 		domain := strings.ToLower(sc.Text())
-		result = append(result, RemoveProtocol(domain))
+		if domain != "" {
+			result = append(result, RemoveProtocol(domain))
+		}
 	}
 	return utils.RemoveDuplicateValues(result)
 }
