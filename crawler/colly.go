@@ -72,8 +72,27 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		c.Visit(e.Request.AbsoluteURL(link))
 	})
 
-	// On every a script element which has src attribute call callback
+	// On every script element which has src attribute call callback
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
+		link := e.Attr("src")
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		c.Visit(e.Request.AbsoluteURL(link))
+	})
+
+	// On every link element which has href attribute call callback
+	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+		rel := e.Attr("rel")
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		if rel != "alternate" && rel != "stylesheet" {
+			c.Visit(e.Request.AbsoluteURL(link))
+		}
+	})
+
+	// On every iframe element which has src attribute call callback
+	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
