@@ -113,7 +113,7 @@ func main() {
 	// if needed print secrets
 	if !flags.Plain && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
-			output.EncapsulateCustomGreen(elem.Secret.Name, "Found in "+elem.Url+" "+elem.Secret.Regex+" matched!")
+			output.EncapsulateCustomGreen(elem.Secret.Name, elem.Match+" in "+elem.Url)
 		}
 	}
 

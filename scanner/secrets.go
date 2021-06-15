@@ -34,6 +34,7 @@ type Secret struct {
 type SecretMatched struct {
 	Secret Secret
 	Url    string
+	Match  string
 }
 
 //GetRegexes returns all the regexes

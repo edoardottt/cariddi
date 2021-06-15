@@ -156,11 +156,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR SECRETS
 			if secrets {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				for _, elem := range secretsSlice {
-
-					secretFound := scanner.SecretMatched{Secret: elem, Url: r.Request.URL.String()}
-					Finalsecrets = append(Finalsecrets, secretFound)
-				}
+				Finalsecrets = append(Finalsecrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpoints {
@@ -192,24 +188,31 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 }
 
 //huntSecrets hunts for secrets
-func huntSecrets(secretsFile []string, target string, body string) []scanner.Secret {
-	secrets := SecretsMatch(body, secretsFile)
+func huntSecrets(secretsFile []string, target string, body string) []scanner.SecretMatched {
+	secrets := SecretsMatch(target, body, secretsFile)
 	return secrets
 }
 
 //SecretsMatch checks if a body matches some secrets
-func SecretsMatch(body string, secretsFile []string) []scanner.Secret {
-	var secrets []scanner.Secret
+func SecretsMatch(url string, body string, secretsFile []string) []scanner.SecretMatched {
+	var secrets []scanner.SecretMatched
 	if len(secretsFile) == 0 {
 		for _, secret := range scanner.GetRegexes() {
 			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
-				secrets = append(secrets, secret)
+				re := regexp.MustCompile(secret.Regex)
+				match := re.FindStringSubmatch(body)
+				secretFound := scanner.SecretMatched{Secret: secret, Url: url, Match: match[0]}
+				secrets = append(secrets, secretFound)
 			}
 		}
 	} else {
 		for _, secret := range secretsFile {
 			if matched, err := regexp.Match(secret, []byte(body)); err == nil && matched {
-				secrets = append(secrets, scanner.Secret{Name: "CustomFromFile", Description: "", Regex: secret, Poc: ""})
+				re := regexp.MustCompile(secret)
+				match := re.FindStringSubmatch(body)
+				secretScanned := scanner.Secret{Name: "CustomFromFile", Description: "", Regex: secret, Poc: ""}
+				secretFound := scanner.SecretMatched{Secret: secretScanned, Url: url, Match: match[0]}
+				secrets = append(secrets, secretFound)
 			}
 		}
 	}
