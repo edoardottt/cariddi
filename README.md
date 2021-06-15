@@ -105,6 +105,10 @@ Usage of cariddi:
   -ext int
     	Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
   -h	Print the help.
+  -i string
+    	Ignore the URL containing at least one of the elements of this array.
+  -it string
+    	Ignore the URL containing at least one of the lines of this file.
   -oh string
     	Write the output into an HTML file.
   -ot string
@@ -134,6 +138,8 @@ Examples 💡
   - `cat urls | cariddi -ext 2` (Hunt for juicy (level 2 of 7) files)
   - `cat urls | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
   - `cat urls | cariddi -s -sf secrets_file` (Hunt for custom secrets)
+  - `cat urls | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
+	- `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
 
   - For Windows use `powershell.exe -Command "cat urls | .\cariddi.exe"`
 
