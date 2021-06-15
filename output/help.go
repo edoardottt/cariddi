@@ -29,26 +29,30 @@ func PrintHelp() {
 	Beautify()
 	fmt.Println(`Usage of cariddi:
 	-c int
-		  Concurrency level. (default 20)
+		Concurrency level. (default 20)
 	-d int
-		  Delay between a page crawled and another.
+		Delay between a page crawled and another.
 	-e	Hunt for juicy endpoints.
 	-ef string
-		  Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
+		Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
 	-examples
-		  Print the examples.
+		Print the examples.
 	-ext int
-		  Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
+		Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
 	-h	Print the help.
+	-i string
+		Ignore the URL containing at least one of the elements of this array.
+	-it string
+		Ignore the URL containing at least one of the lines of this file.
 	-oh string
-		  Write the output into an HTML file.
+		Write the output into an HTML file.
 	-ot string
-		  Write the output into a TXT file.
+		Write the output into a TXT file.
 	-plain
-		  Print only the results.
+		Print only the results.
 	-s	Hunt for secrets.
 	-sf string
-		  Use an external file (txt, one per line) to use custom regexes for secrets hunting.
+		Use an external file (txt, one per line) to use custom regexes for secrets hunting.
 	-version
-		  Print the version.`)
+		Print the version.`)
 }

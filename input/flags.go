@@ -37,6 +37,8 @@ type Input struct {
 	Plain       bool
 	Html        string
 	Txt         string
+	Ignore      string
+	IgnoreTxt   string
 	//DataPost    string
 	Secrets       bool
 	SecretsFile   string
@@ -58,6 +60,8 @@ func ScanFlag() Input {
 	plainPtr := flag.Bool("plain", false, "Print only the results.")
 	outputHtmlPtr := flag.String("oh", "", "Write the output into an HTML file.")
 	outputTxtPtr := flag.String("ot", "", "Write the output into a TXT file.")
+	ignorePtr := flag.String("i", "", "Ignore the URL containing at least one of the elements of this array.")
+	ignoreTxtPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
 
 	//dataPostPtr := flag.String("post", "", "Set the data to perform the POST requests.")
 
@@ -81,6 +85,8 @@ func ScanFlag() Input {
 		*plainPtr,
 		*outputHtmlPtr,
 		*outputTxtPtr,
+		*ignorePtr,
+		*ignoreTxtPtr,
 		//*dataPostPtr,
 		*secretsPtr,
 		*secretsFilePtr,

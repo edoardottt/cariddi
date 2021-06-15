@@ -50,5 +50,9 @@ func PrintExamples() {
 	
 	cat urls | cariddi -e -ef endpoints_file (Hunt for custom endpoints)
 
-	cat urls | cariddi -s -sf secrets_file (Hunt for custom secrets)`)
+	cat urls | cariddi -s -sf secrets_file (Hunt for custom secrets)
+	
+	cat urls | cariddi -i forum,blog,community,open (Ignore urls containing these words)
+	
+	cat urls | cariddi -it ignore_file (Ignore urls containing at least one line in the input file)`)
 }

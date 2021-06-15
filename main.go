@@ -88,7 +88,7 @@ func main() {
 
 	for _, inp := range targets {
 
-		secrets, endpoints, extensions := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay, flags.Concurrency, flags.Secrets,
+		secrets, endpoints, extensions := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay, flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Secrets,
 			secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice, flags.Extensions)
 
 		finalSecret = append(finalSecret, secrets...)

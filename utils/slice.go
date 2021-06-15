@@ -22,6 +22,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package utils
 
+import (
+	"strings"
+)
+
 //RemoveDuplicateValues removes duplicates rom a string slice
 func RemoveDuplicateValues(strSlice []string) []string {
 	keys := make(map[string]bool)
@@ -33,4 +37,19 @@ func RemoveDuplicateValues(strSlice []string) []string {
 		}
 	}
 	return list
+}
+
+//CheckInputArray checks the basic rules to
+//be valid and then returns the array as input.
+func CheckInputArray(input string) []string {
+	delimiter := byte(',')
+	sliceOut := strings.Split(input, string(delimiter))
+	sliceOut = RemoveDuplicateValues(sliceOut)
+	result := []string{}
+	for _, elem := range sliceOut {
+		if elem != "" {
+			result = append(result, elem)
+		}
+	}
+	return result
 }

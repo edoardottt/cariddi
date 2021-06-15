@@ -26,6 +26,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/edoardottt/cariddi/utils"
 )
 
 //CheckDataPost > TODO
@@ -95,5 +97,17 @@ func CheckFlags(flags Input) {
 			fmt.Println("	- cat urls | cariddi -s")
 			os.Exit(1)
 		}
+	}
+
+	if flags.IgnoreTxt != "" {
+		_ = utils.ReadFile(flags.IgnoreTxt)
+	}
+
+	if flags.Ignore != "" && flags.IgnoreTxt != "" {
+		fmt.Println("You should use only one among -i and -it.")
+		fmt.Println("Examples:")
+		fmt.Println("	- cat urls | cariddi -i forum,blog")
+		fmt.Println("	- cat urls | cariddi -it ignore.txt")
+		os.Exit(1)
 	}
 }

@@ -32,15 +32,31 @@ import (
 	"github.com/edoardottt/cariddi/input"
 	"github.com/edoardottt/cariddi/output"
 	"github.com/edoardottt/cariddi/scanner"
+	"github.com/edoardottt/cariddi/utils"
 	"github.com/gocolly/colly"
 )
 
 //Crawler it's the actual crawler core
-func Crawler(target string, txt string, html string, delayTime int, concurrency int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
+func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string, ignoreTxt string,
+	secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	//clean target input
 	target = input.RemoveProtocol(target)
+
+	var ignoreSlice []string
+	ignoreBool := false
+	//if ignore -> produce the slice
+	if ignore != "" {
+		ignoreBool = true
+		ignoreSlice = utils.CheckInputArray(ignore)
+	}
+
+	//if ignoreTxt -> produce the slice
+	if ignoreTxt != "" {
+		ignoreBool = true
+		ignoreSlice = utils.ReadFile(ignoreTxt)
+	}
 
 	var Finalsecrets []scanner.SecretMatched
 	var Finalendpoints []scanner.EndpointMatched
@@ -69,7 +85,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		link := e.Attr("href")
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
-		c.Visit(e.Request.AbsoluteURL(link))
+		if ignoreBool {
+			if !IgnoreMatch(link, ignoreSlice) {
+				c.Visit(e.Request.AbsoluteURL(link))
+			}
+		} else {
+			c.Visit(e.Request.AbsoluteURL(link))
+		}
 	})
 
 	// On every script element which has src attribute call callback
@@ -77,7 +99,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		link := e.Attr("src")
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
-		c.Visit(e.Request.AbsoluteURL(link))
+		if ignoreBool {
+			if !IgnoreMatch(link, ignoreSlice) {
+				c.Visit(e.Request.AbsoluteURL(link))
+			}
+		} else {
+			c.Visit(e.Request.AbsoluteURL(link))
+		}
 	})
 
 	// On every link element which has href attribute call callback
@@ -87,7 +115,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		if rel != "alternate" && rel != "stylesheet" {
-			c.Visit(e.Request.AbsoluteURL(link))
+			if ignoreBool {
+				if !IgnoreMatch(link, ignoreSlice) {
+					c.Visit(e.Request.AbsoluteURL(link))
+				}
+			} else {
+				c.Visit(e.Request.AbsoluteURL(link))
+			}
 		}
 	})
 
@@ -96,7 +130,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		link := e.Attr("src")
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
-		c.Visit(e.Request.AbsoluteURL(link))
+		if ignoreBool {
+			if !IgnoreMatch(link, ignoreSlice) {
+				c.Visit(e.Request.AbsoluteURL(link))
+			}
+		} else {
+			c.Visit(e.Request.AbsoluteURL(link))
+		}
 	})
 
 	c.OnResponse(func(r *colly.Response) {
@@ -236,4 +276,15 @@ func RetrieveBody(target string) string {
 func isLinkOkay(input string) bool {
 	_, err := url.Parse(input)
 	return err == nil
+}
+
+//IgnoreMatch checks if the URL is not in
+//the ignored ones.
+func IgnoreMatch(url string, ignoreSlice []string) bool {
+	for _, ignore := range ignoreSlice {
+		if strings.Contains(url, ignore) {
+			return true
+		}
+	}
+	return false
 }
