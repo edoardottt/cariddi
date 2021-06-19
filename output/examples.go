@@ -28,9 +28,11 @@ import "fmt"
 func PrintExamples() {
 	Beautify()
 	fmt.Println(`
-	cat urls | cariddi -version (Print the version)
+	cariddi -version (Print the version)
 
-	cat urls | cariddi -h (Print the help)
+	cariddi -h (Print the help)
+
+	cariddi -examples (Print the examples)
 	
 	cat urls | cariddi -e (Hunt for secrets)
 	
