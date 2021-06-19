@@ -89,7 +89,7 @@ You need [Go](https://golang.org/).
 Get Started 🎉
 ----------
 
-`cariddi help` prints the help in the command line.
+`cariddi -h` prints the help in the command line.
 
 ```
 Usage of cariddi:
@@ -126,8 +126,9 @@ Usage of cariddi:
 Examples 💡
 ----------
 
-  - `cat urls | cariddi -version` (Print the version)
-  - `cat urls | cariddi -h` (Print the help)
+  - `cariddi -version` (Print the version)
+  - `cariddi -h` (Print the help)
+  - `cariddi -examples` (Print the examples)
   - `cat urls | cariddi -s` (Hunt for secrets)
   - `cat urls | cariddi -d 2` (2 seconds between a page crawled and another)
   - `cat urls | cariddi -c 200` (Set the concurrency level to 200)

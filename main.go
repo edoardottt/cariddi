@@ -35,7 +35,6 @@ import (
 //main
 func main() {
 
-	targets := input.ScanTargets()
 	flags := input.ScanFlag()
 
 	if flags.Version {
@@ -56,6 +55,8 @@ func main() {
 	if !flags.Plain {
 		output.Beautify()
 	}
+
+	targets := input.ScanTargets()
 
 	// ----------- TODO: check ALL input -------------------
 	input.CheckFlags(flags)
