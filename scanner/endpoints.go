@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
 
 	@Repository:  https://github.com/edoardottt/cariddi
+
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
 */
 
@@ -48,6 +49,9 @@ func GetJuicyParameters() []string {
 		"admin",
 		"adminid",
 		"admin-id",
+		"dashboard",
+		"manage",
+		"debug",
 		"admin_id",
 		"uid",
 		"exec",

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
 
 	@Repository:  https://github.com/edoardottt/cariddi
+
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
 */
 
@@ -67,13 +68,13 @@ func GetExtensions() []FileType {
 		{"php4", 3},
 		{"json", 3},
 		{"zip", 3},
-		{"doc", 3},
-		{"docx", 3},
 		{"dochtml", 3},
-		{"csv", 3},
-		{"odt", 3},
-		{"xls", 3},
-		{"xlsx", 3},
+		{"doc", 4},
+		{"docx", 4},
+		{"csv", 4},
+		{"odt", 4},
+		{"xls", 4},
+		{"xlsx", 4},
 		{"ts", 4},
 		{"js", 4},
 		{"php", 5},
