@@ -1,5 +1,6 @@
 # cariddi
 output-cariddi/
+_cache/
 
 # Binaries for programs and plugins
 *.exe

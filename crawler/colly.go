@@ -73,16 +73,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 	// Instantiate  collector
 	c := colly.NewCollector(
-		colly.AllowedDomains(target),
+		colly.AllowedDomains(targetTemp),
 		colly.Async(true),
-		colly.URLFilters(
-			regexp.MustCompile(targetTemp+"*"),
-		),
+		//colly.CacheDir("./_cache"),
 	)
 
 	c.Limit(
 		&colly.LimitRule{
-			DomainGlob:  target,
 			Parallelism: concurrency,
 			Delay:       time.Duration(delayTime) * time.Second,
 		},
