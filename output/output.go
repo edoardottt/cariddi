@@ -56,7 +56,7 @@ func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndp
 	if flags.Secrets {
 		SecretFilename := utils.CreateOutputFile(flags.Txt, "secrets", "txt")
 		for _, elem := range finalSecret {
-			AppendOutputToTxt(elem.Secret.Name+" Found in "+elem.Url+" "+elem.Secret.Regex, SecretFilename)
+			AppendOutputToTxt(elem.Secret.Name+" - "+elem.Match+" in "+elem.Url, SecretFilename)
 		}
 	}
 
@@ -68,7 +68,7 @@ func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndp
 			for _, parameter := range elem.Parameters {
 				finalString += parameter
 			}
-			AppendOutputToTxt(finalString+" Found in "+elem.Url, EndpointFilename)
+			AppendOutputToTxt(finalString+" in "+elem.Url, EndpointFilename)
 		}
 	}
 
@@ -76,7 +76,7 @@ func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndp
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
 		ExtensionsFilename := utils.CreateOutputFile(flags.Txt, "extensions", "txt")
 		for _, elem := range finalExtensions {
-			AppendOutputToTxt(elem.Filetype.Extension+" Found in "+elem.Url, ExtensionsFilename)
+			AppendOutputToTxt(elem.Filetype.Extension+" in "+elem.Url, ExtensionsFilename)
 		}
 	}
 
@@ -101,7 +101,7 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalSecret []scanner.
 	if flags.Secrets {
 		HeaderHTML("Secrets found", ResultFilename)
 		for _, elem := range finalSecret {
-			AppendOutputToHTML(elem.Secret.Name+" Found in "+elem.Url+" "+elem.Secret.Regex, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Secret.Name+" - "+elem.Match+" in "+elem.Url, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
