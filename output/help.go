@@ -31,6 +31,8 @@ func PrintHelp() {
 	fmt.Println(`Usage of cariddi:
 	-c int
 		Concurrency level. (default 20)
+	-cache
+		Use the .cariddi_cache folder as cache.
 	-d int
 		Delay between a page crawled and another.
 	-e	Hunt for juicy endpoints.

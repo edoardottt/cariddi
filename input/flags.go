@@ -29,18 +29,17 @@ import (
 
 //Input struct
 type Input struct {
-	//Verbose     bool
-	Version     bool
-	Delay       int
-	Concurrency int
-	Help        bool
-	Examples    bool
-	Plain       bool
-	Html        string
-	Txt         string
-	Ignore      string
-	IgnoreTxt   string
-	//DataPost    string
+	Version       bool
+	Delay         int
+	Concurrency   int
+	Help          bool
+	Examples      bool
+	Plain         bool
+	Html          string
+	Txt           string
+	Ignore        string
+	IgnoreTxt     string
+	Cache         bool
 	Secrets       bool
 	SecretsFile   string
 	Endpoints     bool
@@ -52,7 +51,6 @@ type Input struct {
 //as input and return them.
 func ScanFlag() Input {
 
-	//verbosePtr := flag.Bool("v", false, "Verbose mode.")
 	versionPtr := flag.Bool("version", false, "Print the version.")
 	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")
 	concurrencyPtr := flag.Int("c", 20, "Concurrency level.")
@@ -63,8 +61,7 @@ func ScanFlag() Input {
 	outputTxtPtr := flag.String("ot", "", "Write the output into a TXT file.")
 	ignorePtr := flag.String("i", "", "Ignore the URL containing at least one of the elements of this array.")
 	ignoreTxtPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
-
-	//dataPostPtr := flag.String("post", "", "Set the data to perform the POST requests.")
+	cachePtr := flag.Bool("cache", false, "Use the .cariddi_cache folder as cache.")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line) to use custom regexes for secrets hunting.")
@@ -77,7 +74,6 @@ func ScanFlag() Input {
 	flag.Parse()
 
 	result := Input{
-		//*verbosePtr,
 		*versionPtr,
 		*delayPtr,
 		*concurrencyPtr,
@@ -88,7 +84,7 @@ func ScanFlag() Input {
 		*outputTxtPtr,
 		*ignorePtr,
 		*ignoreTxtPtr,
-		//*dataPostPtr,
+		*cachePtr,
 		*secretsPtr,
 		*secretsFilePtr,
 		*endpointsPtr,

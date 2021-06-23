@@ -39,7 +39,7 @@ import (
 
 //Crawler it's the actual crawler core
 func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string, ignoreTxt string,
-	secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
+	cache bool, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	// This is to avoid to insert into the crawler target regular
@@ -77,12 +77,20 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalEndpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
 
-	// Instantiate  collector
-	c := colly.NewCollector(
-		colly.AllowedDomains(targetTemp),
-		colly.Async(true),
-		//colly.CacheDir("./_cache"),
-	)
+	// Instantiate collector using the cache if needed
+	c := colly.NewCollector()
+	if cache {
+		c = colly.NewCollector(
+			colly.AllowedDomains(targetTemp),
+			colly.Async(true),
+			colly.CacheDir("./.cariddi_cache"),
+		)
+	} else {
+		c = colly.NewCollector(
+			colly.AllowedDomains(targetTemp),
+			colly.Async(true),
+		)
+	}
 
 	c.Limit(
 		&colly.LimitRule{

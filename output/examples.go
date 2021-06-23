@@ -57,5 +57,7 @@ func PrintExamples() {
 	
 	cat urls | cariddi -i forum,blog,community,open (Ignore urls containing these words)
 	
-	cat urls | cariddi -it ignore_file (Ignore urls containing at least one line in the input file)`)
+	cat urls | cariddi -it ignore_file (Ignore urls containing at least one line in the input file)
+	
+	cat urls | cariddi -cache (Use the .cariddi_cache folder as cache.)`)
 }
