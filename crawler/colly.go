@@ -26,6 +26,7 @@ package crawler
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -48,6 +49,11 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		targetTemp = utils.GetHost("http://" + target)
 	} else {
 		targetTemp = utils.GetHost(target)
+	}
+
+	if targetTemp == "" {
+		fmt.Println("The URL provided is not built in a proper way: " + target)
+		os.Exit(1)
 	}
 
 	//clean target input
