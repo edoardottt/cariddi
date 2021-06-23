@@ -30,7 +30,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/edoardottt/cariddi/input"
 	"github.com/edoardottt/cariddi/output"
 	"github.com/edoardottt/cariddi/scanner"
 	"github.com/edoardottt/cariddi/utils"
@@ -42,8 +41,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
+	// This is to avoid to insert into the crawler target regular
+	// expression directories passed as input.
+	var targetTemp string
+	if !utils.HasScheme(target) {
+		targetTemp = utils.GetHost("http://" + target)
+	} else {
+		targetTemp = utils.GetHost(target)
+	}
+
 	//clean target input
-	target = input.RemoveProtocol(target)
+	target = utils.RemoveProtocol(target)
 
 	var ignoreSlice []string
 	ignoreBool := false
@@ -59,8 +67,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		ignoreSlice = utils.ReadFile(ignoreTxt)
 	}
 
-	var Finalsecrets []scanner.SecretMatched
-	var Finalendpoints []scanner.EndpointMatched
+	var FinalSecrets []scanner.SecretMatched
+	var FinalEndpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
 
 	// Instantiate  collector
@@ -68,7 +76,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		colly.AllowedDomains(target),
 		colly.Async(true),
 		colly.URLFilters(
-			regexp.MustCompile(target+"*"),
+			regexp.MustCompile(targetTemp+"*"),
 		),
 	)
 
@@ -157,14 +165,14 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR SECRETS
 			if secrets {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				Finalsecrets = append(Finalsecrets, secretsSlice...)
+				FinalSecrets = append(FinalSecrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpoints {
 				endpointsSlice := huntEndpoints(endpointsFile, r.Request.URL.String())
 				for _, elem := range endpointsSlice {
 					if len(elem.Parameters) != 0 {
-						Finalendpoints = append(Finalendpoints, elem)
+						FinalEndpoints = append(FinalEndpoints, elem)
 					}
 				}
 			}
@@ -185,7 +193,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	if html != "" {
 		output.FooterHTML(html)
 	}
-	return Finalsecrets, Finalendpoints, FinalExtensions
+	return FinalSecrets, FinalEndpoints, FinalExtensions
 }
 
 //huntSecrets hunts for secrets

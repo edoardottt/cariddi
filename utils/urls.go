@@ -21,29 +21,51 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
 */
 
-package input
+package utils
 
 import (
-	"bufio"
-	"os"
+	"net/url"
 	"strings"
-
-	"github.com/edoardottt/cariddi/utils"
 )
 
-//ScanTargets return the array of elements
-//taken as input on stdin.
-func ScanTargets() []string {
-
-	var result []string
-
-	// accept domains on stdin
-	sc := bufio.NewScanner(os.Stdin)
-	for sc.Scan() {
-		domain := strings.ToLower(sc.Text())
-		if len(domain) > 2 {
-			result = append(result, utils.RemoveProtocol(domain))
-		}
+//GetHost >
+func GetHost(input string) string {
+	u, err := url.Parse(input)
+	if err != nil {
+		return ""
 	}
-	return utils.RemoveDuplicateValues(result)
+	return u.Host
+}
+
+//GetScheme >
+func GetScheme(input string) string {
+	u, err := url.Parse(input)
+	if err != nil {
+		return ""
+	}
+	return u.Scheme
+}
+
+//HasScheme >
+func HasScheme(input string) bool {
+	res := strings.Index(input, "://")
+	return res >= 0
+}
+
+//RemoveProtocol removes protocol from target (something://...)
+func RemoveProtocol(input string) string {
+	res := strings.Index(input, "://")
+	if res >= 0 {
+		return input[res+3:]
+	}
+	return input
+}
+
+//RemovePort removes port from target (:80...)
+func RemovePort(input string) string {
+	res := strings.Index(input, ":")
+	if res >= 0 {
+		return input[:res-1]
+	}
+	return input
 }
