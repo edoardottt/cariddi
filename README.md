@@ -55,7 +55,8 @@
   <a href="#installation-">Install</a> •
   <a href="#get-started-">Get Started</a> •
   <a href="#examples-">Examples</a> •
-  <a href="#contributing-">Contributing</a>
+  <a href="#contributing-">Contributing</a> •
+  <a href="#license-">License</a>
 </p>
 
 Preview :bar_chart:
