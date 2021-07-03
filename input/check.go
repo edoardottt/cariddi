@@ -104,6 +104,11 @@ func CheckFlags(flags Input) {
 		_ = utils.ReadFile(flags.IgnoreTxt)
 	}
 
+	if flags.Timeout < 0 {
+		fmt.Println("The timeout value must be a positive value.")
+		os.Exit(1)
+	}
+
 	if flags.Ignore != "" && flags.IgnoreTxt != "" {
 		fmt.Println("You should use only one among -i and -it.")
 		fmt.Println("Examples:")

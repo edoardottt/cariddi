@@ -39,7 +39,7 @@ import (
 
 //Crawler it's the actual crawler core
 func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string, ignoreTxt string,
-	cache bool, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
+	cache bool, timeout int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	// This is to avoid to insert into the crawler target regular
@@ -100,6 +100,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		},
 	)
 	c.AllowURLRevisit = false
+	if timeout != 10 {
+		c.SetRequestTimeout(time.Second * time.Duration(timeout))
+	}
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {

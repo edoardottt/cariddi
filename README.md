@@ -121,6 +121,8 @@ Usage of cariddi:
   -s	Hunt for secrets.
   -sf string
     	Use an external file (txt, one per line) to use custom regexes for secrets hunting.
+	-t int
+	    Set timeout (seconds, default 10) for the requests. (default 10)
   -version
     	Print the version.
 ```
@@ -144,7 +146,8 @@ Examples 💡
   - `cat urls | cariddi -s -sf secrets_file` (Hunt for custom secrets)
   - `cat urls | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
   - `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
-  - `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache.)
+  - `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
+  - `cat urls | cariddi -t 5` (Set the timeout for the requests)
 
   - For Windows use `powershell.exe -Command "cat urls | .\cariddi.exe"`
 
