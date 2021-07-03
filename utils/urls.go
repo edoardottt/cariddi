@@ -69,3 +69,17 @@ func RemovePort(input string) string {
 	}
 	return input
 }
+
+//RetrieveParameters from url
+func RetrieveParameters(input string) []string {
+	var result []string
+	u, err := url.Parse(input)
+	if err != nil {
+		return result
+	}
+	m, _ := url.ParseQuery(u.RawQuery)
+	for k := range m {
+		result = append(result, k)
+	}
+	return result
+}

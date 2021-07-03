@@ -123,11 +123,17 @@ func main() {
 	// if needed print endpoints
 	if !flags.Plain && len(finalEndpoints) != 0 {
 		for _, elem := range finalEndpoints {
-			finalString := ""
 			for _, parameter := range elem.Parameters {
-				finalString += parameter
+				finalString := ""
+				finalString += parameter.Parameter
+				if len(parameter.Attacks) != 0 {
+					finalString += " -"
+					for _, attack := range parameter.Attacks {
+						finalString += " " + attack
+					}
+				}
+				output.EncapsulateCustomGreen(finalString, " in "+elem.Url)
 			}
-			output.EncapsulateCustomGreen(finalString, "Found in "+elem.Url+" matched!")
 		}
 	}
 

@@ -64,11 +64,17 @@ func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndp
 	if flags.Endpoints {
 		EndpointFilename := utils.CreateOutputFile(flags.Txt, "endpoints", "txt")
 		for _, elem := range finalEndpoints {
-			finalString := ""
 			for _, parameter := range elem.Parameters {
-				finalString += parameter
+				finalString := ""
+				finalString += parameter.Parameter
+				if len(parameter.Attacks) != 0 {
+					finalString += " -"
+					for _, attack := range parameter.Attacks {
+						finalString += " " + attack
+					}
+				}
+				AppendOutputToTxt(finalString+" in "+elem.Url, EndpointFilename)
 			}
-			AppendOutputToTxt(finalString+" in "+elem.Url, EndpointFilename)
 		}
 	}
 
@@ -110,11 +116,17 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalSecret []scanner.
 	if flags.Endpoints {
 		HeaderHTML("Endpoints found", ResultFilename)
 		for _, elem := range finalEndpoints {
-			finalString := ""
 			for _, parameter := range elem.Parameters {
-				finalString += parameter
+				finalString := ""
+				finalString += parameter.Parameter
+				if len(parameter.Attacks) != 0 {
+					finalString += " -"
+					for _, attack := range parameter.Attacks {
+						finalString += " " + attack
+					}
+				}
+				AppendOutputToHTML(finalString+" in "+elem.Url, "", ResultFilename, false)
 			}
-			AppendOutputToHTML(finalString+" Found in "+elem.Url, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
@@ -123,7 +135,7 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalSecret []scanner.
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
 		HeaderHTML("Extensions found", ResultFilename)
 		for _, elem := range finalExtensions {
-			AppendOutputToHTML(elem.Filetype.Extension+" Found in "+elem.Url, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.Url, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}

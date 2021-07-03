@@ -251,20 +251,26 @@ func huntEndpoints(endpointsFile []string, target string) []scanner.EndpointMatc
 //EndpointsMatch check if an endpoint matches a juicy parameter
 func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMatched {
 	var endpoints []scanner.EndpointMatched
-	matched := []string{}
+	matched := []scanner.Parameter{}
+	parameters := utils.RetrieveParameters(target)
 	if len(endpointsFile) == 0 {
 		for _, parameter := range scanner.GetJuicyParameters() {
-			if strings.Contains(target, parameter) {
-				matched = append(matched, parameter)
+			for _, param := range parameters {
+				if param == parameter.Parameter {
+					matched = append(matched, parameter)
+				}
+				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
 			}
-			endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
 		}
 	} else {
+
 		for _, parameter := range endpointsFile {
-			if strings.Contains(target, parameter) {
-				matched = append(matched, parameter)
+			for _, param := range parameters {
+				if param == parameter {
+					matched = append(matched, scanner.Parameter{Parameter: parameter, Attacks: []string{}})
+				}
+				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
 			}
-			endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
 		}
 	}
 	return endpoints
