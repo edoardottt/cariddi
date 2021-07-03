@@ -121,8 +121,8 @@ Usage of cariddi:
   -s	Hunt for secrets.
   -sf string
     	Use an external file (txt, one per line) to use custom regexes for secrets hunting.
-	-t int
-	    Set timeout (seconds, default 10) for the requests. (default 10)
+  -t int
+  	Set timeout (seconds, default 10) for the requests. (default 10)
   -version
     	Print the version.
 ```
