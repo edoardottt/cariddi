@@ -35,7 +35,6 @@ func BannerHTML(filename string) {
 		log.Println(err)
 		os.Exit(1)
 	}
-	defer file.Close()
 	file.WriteString("<html><body><div style='" + "background-color:#4adeff;color:white" + "'><h1>Cariddi</h1>")
 	file.WriteString("<ul>")
 	file.WriteString("<li><a href='" + "https://github.com/edoardottt/cariddi'" + ">github.com/edoardottt/cariddi</a></li>")
@@ -51,7 +50,6 @@ func AppendOutputToHTML(output string, status string, filename string, isLink bo
 		log.Println(err)
 		os.Exit(1)
 	}
-	defer file.Close()
 	if isLink {
 		var statusColor string
 		if status != "" {
@@ -95,7 +93,6 @@ func FooterHTML(filename string) {
 		log.Println(err)
 		os.Exit(1)
 	}
-	defer file.Close()
 	if _, err := file.WriteString("</ul>"); err != nil {
 		log.Fatal(err)
 	}
