@@ -112,7 +112,7 @@ func GetJuicyParameters() []Parameter {
 		{"return", []string{"OpenRedir", "SSRF"}},
 		{"continue", []string{"OpenRedir", "SSRF"}},
 		{"image_url", []string{"OpenRedir", "SSRF"}},
-		{"returnTo", []string{"OpenRedir"}},
+		{"returnto", []string{"OpenRedir"}},
 		{"return_to", []string{"OpenRedir"}},
 		{"checkout_url", []string{"OpenRedir", "SSRF"}},
 		{"return_path", []string{"OpenRedir"}},

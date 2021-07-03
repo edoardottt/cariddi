@@ -256,7 +256,7 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 	if len(endpointsFile) == 0 {
 		for _, parameter := range scanner.GetJuicyParameters() {
 			for _, param := range parameters {
-				if param == parameter.Parameter {
+				if strings.ToLower(param) == parameter.Parameter {
 					matched = append(matched, parameter)
 				}
 				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
@@ -287,7 +287,7 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 				target = target[:firstIndex]
 			}
 			i := strings.LastIndex(target, ".")
-			if i >= 0 && target[i:] == "."+ext.Extension {
+			if i >= 0 && strings.ToLower(target[i:]) == "."+ext.Extension {
 				extension = scanner.FileTypeMatched{Filetype: ext, Url: copyTarget}
 			}
 		}
