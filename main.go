@@ -100,6 +100,7 @@ func main() {
 		finalExtensions = append(finalExtensions, extensions...)
 	}
 
+	finalResults = utils.RemoveDuplicateValues(finalResults)
 	finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
 	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
 	finalExtensions = scanner.RemoveDuplicateExtensions(finalExtensions)
