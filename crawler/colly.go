@@ -164,12 +164,14 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 		fmt.Println(r.Request.URL.String())
 
+		lengthOk := len(string(r.Body)) > 10
+
 		FinalResults = append(FinalResults, r.Request.URL.String())
 
 		//if endpoints or secrets or filetype: scan
 		if endpoints || secrets || (1 <= fileType && fileType <= 7) {
 			// HERE SCAN FOR SECRETS
-			if secrets {
+			if secrets && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
 				FinalSecrets = append(FinalSecrets, secretsSlice...)
 			}
