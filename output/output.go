@@ -41,7 +41,7 @@ func PrintSimpleOutput(out []string) {
 
 //TxtOutput it's the wrapper around all the txt things.
 //Actually it manages everything related to TXT output.
-func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
+func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
 
 	exists, err := utils.ElementExists("output-cariddi")
 	if err != nil {
@@ -50,6 +50,11 @@ func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndp
 	}
 	if !exists {
 		utils.CreateOutputFolder()
+	}
+
+	ResultFilename := utils.CreateOutputFile(flags.Txt, "results", "txt")
+	for _, elem := range finalResults {
+		AppendOutputToTxt(elem, ResultFilename)
 	}
 
 	// if secrets flag enabled save also secrets
@@ -90,7 +95,7 @@ func TxtOutput(flags input.Input, finalSecret []scanner.SecretMatched, finalEndp
 
 //HtmlOutput it's the wrapper around all the html things.
 //Actually it manages everything related to HTML output.
-func HtmlOutput(flags input.Input, ResultFilename string, finalSecret []scanner.SecretMatched,
+func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
 	exists, err := utils.ElementExists("output-cariddi")
 
@@ -102,6 +107,12 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalSecret []scanner.
 	if !exists {
 		utils.CreateOutputFolder()
 	}
+
+	HeaderHTML("Results found", ResultFilename)
+	for _, elem := range finalResults {
+		AppendOutputToHTML(elem, "", ResultFilename, true)
+	}
+	FooterHTML(ResultFilename)
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {

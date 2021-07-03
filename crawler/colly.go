@@ -40,7 +40,7 @@ import (
 //Crawler it's the actual crawler core
 func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string, ignoreTxt string,
 	cache bool, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
-	fileType int) ([]scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
+	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
@@ -73,6 +73,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		ignoreSlice = utils.ReadFile(ignoreTxt)
 	}
 
+	var FinalResults []string
 	var FinalSecrets []scanner.SecretMatched
 	var FinalEndpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
@@ -163,13 +164,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 		fmt.Println(r.Request.URL.String())
 
-		// results on txt/html files
-		if txt != "" {
-			output.AppendOutputToTxt(r.Request.URL.String(), txt)
-		}
-		if html != "" {
-			output.AppendOutputToHTML(r.Request.URL.String(), "", html, true)
-		}
+		FinalResults = append(FinalResults, r.Request.URL.String())
 
 		//if endpoints or secrets or filetype: scan
 		if endpoints || secrets || (1 <= fileType && fileType <= 7) {
@@ -204,7 +199,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	if html != "" {
 		output.FooterHTML(html)
 	}
-	return FinalSecrets, FinalEndpoints, FinalExtensions
+	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions
 }
 
 //huntSecrets hunts for secrets
