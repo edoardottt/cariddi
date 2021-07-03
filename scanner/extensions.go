@@ -63,6 +63,7 @@ func GetExtensions() []FileType {
 		{"config", 2},
 		{"configs", 2},
 		{"apk", 2},
+		{"cgi", 3},
 		{"sh", 3},
 		{"py", 3},
 		{"txt", 3},
