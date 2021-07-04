@@ -222,11 +222,16 @@ func SecretsMatch(url string, body string, secretsFile []string) []scanner.Secre
 				re := regexp.MustCompile(secret.Regex)
 				match := re.FindStringSubmatch(body)
 				// Avoiding false positives
+				var isFalsePositive = false
 				for _, falsePositive := range secret.FalsePositives {
-					if !strings.Contains(strings.ToLower(match[0]), falsePositive) {
-						secretFound := scanner.SecretMatched{Secret: secret, Url: url, Match: match[0]}
-						secrets = append(secrets, secretFound)
+					if strings.Contains(strings.ToLower(match[0]), falsePositive) {
+						isFalsePositive = true
+						break
 					}
+				}
+				if !isFalsePositive {
+					secretFound := scanner.SecretMatched{Secret: secret, Url: url, Match: match[0]}
+					secrets = append(secrets, secretFound)
 				}
 			}
 		}
