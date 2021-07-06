@@ -177,8 +177,6 @@ A special thanks to:
   - [x] Plain output (print only results)
   
   - [x] HTML output
-  
-  - [x] Build an Input Struct and use it as parameter
 
   - [x] Output color
 
