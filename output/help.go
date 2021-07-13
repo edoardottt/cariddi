@@ -46,7 +46,7 @@ func PrintHelp() {
 	-i string
 		Ignore the URL containing at least one of the elements of this array.
 	-intensive
-    	Crawl searching for resources matching 2nd level domain.
+		Crawl searching for resources matching 2nd level domain.
 	-it string
 		Ignore the URL containing at least one of the lines of this file.
 	-oh string
