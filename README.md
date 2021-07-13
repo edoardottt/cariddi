@@ -110,6 +110,8 @@ Usage of cariddi:
   -h	Print the help.
   -i string
     	Ignore the URL containing at least one of the elements of this array.
+  -intensive
+    	Crawl searching for resources matching 2nd level domain.
   -it string
     	Ignore the URL containing at least one of the lines of this file.
   -oh string
@@ -148,6 +150,7 @@ Examples 💡
   - `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
   - `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
   - `cat urls | cariddi -t 5` (Set the timeout for the requests)
+  - `cat urls | cariddi -intensive` (Crawl searching for resources matching 2nd level domain)
 
   - For Windows use `powershell.exe -Command "cat urls | .\cariddi.exe"`
 

@@ -41,6 +41,7 @@ type Input struct {
 	IgnoreTxt     string
 	Cache         bool
 	Timeout       int
+	Intensive     bool
 	Secrets       bool
 	SecretsFile   string
 	Endpoints     bool
@@ -64,6 +65,7 @@ func ScanFlag() Input {
 	ignoreTxtPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
 	cachePtr := flag.Bool("cache", false, "Use the .cariddi_cache folder as cache.")
 	timeoutPtr := flag.Int("t", 10, "Set timeout for the requests.")
+	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching 2nd level domain.")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line) to use custom regexes for secrets hunting.")
@@ -88,6 +90,7 @@ func ScanFlag() Input {
 		*ignoreTxtPtr,
 		*cachePtr,
 		*timeoutPtr,
+		*intensivePtr,
 		*secretsPtr,
 		*secretsFilePtr,
 		*endpointsPtr,

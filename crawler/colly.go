@@ -39,7 +39,7 @@ import (
 
 //Crawler it's the actual crawler core
 func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string, ignoreTxt string,
-	cache bool, timeout int, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
+	cache bool, timeout int, intensive bool, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	// This is to avoid to insert into the crawler target regular
@@ -49,6 +49,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		targetTemp = utils.GetHost("http://" + target)
 	} else {
 		targetTemp = utils.GetHost(target)
+	}
+	if intensive {
+		targetTemp = utils.GetRootHost(targetTemp)
 	}
 
 	if targetTemp == "" {
@@ -77,21 +80,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalSecrets []scanner.SecretMatched
 	var FinalEndpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
-
-	// Instantiate collector using the cache if needed
-	c := colly.NewCollector()
-	if cache {
-		c = colly.NewCollector(
-			colly.AllowedDomains(targetTemp),
-			colly.Async(true),
-			colly.CacheDir("./.cariddi_cache"),
-		)
-	} else {
-		c = colly.NewCollector(
-			colly.AllowedDomains(targetTemp),
-			colly.Async(true),
-		)
-	}
+	c := colly.NewCollector(
+		colly.Async(true),
+	)
 
 	c.Limit(
 		&colly.LimitRule{
@@ -100,10 +91,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		},
 	)
 	c.AllowURLRevisit = false
+	// Using timeout if needed
 	if timeout != 10 {
 		c.SetRequestTimeout(time.Second * time.Duration(timeout))
 	}
-
+	// Using cache if needed
+	if cache {
+		c.CacheDir = ".cariddi_cache"
+	}
+	//
+	if !intensive {
+		c.AllowedDomains = []string{targetTemp}
+	} else {
+		targetRegex := strings.ReplaceAll(targetTemp, ".", "\\.")
+		c.URLFilters =
+			[]*regexp.Regexp{regexp.MustCompile(targetRegex)}
+	}
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")

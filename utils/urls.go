@@ -26,6 +26,8 @@ package utils
 import (
 	"net/url"
 	"strings"
+
+	"github.com/bobesa/go-domain-util/domainutil"
 )
 
 //GetHost >
@@ -35,6 +37,15 @@ func GetHost(input string) string {
 		return ""
 	}
 	return u.Host
+}
+
+//GetHost >
+func GetRootHost(input string) string {
+	_, err := url.Parse(input)
+	if err != nil {
+		return ""
+	}
+	return domainutil.Domain(input)
 }
 
 //GetScheme >
