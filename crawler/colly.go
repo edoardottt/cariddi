@@ -104,7 +104,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		c.AllowedDomains = []string{targetTemp}
 	} else {
 		targetTemp = "." + targetTemp
-		targetRegex := strings.ReplaceAll(targetTemp, ".", "\\.")
+		targetTemp = strings.ReplaceAll(targetTemp, ".", "\\.")
+		targetRegex := "://" + "([-a-z0-9]+)" + targetTemp
 		c.URLFilters =
 			[]*regexp.Regexp{regexp.MustCompile(targetRegex)}
 	}
