@@ -67,6 +67,15 @@ Preview :bar_chart:
 Installation 📡
 ----------
 
+### Using Docker
+
+```shell
+docker build -t cariddi .
+docker run cariddi -h
+```
+
+### Building from source
+
 You need [Go](https://golang.org/).
 
 - **Linux**
