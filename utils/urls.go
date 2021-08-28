@@ -107,11 +107,13 @@ func RetrieveParameters(input string) []string {
 //AbsoluteURL takes as input a path and returns the full
 //absolute URL with protocol + host + path
 func AbsoluteURL(protocol string, target string, path string) string {
+	// if the path variable starts with a scheme, it means that the
+	// path is itself an absolute path.
+	if HasScheme(path) {
+		return path
+	}
 	if path[0] == '/' {
-		if len(protocol) == 0 {
-			protocol = "http"
-		}
 		return protocol + "://" + target + path
 	}
-	return path
+	return protocol + "://" + target + "/" + path
 }

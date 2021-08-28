@@ -117,7 +117,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		if len(link) != 0 {
+		if len(link) != 0 && link[0] != '#' {
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
 			if ignoreBool {
@@ -125,7 +125,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
-				c.Visit(e.Request.AbsoluteURL(link))
+				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
@@ -141,7 +141,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
-				c.Visit(e.Request.AbsoluteURL(link))
+				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
@@ -150,17 +150,14 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 {
-			rel := e.Attr("rel")
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if rel != "alternate" && rel != "stylesheet" {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						c.Visit(e.Request.AbsoluteURL(link))
-					}
-				} else {
+			if ignoreBool {
+				if !IgnoreMatch(link, ignoreSlice) {
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
+			} else {
+				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
@@ -176,7 +173,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
-				c.Visit(e.Request.AbsoluteURL(link))
+				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
