@@ -161,7 +161,9 @@ Examples 💡
   - `cat urls | cariddi -t 5` (Set the timeout for the requests)
   - `cat urls | cariddi -intensive` (Crawl searching for resources matching 2nd level domain)
 
-  - For Windows use `powershell.exe -Command "cat urls | .\cariddi.exe"`
+  - For Windows:
+  	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
+  	- or just `cat urls | cariddi.exe` using PowerShell
 
 Contributing 🛠
 -------
