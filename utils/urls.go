@@ -94,3 +94,15 @@ func RetrieveParameters(input string) []string {
 	}
 	return result
 }
+
+//AbsoluteURL takes as input a path and returns the full
+//absolute URL with protocol + host + path
+func AbsoluteURL(protocol string, target string, path string) string {
+	if path[0] == '/' {
+		if len(protocol) == 0 {
+			protocol = "http"
+		}
+		return protocol + "://" + target + path
+	}
+	return path
+}
