@@ -103,60 +103,64 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	if cache {
 		c.CacheDir = ".cariddi_cache"
 	}
-	//
+	// if not intensive
 	if !intensive {
 		c.AllowedDomains = []string{targetTemp}
 	} else {
+		// otherwise, intensive set
 		targetTemp = "." + targetTemp
 		targetTemp = strings.ReplaceAll(targetTemp, ".", "\\.")
-		targetRegex := `^(http|https+):\/\/` + "([-a-z0-9.]+)" + targetTemp
+		targetRegex := "([-a-z0-9.]*)" + targetTemp + "([-a-z0-9.]*)"
 		c.URLFilters =
 			[]*regexp.Regexp{regexp.MustCompile(targetRegex)}
 	}
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		// Visit link found on page
-		// Only those links are visited which are in AllowedDomains
-		if ignoreBool {
-			if !IgnoreMatch(link, ignoreSlice) {
+		if len(link) != 0 {
+			// Visit link found on page
+			// Only those links are visited which are in AllowedDomains
+			if ignoreBool {
+				if !IgnoreMatch(link, ignoreSlice) {
+					c.Visit(e.Request.AbsoluteURL(link))
+				}
+			} else {
 				c.Visit(e.Request.AbsoluteURL(link))
 			}
-		} else {
-			fmt.Println(e.Request.AbsoluteURL(link))
-			c.Visit(e.Request.AbsoluteURL(link))
 		}
 	})
 
 	// On every script element which has src attribute call callback
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		// Visit link found on page
-		// Only those links are visited which are in AllowedDomains
-		if ignoreBool {
-			if !IgnoreMatch(link, ignoreSlice) {
+		if len(link) != 0 {
+			// Visit link found on page
+			// Only those links are visited which are in AllowedDomains
+			if ignoreBool {
+				if !IgnoreMatch(link, ignoreSlice) {
+					c.Visit(e.Request.AbsoluteURL(link))
+				}
+			} else {
 				c.Visit(e.Request.AbsoluteURL(link))
 			}
-		} else {
-			fmt.Println(e.Request.AbsoluteURL(link))
-			c.Visit(e.Request.AbsoluteURL(link))
 		}
 	})
 
 	// On every link element which has href attribute call callback
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		rel := e.Attr("rel")
-		// Visit link found on page
-		// Only those links are visited which are in AllowedDomains
-		if rel != "alternate" && rel != "stylesheet" {
-			if ignoreBool {
-				if !IgnoreMatch(link, ignoreSlice) {
+		if len(link) != 0 {
+			rel := e.Attr("rel")
+			// Visit link found on page
+			// Only those links are visited which are in AllowedDomains
+			if rel != "alternate" && rel != "stylesheet" {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						c.Visit(e.Request.AbsoluteURL(link))
+					}
+				} else {
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
-			} else {
-				fmt.Println(e.Request.AbsoluteURL(link))
-				c.Visit(e.Request.AbsoluteURL(link))
 			}
 		}
 	})
@@ -164,19 +168,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// On every iframe element which has src attribute call callback
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		// Visit link found on page
-		// Only those links are visited which are in AllowedDomains
-		if ignoreBool {
-			if !IgnoreMatch(link, ignoreSlice) {
+		if len(link) != 0 {
+			// Visit link found on page
+			// Only those links are visited which are in AllowedDomains
+			if ignoreBool {
+				if !IgnoreMatch(link, ignoreSlice) {
+					c.Visit(e.Request.AbsoluteURL(link))
+				}
+			} else {
 				c.Visit(e.Request.AbsoluteURL(link))
 			}
-		} else {
-			fmt.Println(e.Request.AbsoluteURL(link))
-			c.Visit(e.Request.AbsoluteURL(link))
 		}
 	})
 
 	c.OnResponse(func(r *colly.Response) {
+
+		fmt.Println(r.Request.URL.String())
 
 		lengthOk := len(string(r.Body)) > 10
 
@@ -210,6 +217,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 	// Start scraping on target
 	c.Visit(protocolTemp + "://" + target)
+	c.Wait()
 	if html != "" {
 		output.FooterHTML(html)
 	}

@@ -42,7 +42,7 @@ func ScanTargets() []string {
 	for sc.Scan() {
 		domain := strings.ToLower(sc.Text())
 		if len(domain) > 2 {
-			result = append(result, utils.RemoveProtocol(domain))
+			result = append(result, domain)
 		}
 	}
 	return utils.RemoveDuplicateValues(result)
