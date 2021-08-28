@@ -39,7 +39,16 @@ func GetHost(input string) string {
 	return u.Host
 }
 
-//GetHost >
+//GetProtocol >
+func GetProtocol(input string) string {
+	u, err := url.Parse(input)
+	if err != nil {
+		return ""
+	}
+	return u.Scheme
+}
+
+//GetRootHost >
 func GetRootHost(input string) string {
 	_, err := url.Parse(input)
 	if err != nil {

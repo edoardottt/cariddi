@@ -45,9 +45,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
 	var targetTemp string
+	var protocolTemp string
+	// if there isn't a scheme use http.
 	if !utils.HasScheme(target) {
-		targetTemp = utils.GetHost("http://" + target)
+		protocolTemp = "http"
+		targetTemp = utils.GetHost(protocolTemp + "://" + target)
 	} else {
+		protocolTemp = utils.GetProtocol(target)
 		targetTemp = utils.GetHost(target)
 	}
 	if intensive {
@@ -205,9 +209,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	})
 
 	// Start scraping on target
-	c.Visit("http://" + target)
-	c.Visit("https://" + target)
-	c.Wait()
+	c.Visit(protocolTemp + "://" + target)
 	if html != "" {
 		output.FooterHTML(html)
 	}
