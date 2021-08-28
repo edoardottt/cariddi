@@ -119,6 +119,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				c.Visit(e.Request.AbsoluteURL(link))
 			}
 		} else {
+			fmt.Println(e.Request.AbsoluteURL(link))
 			c.Visit(e.Request.AbsoluteURL(link))
 		}
 	})
@@ -133,6 +134,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				c.Visit(e.Request.AbsoluteURL(link))
 			}
 		} else {
+			fmt.Println(e.Request.AbsoluteURL(link))
 			c.Visit(e.Request.AbsoluteURL(link))
 		}
 	})
@@ -149,6 +151,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
+				fmt.Println(e.Request.AbsoluteURL(link))
 				c.Visit(e.Request.AbsoluteURL(link))
 			}
 		}
@@ -164,13 +167,12 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				c.Visit(e.Request.AbsoluteURL(link))
 			}
 		} else {
+			fmt.Println(e.Request.AbsoluteURL(link))
 			c.Visit(e.Request.AbsoluteURL(link))
 		}
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-
-		fmt.Println(r.Request.URL.String())
 
 		lengthOk := len(string(r.Body)) > 10
 
