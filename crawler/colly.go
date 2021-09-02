@@ -125,6 +125,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
+				FinalResults = append(FinalResults,
+					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
@@ -141,6 +143,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
+				FinalResults = append(FinalResults,
+					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
@@ -157,6 +161,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
+				FinalResults = append(FinalResults,
+					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
@@ -173,6 +179,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					c.Visit(e.Request.AbsoluteURL(link))
 				}
 			} else {
+				FinalResults = append(FinalResults,
+					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
@@ -183,8 +191,6 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		fmt.Println(r.Request.URL.String())
 
 		lengthOk := len(string(r.Body)) > 10
-
-		FinalResults = append(FinalResults, r.Request.URL.String())
 
 		//if endpoints or secrets or filetype: scan
 		if endpoints || secrets || (1 <= fileType && fileType <= 7) {
