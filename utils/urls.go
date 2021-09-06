@@ -112,7 +112,7 @@ func AbsoluteURL(protocol string, target string, path string) string {
 	if HasScheme(path) {
 		return path
 	}
-	if path[0] == '/' {
+	if len(path) != 0 && path[0] == '/' {
 		return protocol + "://" + target + path
 	}
 	return protocol + "://" + target + "/" + path
