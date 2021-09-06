@@ -29,6 +29,7 @@ type EndpointMatched struct {
 	Url        string
 }
 
+//Parameter struct
 type Parameter struct {
 	Parameter string
 	Attacks   []string
