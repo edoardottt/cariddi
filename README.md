@@ -159,7 +159,7 @@ Examples 💡
   - `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
   - `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
   - `cat urls | cariddi -t 5` (Set the timeout for the requests)
-  - `cat urls | cariddi -intensive` (Crawl searching for resources matching 2nd level domain)
+  - `cat urls | cariddi -intensive` (Crawl searching for any resource under 2nd level domain (`*.target.com`))
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
