@@ -162,6 +162,7 @@ Examples 💡
   - `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
   - `cat urls | cariddi -t 5` (Set the timeout for the requests)
   - `cat urls | cariddi -intensive` (Crawl searching for any resource under 2nd level domain (`*.target.com`))
+  - `cat urls | cariddi -rua` (Use a random browser user agent on every request)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
