@@ -40,8 +40,8 @@ import (
 
 //Crawler it's the actual crawler core
 func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string,
-	ignoreTxt string, cache bool, timeout int, intensive bool, rua bool, secrets bool, secretsFile []string,
-	plain bool, endpoints bool, endpointsFile []string,
+	ignoreTxt string, cache bool, timeout int, intensive bool, rua bool, proxy string, secrets bool,
+	secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	// This is to avoid to insert into the crawler target regular
@@ -122,6 +122,15 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// Use a Random User Agent for each request if needed
 	if rua {
 		extensions.RandomUserAgent(c)
+	}
+
+	// Use a Proxy if needed
+	if proxy != "" {
+		err := c.SetProxy(proxy)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	// On every a element which has href attribute call callback

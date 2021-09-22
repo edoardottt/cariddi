@@ -55,6 +55,8 @@ func PrintHelp() {
 		Write the output into a TXT file.
 	-plain
 		Print only the results.
+	-proxy string
+    	Set a Proxy to be used (http and socks5 supported).
 	-rua
 		Use a random browser user agent on every request.
 	-s	Hunt for secrets.
