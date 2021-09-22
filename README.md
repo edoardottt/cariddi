@@ -169,7 +169,7 @@ Contributing 🛠
 -------
 
 Just open an [issue](https://github.com/edoardottt/cariddi/issues)/[pull request](https://github.com/edoardottt/cariddi/pulls).  
-See also [CONTRIBUTING.md](https://github.com/edoardottt/cariddi/blob/master/CONTRIBUTING.md) and [CODE OF CONDUCT.md](https://github.com/edoardottt/cariddi/blob/master/CODE_OF_CONDUCT.md).
+See also [CONTRIBUTING](https://github.com/edoardottt/cariddi/blob/master/CONTRIBUTING.md) and [CODE OF CONDUCT](https://github.com/edoardottt/cariddi/blob/master/CODE_OF_CONDUCT.md) files.
 
 **Help me building this!**
 
