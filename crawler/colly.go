@@ -35,17 +35,20 @@ import (
 	"github.com/edoardottt/cariddi/scanner"
 	"github.com/edoardottt/cariddi/utils"
 	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/extensions"
 )
 
 //Crawler it's the actual crawler core
-func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string, ignoreTxt string,
-	cache bool, timeout int, intensive bool, secrets bool, secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
+func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string,
+	ignoreTxt string, cache bool, timeout int, intensive bool, rua bool, secrets bool, secretsFile []string,
+	plain bool, endpoints bool, endpointsFile []string,
 	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
 	var targetTemp string
 	var protocolTemp string
+
 	// if there isn't a scheme use http.
 	if !utils.HasScheme(target) {
 		protocolTemp = "http"
@@ -54,6 +57,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		protocolTemp = utils.GetProtocol(target)
 		targetTemp = utils.GetHost(target)
 	}
+
 	if intensive {
 		targetTemp = utils.GetRootHost(targetTemp)
 	}
@@ -114,6 +118,12 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		c.URLFilters =
 			[]*regexp.Regexp{regexp.MustCompile(targetRegex)}
 	}
+
+	// Use a Random User Agent for each request if needed
+	if rua {
+		extensions.RandomUserAgent(c)
+	}
+
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
