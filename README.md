@@ -129,6 +129,8 @@ Usage of cariddi:
     	Write the output into a TXT file.
   -plain
       Print only the results.
+  -proxy string
+    	Set a Proxy to be used (http and socks5 supported).
   -rua
       Use a random browser user agent on every request.
   -s	Hunt for secrets.
@@ -163,6 +165,7 @@ Examples 💡
   - `cat urls | cariddi -t 5` (Set the timeout for the requests)
   - `cat urls | cariddi -intensive` (Crawl searching for any resource under 2nd level domain (`*.target.com`))
   - `cat urls | cariddi -rua` (Use a random browser user agent on every request)
+  - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy to be used (http and socks5 supported))
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
@@ -185,10 +188,10 @@ A special thanks to:
   - [ ] Tests (😂)
   
   - [ ] Tor support
-  
-  - [ ] Proxy support
 
   - [ ] Cookie support
+
+  - [x] Proxy support
 
   - [x] Ignore specific types of urls
 

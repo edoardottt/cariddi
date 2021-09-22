@@ -92,7 +92,7 @@ func main() {
 
 		results, secrets, endpoints, extensions := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Cache, flags.Timeout, flags.Intensive,
-			flags.Rua, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
+			flags.Rua, flags.Proxy, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
 			flags.Extensions)
 
 		finalResults = append(finalResults, results...)
