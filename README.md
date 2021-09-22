@@ -128,7 +128,9 @@ Usage of cariddi:
   -ot string
     	Write the output into a TXT file.
   -plain
-    	Print only the results.
+      Print only the results.
+  -rua
+      Use a random browser user agent on every request.
   -s	Hunt for secrets.
   -sf string
     	Use an external file (txt, one per line) to use custom regexes for secrets hunting.

@@ -42,6 +42,7 @@ type Input struct {
 	Cache         bool
 	Timeout       int
 	Intensive     bool
+	Rua           bool
 	Secrets       bool
 	SecretsFile   string
 	Endpoints     bool
@@ -66,6 +67,7 @@ func ScanFlag() Input {
 	cachePtr := flag.Bool("cache", false, "Use the .cariddi_cache folder as cache.")
 	timeoutPtr := flag.Int("t", 10, "Set timeout for the requests.")
 	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching 2nd level domain.")
+	ruaPtr := flag.Bool("rua", false, "Use a random browser user agent on every request.")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line) to use custom regexes for secrets hunting.")
@@ -91,6 +93,7 @@ func ScanFlag() Input {
 		*cachePtr,
 		*timeoutPtr,
 		*intensivePtr,
+		*ruaPtr,
 		*secretsPtr,
 		*secretsFilePtr,
 		*endpointsPtr,
