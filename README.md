@@ -181,6 +181,7 @@ See also [CONTRIBUTING](https://github.com/edoardottt/cariddi/blob/master/CONTRI
 
 A special thanks to:
 
+  - [go-colly](http://go-colly.org/)
   - [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go)
 
 **To do:**
