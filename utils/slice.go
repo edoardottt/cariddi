@@ -24,6 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package utils
 
 import (
+	"net/http"
 	"strings"
 )
 
@@ -50,6 +51,34 @@ func CheckInputArray(input string) []string {
 	for _, elem := range sliceOut {
 		if elem != "" {
 			result = append(result, elem)
+		}
+	}
+	return result
+}
+
+//CheckCookies checks if the string provided to the
+//-cookie option is a valid one.
+//format: "name1:value1;name2:value2"
+//It returns a slice of Cookies (empty if no one)
+func CheckCookies(input string) []*http.Cookie {
+	var result []*http.Cookie
+	if input == "" {
+		return result
+	}
+	//Split and get different pairs of (name,value)
+	pairs := strings.Split(input, ";")
+	if len(pairs) == 0 {
+		return result
+	}
+	for _, pair := range pairs {
+		couple := strings.Split(pair, ":")
+		if len(couple) == 0 {
+			continue
+		}
+		if len(couple) == 2 {
+			result = append(result, &http.Cookie{Name: couple[0], Value: couple[1]})
+		} else {
+			continue
 		}
 	}
 	return result
