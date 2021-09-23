@@ -49,7 +49,7 @@ func PrintExamples() {
 	
 	cat urls | cariddi -oh target_name (Results in html file)
 	
-	cat urls | cariddi -ext 2 (Hunt for juicy (level 2 of 7) files)
+	cat urls | cariddi -ext 2 (Hunt for juicy (level 2 out of 7) files)
 	
 	cat urls | cariddi -e -ef endpoints_file (Hunt for custom endpoints)
 
