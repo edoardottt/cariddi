@@ -99,24 +99,15 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		},
 	)
 	c.AllowURLRevisit = false
+
 	// Using timeout if needed
 	if timeout != 10 {
 		c.SetRequestTimeout(time.Second * time.Duration(timeout))
 	}
+
 	// Using cache if needed
 	if cache {
 		c.CacheDir = ".cariddi_cache"
-	}
-	// if not intensive
-	if !intensive {
-		c.AllowedDomains = []string{targetTemp}
-	} else {
-		// otherwise, intensive set
-		targetTemp = "." + targetTemp
-		targetTemp = strings.ReplaceAll(targetTemp, ".", "\\.")
-		targetRegex := "([-a-z0-9.]*)" + targetTemp + "([-a-z0-9.]*)"
-		c.URLFilters =
-			[]*regexp.Regexp{regexp.MustCompile(targetRegex)}
 	}
 
 	// Use a Random User Agent for each request if needed
@@ -137,16 +128,20 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
+			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if ignoreBool {
-				if !IgnoreMatch(link, ignoreSlice) {
-					c.Visit(e.Request.AbsoluteURL(link))
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
+				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						FinalResults = append(FinalResults, absoluteUrl)
+						c.Visit(absoluteUrl)
+					}
+				} else {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				}
-			} else {
-				FinalResults = append(FinalResults,
-					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
-				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
@@ -155,16 +150,20 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		if len(link) != 0 {
+			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if ignoreBool {
-				if !IgnoreMatch(link, ignoreSlice) {
-					c.Visit(e.Request.AbsoluteURL(link))
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
+				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						FinalResults = append(FinalResults, absoluteUrl)
+						c.Visit(absoluteUrl)
+					}
+				} else {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				}
-			} else {
-				FinalResults = append(FinalResults,
-					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
-				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
@@ -173,16 +172,20 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 {
+			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if ignoreBool {
-				if !IgnoreMatch(link, ignoreSlice) {
-					c.Visit(e.Request.AbsoluteURL(link))
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
+				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						FinalResults = append(FinalResults, absoluteUrl)
+						c.Visit(absoluteUrl)
+					}
+				} else {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				}
-			} else {
-				FinalResults = append(FinalResults,
-					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
-				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
@@ -191,16 +194,20 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		if len(link) != 0 {
+			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if ignoreBool {
-				if !IgnoreMatch(link, ignoreSlice) {
-					c.Visit(e.Request.AbsoluteURL(link))
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
+				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						FinalResults = append(FinalResults, absoluteUrl)
+						c.Visit(absoluteUrl)
+					}
+				} else {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				}
-			} else {
-				FinalResults = append(FinalResults,
-					utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
-				c.Visit(utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link)))
 			}
 		}
 	})
@@ -350,7 +357,7 @@ func RetrieveBody(target string) string {
 	return ""
 }
 
-//isLinkOkay checks if a link is buit in a proper way
+//isLinkOkay checks if a link is built in a proper way
 func isLinkOkay(input string) bool {
 	_, err := url.Parse(input)
 	return err == nil
@@ -365,4 +372,15 @@ func IgnoreMatch(url string, ignoreSlice []string) bool {
 		}
 	}
 	return false
+}
+
+//intensiveOk checks if a given url can be crawled
+//in intensive mode (if the 2nd level domain matches with
+//the inputted target).
+func intensiveOk(target string, urlInput string) bool {
+	u, err := url.Parse(urlInput)
+	if err != nil {
+		return false
+	}
+	return utils.GetRootHost(u.Host) == target
 }
