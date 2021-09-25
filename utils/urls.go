@@ -117,3 +117,16 @@ func AbsoluteURL(protocol string, target string, path string) string {
 	}
 	return protocol + "://" + target + "/" + path
 }
+
+//SameDomain checks if two urls have the same domain
+func SameDomain(url1 string, url2 string) bool {
+	u1, err := url.Parse(url1)
+	if err != nil {
+		return false
+	}
+	u2, err := url.Parse(url2)
+	if err != nil {
+		return false
+	}
+	return u1.Host == u2.Host
+}
