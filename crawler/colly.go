@@ -212,6 +212,28 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		}
 	})
 
+	// On every from element which has action attribute call callback
+	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
+		link := e.Attr("action")
+		if len(link) != 0 {
+			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			// Visit link found on page
+			// Only those links are visited which are in AllowedDomains
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
+				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						FinalResults = append(FinalResults, absoluteUrl)
+						c.Visit(absoluteUrl)
+					}
+				} else {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
+				}
+			}
+		}
+	})
+
 	c.OnResponse(func(r *colly.Response) {
 
 		fmt.Println(r.Request.URL.String())
