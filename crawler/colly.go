@@ -113,6 +113,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// Use a Random User Agent for each request if needed
 	if rua {
 		extensions.RandomUserAgent(c)
+	} else {
+		// Avoid using the default colly user agent
+		c.UserAgent = GenerateRandomUserAgent()
 	}
 
 	// Use a Proxy if needed
