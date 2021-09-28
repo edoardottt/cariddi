@@ -1,6 +1,6 @@
 /*
 ==========
-Cariddi v0.dev
+Cariddi v1.1
 ==========
 
 This program is free software: you can redistribute it and/or modify

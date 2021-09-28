@@ -113,6 +113,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// Use a Random User Agent for each request if needed
 	if rua {
 		extensions.RandomUserAgent(c)
+	} else {
+		// Avoid using the default colly user agent
+		c.UserAgent = GenerateRandomUserAgent()
 	}
 
 	// Use a Proxy if needed
@@ -212,9 +215,56 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		}
 	})
 
+	// On every from element which has action attribute call callback
+	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
+		link := e.Attr("action")
+		if len(link) != 0 {
+			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			// Visit link found on page
+			// Only those links are visited which are in AllowedDomains
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
+				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						FinalResults = append(FinalResults, absoluteUrl)
+						c.Visit(absoluteUrl)
+					}
+				} else {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
+				}
+			}
+		}
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
+		link := e.Text
+		output.EncapsulateCustomRed("XML URL", link)
+		if len(link) != 0 {
+			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			// Visit link found on page
+			// Only those links are visited which are in AllowedDomains
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
+				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+				if ignoreBool {
+					if !IgnoreMatch(link, ignoreSlice) {
+						FinalResults = append(FinalResults, absoluteUrl)
+						c.Visit(absoluteUrl)
+					}
+				} else {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
+				}
+			}
+		}
+	})
+
 	c.OnResponse(func(r *colly.Response) {
 
-		fmt.Println(r.Request.URL.String())
+		if utils.SameDomain(protocolTemp+"://"+target, r.Request.URL.String()) {
+			fmt.Println(r.Request.URL.String())
+		}
 
 		lengthOk := len(string(r.Body)) > 10
 
