@@ -57,6 +57,9 @@ set GO111MODULE=on
 echo Updating ...
 go get -u
 go mod tidy -v
+CALL :Unwindows
+git pull
+CALL :Windows
 echo Done.
 EXIT /B 0
 
