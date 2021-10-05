@@ -88,44 +88,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalSecrets []scanner.SecretMatched
 	var FinalEndpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
-	c := colly.NewCollector(
-		colly.Async(true),
-	)
 
-	c.Limit(
-		&colly.LimitRule{
-			Parallelism: concurrency,
-			Delay:       time.Duration(delayTime) * time.Second,
-		},
-	)
-	c.AllowURLRevisit = false
-
-	// Using timeout if needed
-	if timeout != 10 {
-		c.SetRequestTimeout(time.Second * time.Duration(timeout))
-	}
-
-	// Using cache if needed
-	if cache {
-		c.CacheDir = ".cariddi_cache"
-	}
-
-	// Use a Random User Agent for each request if needed
-	if rua {
-		extensions.RandomUserAgent(c)
-	} else {
-		// Avoid using the default colly user agent
-		c.UserAgent = GenerateRandomUserAgent()
-	}
-
-	// Use a Proxy if needed
-	if proxy != "" {
-		err := c.SetProxy(proxy)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}
+	//crawler creation
+	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy)
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
@@ -301,6 +266,53 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		output.FooterHTML(html)
 	}
 	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions
+}
+
+//CreateColly takes as input all the settings needed to instantiate
+//a new Colly Collector object and it returns this object.
+func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
+	intensive bool, rua bool, proxy string) *colly.Collector {
+
+	c := colly.NewCollector(
+		colly.Async(true),
+	)
+
+	c.Limit(
+		&colly.LimitRule{
+			Parallelism: concurrency,
+			Delay:       time.Duration(delayTime) * time.Second,
+		},
+	)
+	c.AllowURLRevisit = false
+
+	// Using timeout if needed
+	if timeout != 10 {
+		c.SetRequestTimeout(time.Second * time.Duration(timeout))
+	}
+
+	// Using cache if needed
+	if cache {
+		c.CacheDir = ".cariddi_cache"
+	}
+
+	// Use a Random User Agent for each request if needed
+	if rua {
+		extensions.RandomUserAgent(c)
+	} else {
+		// Avoid using the default colly user agent
+		c.UserAgent = GenerateRandomUserAgent()
+	}
+
+	// Use a Proxy if needed
+	if proxy != "" {
+		err := c.SetProxy(proxy)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
+	return c
 }
 
 //huntSecrets hunts for secrets
