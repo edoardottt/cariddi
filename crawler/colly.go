@@ -205,7 +205,6 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
 		link := e.Text
-		output.EncapsulateCustomRed("XML URL", link)
 		if len(link) != 0 {
 			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
