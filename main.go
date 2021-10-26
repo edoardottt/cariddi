@@ -33,39 +33,50 @@ import (
 	"github.com/edoardottt/cariddi/utils"
 )
 
-//main
+//main function >
 func main() {
 
+	// Scan flags.
 	flags := input.ScanFlag()
 
+	//Print version and exit.
 	if flags.Version {
 		output.Beautify()
 		os.Exit(0)
 	}
 
+	//Print help and exit.
 	if flags.Help {
 		output.PrintHelp()
 		os.Exit(0)
 	}
 
+	//Print examples and exit.
 	if flags.Examples {
 		output.PrintExamples()
 		os.Exit(0)
 	}
 
+	//If it's possible print the cariddi banner.
 	if !flags.Plain {
 		output.Beautify()
 	}
 
+	//Read the targets from standard input.
 	targets := input.ScanTargets()
 
+	//Check if there are errors in the flags definition.
 	input.CheckFlags(flags)
 
+	//If it is needed, read custom endpoints definition
+	//from the specified file.
 	var endpointsFileSlice []string
 	if flags.EndpointsFile != "" {
 		endpointsFileSlice = utils.ReadFile(flags.EndpointsFile)
 	}
 
+	//If it is needed, read custom secrets definition
+	//from the specified file.
 	var secretsFileSlice []string
 	if flags.SecretsFile != "" {
 		secretsFileSlice = utils.ReadFile(flags.SecretsFile)
@@ -76,7 +87,7 @@ func main() {
 	var finalEndpoints []scanner.EndpointMatched
 	var finalExtensions []scanner.FileTypeMatched
 
-	// output files
+	//Create output files if needed (txt / html).
 	var ResultTxt = ""
 	if flags.Txt != "" {
 		ResultTxt = utils.CreateOutputFile(flags.Txt, "results", "txt")
@@ -88,6 +99,7 @@ func main() {
 		output.HeaderHTML("Results", ResultHtml)
 	}
 
+	//For each target generate a crawler and collect all the results.
 	for _, inp := range targets {
 
 		results, secrets, endpoints, extensions := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
@@ -101,29 +113,30 @@ func main() {
 		finalExtensions = append(finalExtensions, extensions...)
 	}
 
+	//Remove duplicates from all the results.
 	finalResults = utils.RemoveDuplicateValues(finalResults)
 	finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
 	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
 	finalExtensions = scanner.RemoveDuplicateExtensions(finalExtensions)
 
-	// IF TXT OUTPUT
+	// IF TXT OUTPUT >
 	if flags.Txt != "" {
 		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints, finalExtensions)
 	}
 
-	// IF HTML OUTPUT
+	// IF HTML OUTPUT >
 	if flags.Html != "" {
 		output.HtmlOutput(flags, ResultHtml, finalResults, finalSecret, finalEndpoints, finalExtensions)
 	}
 
-	// if needed print secrets
+	//If needed print secrets.
 	if !flags.Plain && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, elem.Match+" in "+elem.Url)
 		}
 	}
 
-	// if needed print endpoints
+	//If needed print endpoints.
 	if !flags.Plain && len(finalEndpoints) != 0 {
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
@@ -140,7 +153,7 @@ func main() {
 		}
 	}
 
-	// if needed print extensions
+	//If needed print extensions.
 	if !flags.Plain && len(finalExtensions) != 0 {
 		for _, elem := range finalExtensions {
 			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.Url+" matched!")
