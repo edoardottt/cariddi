@@ -130,3 +130,12 @@ func SameDomain(url1 string, url2 string) bool {
 	}
 	return u1.Host == u2.Host
 }
+
+//GetPath returns the path of the input URL
+func GetPath(input string) (string, error) {
+	u, err := url.Parse(input)
+	if err != nil {
+		return "", err
+	}
+	return u.Path, nil
+}

@@ -257,6 +257,16 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	})
 
 	// Start scraping on target
+	path, err := utils.GetPath(protocolTemp + "://" + target)
+	if err == nil {
+		if path == "" {
+			c.Visit(protocolTemp + "://" + target + "/" + "robots.txt")
+			c.Visit(protocolTemp + "://" + target + "/" + "sitemap.xml")
+		} else if path == "/" {
+			c.Visit(protocolTemp + "://" + target + "robots.txt")
+			c.Visit(protocolTemp + "://" + target + "sitemap.xml")
+		}
+	}
 	c.Visit(protocolTemp + "://" + target)
 	c.Wait()
 	if html != "" {
