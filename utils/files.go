@@ -26,7 +26,9 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -114,4 +116,42 @@ func ElementExists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+//ReadHTTPRequestFromFile reads from a file an HTTP
+//request and returns a *http.Request object
+func ReadHTTPFromFile(inputFile string) (*http.Request, error) {
+	f, err := os.Open(inputFile)
+	if err != nil {
+		fmt.Println("Cannot open input file.")
+		os.Exit(1)
+	}
+	defer f.Close()
+
+	buf := bufio.NewReader(f)
+	req, err := http.ReadRequest(buf)
+	if err != nil {
+		fmt.Println("Cannot read request from input file.")
+		os.Exit(1)
+	}
+	return req, nil
+
+}
+
+//ReadEntireFile returns the content of the inputted file.
+func ReadEntireFile(inputFile string) []byte {
+	file, err := os.Open(inputFile)
+	if err != nil {
+		fmt.Println("Cannot open input file.")
+		os.Exit(1)
+	}
+	defer func() {
+		if err = file.Close(); err != nil {
+			fmt.Println("Cannot close input file.")
+			os.Exit(1)
+		}
+	}()
+
+	b, err := ioutil.ReadAll(file)
+	return b
 }

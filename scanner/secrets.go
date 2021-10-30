@@ -309,6 +309,13 @@ func GetRegexes() []Secret {
 			"?",
 		},
 		{
+			"Bugsnag API Key",
+			"Bugsnag API Key",
+			"(?i)(bs|bugsnag)(.{0,20})?[0-9a-f]{32}",
+			[]string{},
+			"?",
+		},
+		{
 			"S3 Bucket",
 			"S3 Bucket",
 			`(?:[a-zA-Z0-9_-]+s3.amazonaws.com|[a-zA-Z0-9_.-]+amazonaws.com|` +

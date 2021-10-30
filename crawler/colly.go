@@ -226,9 +226,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 	c.OnResponse(func(r *colly.Response) {
 
-		if utils.SameDomain(protocolTemp+"://"+target, r.Request.URL.String()) {
-			fmt.Println(r.Request.URL.String())
-		}
+		fmt.Println(r.Request.URL.String())
 
 		lengthOk := len(string(r.Body)) > 10
 
@@ -259,6 +257,16 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	})
 
 	// Start scraping on target
+	path, err := utils.GetPath(protocolTemp + "://" + target)
+	if err == nil {
+		if path == "" {
+			c.Visit(protocolTemp + "://" + target + "/" + "robots.txt")
+			c.Visit(protocolTemp + "://" + target + "/" + "sitemap.xml")
+		} else if path == "/" {
+			c.Visit(protocolTemp + "://" + target + "robots.txt")
+			c.Visit(protocolTemp + "://" + target + "sitemap.xml")
+		}
+	}
 	c.Visit(protocolTemp + "://" + target)
 	c.Wait()
 	if html != "" {
