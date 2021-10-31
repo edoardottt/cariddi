@@ -197,7 +197,7 @@ A special thanks to:
   
   - [ ] Tor support
 
-  - [ ] Cookie support
+  - [x] Custom headers support
 
   - [x] Proxy support
 
