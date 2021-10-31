@@ -167,11 +167,11 @@ Examples 💡
   - `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
   - `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
   - `cat urls | cariddi -t 5` (Set the timeout for the requests)
-  - `cat urls | cariddi -intensive` (Crawl searching for any resource under 2nd level domain (`*.target.com`))
+  - `cat urls | cariddi -intensive` (Crawl searching also subdomains, same as `*.target.com`)
   - `cat urls | cariddi -rua` (Use a random browser user agent on every request)
-  - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy to be used (http and socks5 supported))
-  - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"` (Use custom headers for each request)
-  - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers (same format of headers flag))
+  - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy (http and socks5 supported))
+  - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
+  - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
