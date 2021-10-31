@@ -38,7 +38,8 @@ func CheckDataPost(input string) (map[string]string, error) {
 	return map[string]string{}, nil
 }
 
-//CheckOutputFile >
+//CheckOutputFile checks if the string provided as input
+//is formatted in correct way.
 func CheckOutputFile(input string) bool {
 	invalid := []string{"\\", "/", "'", "\""}
 	for _, elem := range invalid {
@@ -49,7 +50,7 @@ func CheckOutputFile(input string) bool {
 	return true
 }
 
-//CheckFlags checks the flags inserted
+//CheckFlags checks the flags inputted
 func CheckFlags(flags Input) {
 	if flags.Txt != "" {
 		if !CheckOutputFile(flags.Txt) {
@@ -114,6 +115,14 @@ func CheckFlags(flags Input) {
 		fmt.Println("Examples:")
 		fmt.Println("	- cat urls | cariddi -i forum,blog")
 		fmt.Println("	- cat urls | cariddi -it ignore.txt")
+		os.Exit(1)
+	}
+
+	if flags.Headers != "" && flags.HeadersFile != "" {
+		fmt.Println("You should use only one among -headers and -headersfile.")
+		fmt.Println("Examples:")
+		fmt.Println("	- cat urls | cariddi -headers \"Cookie: auth=yes;;Client: type=2\"")
+		fmt.Println("	- cat urls | cariddi -headersfile headers.txt")
 		os.Exit(1)
 	}
 }

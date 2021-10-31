@@ -99,13 +99,25 @@ func main() {
 		output.HeaderHTML("Results", ResultHtml)
 	}
 
+	//Read headers if needed
+	var headers map[string]string
+	if flags.HeadersFile != "" || flags.Headers != "" {
+		var headersInput string
+		if flags.HeadersFile != "" {
+			headersInput = string(utils.ReadEntireFile(flags.HeadersFile))
+		} else {
+			headersInput = flags.Headers
+		}
+		headers = input.GetHeaders(headersInput)
+	}
+
 	//For each target generate a crawler and collect all the results.
 	for _, inp := range targets {
 
 		results, secrets, endpoints, extensions := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Cache, flags.Timeout, flags.Intensive,
 			flags.Rua, flags.Proxy, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
-			flags.Extensions)
+			flags.Extensions, headers)
 
 		finalResults = append(finalResults, results...)
 		finalSecret = append(finalSecret, secrets...)
