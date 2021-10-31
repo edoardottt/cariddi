@@ -117,6 +117,10 @@ Usage of cariddi:
   -ext int
     	Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
   -h	Print the help.
+  -headers string
+    	Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
+  -headersfile string
+    	Read from an external file custom headers (same format of headers flag).
   -i string
     	Ignore the URL containing at least one of the elements of this array.
   -intensive
@@ -166,6 +170,8 @@ Examples 💡
   - `cat urls | cariddi -intensive` (Crawl searching for any resource under 2nd level domain (`*.target.com`))
   - `cat urls | cariddi -rua` (Use a random browser user agent on every request)
   - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy to be used (http and socks5 supported))
+  - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"` (Use custom headers for each request)
+  - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers (same format of headers flag))
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
