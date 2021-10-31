@@ -38,7 +38,8 @@ func CheckDataPost(input string) (map[string]string, error) {
 	return map[string]string{}, nil
 }
 
-//CheckOutputFile >
+//CheckOutputFile checks if the string provided as input
+//is formatted in correct way.
 func CheckOutputFile(input string) bool {
 	invalid := []string{"\\", "/", "'", "\""}
 	for _, elem := range invalid {
@@ -49,7 +50,7 @@ func CheckOutputFile(input string) bool {
 	return true
 }
 
-//CheckFlags checks the flags inserted
+//CheckFlags checks the flags inputted
 func CheckFlags(flags Input) {
 	if flags.Txt != "" {
 		if !CheckOutputFile(flags.Txt) {

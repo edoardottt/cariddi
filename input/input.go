@@ -25,6 +25,7 @@ package input
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 
@@ -46,4 +47,26 @@ func ScanTargets() []string {
 		}
 	}
 	return utils.RemoveDuplicateValues(result)
+}
+
+//GetHeaders returns the headers provided as input
+func GetHeaders(input string) map[string]string {
+	result := make(map[string]string)
+	if input != "" {
+		if !strings.Contains(input, ":") {
+			fmt.Println("The headers provided don't contains the : separator.")
+			os.Exit(1)
+		}
+		headers := strings.Split(input, ";;")
+		for _, header := range headers {
+			var parts []string
+			if strings.Contains(header, ":") {
+				parts = strings.SplitN(header, ":", 2)
+			} else {
+				continue
+			}
+			result[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+		}
+	}
+	return result
 }
