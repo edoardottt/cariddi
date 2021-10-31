@@ -49,6 +49,8 @@ type Input struct {
 	Endpoints     bool
 	EndpointsFile string
 	Extensions    int
+	Headers       string
+	HeadersFile   string
 }
 
 //ScanFlag defines all the switches taken
@@ -79,6 +81,9 @@ func ScanFlag() Input {
 
 	extensionsPtr := flag.Int("ext", 0, "Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).")
 
+	headersPtr := flag.String("headers", "", "Use custom headers for each request E.g. -headers \"Cookie: auth=yes;;Client: type=2\".")
+	headersFilePtr := flag.String("headersfile", "", "Use an external file (txt, one per line) to use custom headers.")
+
 	flag.Parse()
 
 	result := Input{
@@ -102,6 +107,8 @@ func ScanFlag() Input {
 		*endpointsPtr,
 		*endpointsFilePtr,
 		*extensionsPtr,
+		*headersPtr,
+		*headersFilePtr,
 	}
 
 	return result
