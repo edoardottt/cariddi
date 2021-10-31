@@ -88,14 +88,14 @@ func GetRegexes() []Secret {
 			"Cloudinary Basic Auth",
 			"Cloudinary Basic Auth",
 			"cloudinary://[0-9]{15}:[0-9A-Za-z\\-_]+@[0-9A-Za-z\\-_]+",
-			[]string{"facebook.com/", "facebook.svg"},
+			[]string{},
 			"?",
 		},
 		{
 			"Firebase Database",
 			"Firebase Database",
-			"[a-z0-9.-]+\\.firebaseio\\.com",
-			[]string{"facebook.com/", "facebook.svg"},
+			"([a-z0-9.-]+\\.firebaseio\\.com|[a-z0-9.-]+\\.firebaseapp\\.com)",
+			[]string{},
 			"?",
 		},
 		{
