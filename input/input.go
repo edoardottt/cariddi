@@ -67,6 +67,13 @@ func GetHeaders(input string) map[string]string {
 			}
 			result[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 		}
+	} else {
+		fmt.Println("Headers or HeadersFile flag provided, but the content is empty.")
+		os.Exit(1)
+	}
+	if len(result) == 0 {
+		fmt.Println("Headers or HeadersFile flag provided, but the content is empty.")
+		os.Exit(1)
 	}
 	return result
 }

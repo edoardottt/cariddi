@@ -117,4 +117,12 @@ func CheckFlags(flags Input) {
 		fmt.Println("	- cat urls | cariddi -it ignore.txt")
 		os.Exit(1)
 	}
+
+	if flags.Headers != "" && flags.HeadersFile != "" {
+		fmt.Println("You should use only one among -headers and -headersfile.")
+		fmt.Println("Examples:")
+		fmt.Println("	- cat urls | cariddi -headers \"Cookie: auth=yes;;Client: type=2\"")
+		fmt.Println("	- cat urls | cariddi -headersfile headers.txt")
+		os.Exit(1)
+	}
 }
