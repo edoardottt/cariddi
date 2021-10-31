@@ -43,6 +43,10 @@ func PrintHelp() {
 	-ext int
 		Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
 	-h	Print the help.
+	-headers string
+    	Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
+  	-headersfile string
+    	Read from an external file custom headers (same format of headers flag).
 	-i string
 		Ignore the URL containing at least one of the elements of this array.
 	-intensive

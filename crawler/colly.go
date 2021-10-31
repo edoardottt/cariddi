@@ -41,8 +41,8 @@ import (
 //Crawler it's the actual crawler core
 func Crawler(target string, txt string, html string, delayTime int, concurrency int, ignore string,
 	ignoreTxt string, cache bool, timeout int, intensive bool, rua bool, proxy string, secrets bool,
-	secretsFile []string, plain bool, endpoints bool, endpointsFile []string,
-	fileType int) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
+	secretsFile []string, plain bool, endpoints bool, endpointsFile []string, fileType int,
+	headers map[string]string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched, []scanner.FileTypeMatched) {
 
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
@@ -223,6 +223,15 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			}
 		}
 	})
+
+	//Add headers (if needed) on each request
+	if (len(headers)) > 0 {
+		c.OnRequest(func(r *colly.Request) {
+			for header, value := range headers {
+				r.Headers.Set(header, value)
+			}
+		})
+	}
 
 	c.OnResponse(func(r *colly.Response) {
 

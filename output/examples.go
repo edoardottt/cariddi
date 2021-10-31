@@ -67,5 +67,9 @@ func PrintExamples() {
 
 	cat urls | cariddi -rua (Use a random browser user agent on every request)
 
-	cat urls | cariddi -proxy http://127.0.0.1:8080 (Set a Proxy to be used (http and socks5 supported))`)
+	cat urls | cariddi -proxy http://127.0.0.1:8080 (Set a Proxy to be used (http and socks5 supported))
+	
+	cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"
+	
+	cat urls | cariddi -headersfile headers.txt`)
 }
