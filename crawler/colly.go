@@ -292,6 +292,7 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
+	c.IgnoreRobotsTxt = false
 
 	c.Limit(
 		&colly.LimitRule{
