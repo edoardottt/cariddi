@@ -101,11 +101,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
 				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
-					}
+				if ignoreBool && !IgnoreMatch(link, ignoreSlice) {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
 					c.Visit(absoluteUrl)
@@ -123,11 +121,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
 				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
-					}
+				if ignoreBool && !IgnoreMatch(link, ignoreSlice) {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
 					c.Visit(absoluteUrl)
@@ -145,11 +141,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
 				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
-					}
+				if ignoreBool && !IgnoreMatch(link, ignoreSlice) {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
 					c.Visit(absoluteUrl)
@@ -167,11 +161,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
 				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
-					}
+				if ignoreBool && !IgnoreMatch(link, ignoreSlice) {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
 					c.Visit(absoluteUrl)
@@ -189,11 +181,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
 				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
-					}
+				if ignoreBool && !IgnoreMatch(link, ignoreSlice) {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
 					c.Visit(absoluteUrl)
@@ -211,11 +201,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
 				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
-					}
+				if ignoreBool && !IgnoreMatch(link, ignoreSlice) {
+					FinalResults = append(FinalResults, absoluteUrl)
+					c.Visit(absoluteUrl)
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
 					c.Visit(absoluteUrl)
@@ -235,7 +223,11 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 	c.OnResponse(func(r *colly.Response) {
 
-		fmt.Println(r.Request.URL.String())
+		if ignoreBool && !IgnoreMatch(r.Request.URL.String(), ignoreSlice) {
+			fmt.Println(r.Request.URL.String())
+		} else {
+			fmt.Println(r.Request.URL.String())
+		}
 
 		lengthOk := len(string(r.Body)) > 10
 
