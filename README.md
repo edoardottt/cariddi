@@ -177,6 +177,8 @@ Examples 💡
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
   	- or just `cat urls | cariddi.exe` using PowerShell
 
+  - To integrate cariddi with Burpsuite [make sure to follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration).
+  
 Contributing 🛠
 -------
 
