@@ -36,15 +36,15 @@ func GetErrorRegexes() []Error {
 	var regexes = []Error{
 		{
 			"PHP error",
-			`(php warning|php error|include_path|undefined index|undefined variable|\\?php|expects parameter [0-9]*)`,
+			`(?i)(php warning|php error|include_path|undefined index|undefined variable|\\?php|expects parameter [0-9]*)`,
 		},
 		{
 			"General error",
-			`(((fatal|critical|severe|high|medium) error)|uncaught exception)`,
+			`(?i)(((fatal|critical|severe|high|medium) error)|uncaught exception)`,
 		},
 		{
 			"Debug information",
-			`(Debug trace|stack trace\\:)`,
+			`(?i)(Debug trace|stack trace\\:)`,
 		},
 	}
 	return regexes

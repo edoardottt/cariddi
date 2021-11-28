@@ -247,7 +247,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		lengthOk := len(string(r.Body)) > 10
 
 		//if endpoints or secrets or filetype: scan
-		if endpoints || secrets || (1 <= fileType && fileType <= 7) {
+		if endpoints || secrets || (1 <= fileType && fileType <= 7) || errors {
 			// HERE SCAN FOR SECRETS
 			if secrets && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
@@ -267,6 +267,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				extension := huntExtensions(r.Request.URL.String(), fileType)
 				if extension.Url != "" {
 					FinalExtensions = append(FinalExtensions, extension)
+				}
+			}
+			// HERE SCAN FOR ERRORS
+			if errors {
+				errorItem := huntErrors(r.Request.URL.String())
+				if errorItem.Url != "" {
+					FinalErrors = append(FinalErrors, errorItem)
 				}
 			}
 		}
@@ -432,6 +439,27 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 		}
 	}
 	return extension
+}
+
+//huntErrors hunts for secrets
+func huntErrors(target string, body string) []scanner.ErrorMatched {
+	errorsSlice := ErrorsMatch(target, body)
+	return errorsSlice
+}
+
+//ErrorsMatch hunts for extensions
+func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
+
+	var errors []scanner.ErrorMatched
+	for _, errorItem := range scanner.GetErrorRegexes() {
+		if matched, err := regexp.Match(errorItem.Regex, []byte(body)); err == nil && matched {
+			re := regexp.MustCompile(errorItem.Regex)
+			match := re.FindStringSubmatch(body)
+			errorFound := scanner.ErrorMatched{Error: errorItem, Url: url, Match: match[0]}
+			errors = append(errors, errorFound)
+		}
+	}
+	return errors
 }
 
 //RetrieveBody retrieves the body of a url
