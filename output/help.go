@@ -38,6 +38,8 @@ func PrintHelp() {
 	-e	Hunt for juicy endpoints.
 	-ef string
 		Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
+	-err
+    	Hunt for errors in websites.
 	-examples
 		Print the examples.
 	-ext int
