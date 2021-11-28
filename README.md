@@ -192,6 +192,7 @@ A special thanks to:
   - [go-colly](http://go-colly.org/)
   - [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go)
   - [nuclei-templates](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys)
+  - [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples)
 
 **To do:**
 
