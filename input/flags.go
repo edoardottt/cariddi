@@ -51,6 +51,7 @@ type Input struct {
 	Extensions    int
 	Headers       string
 	HeadersFile   string
+	Errors        bool
 }
 
 //ScanFlag defines all the switches taken
@@ -84,6 +85,8 @@ func ScanFlag() Input {
 	headersPtr := flag.String("headers", "", "Use custom headers for each request E.g. -headers \"Cookie: auth=yes;;Client: type=2\".")
 	headersFilePtr := flag.String("headersfile", "", "Read from an external file custom headers (same format of headers flag).")
 
+	errorsPtr := flag.Bool("err", false, "Hunt for errors in websites.")
+
 	flag.Parse()
 
 	result := Input{
@@ -109,6 +112,7 @@ func ScanFlag() Input {
 		*extensionsPtr,
 		*headersPtr,
 		*headersFilePtr,
+		*errorsPtr,
 	}
 
 	return result
