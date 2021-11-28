@@ -28,6 +28,7 @@ type Error struct {
 type ErrorMatched struct {
 	Error Error
 	Url   string
+	Match string
 }
 
 //GetErrorRegexes returns all the error regexes
@@ -47,4 +48,17 @@ func GetErrorRegexes() []Error {
 		},
 	}
 	return regexes
+}
+
+//RemoveDuplicateErrors removes duplicates from secrets found
+func RemoveDuplicateErrors(input []ErrorMatched) []ErrorMatched {
+	keys := make(map[string]bool)
+	list := []ErrorMatched{}
+	for _, entry := range input {
+		if _, value := keys[entry.Match+entry.Url]; !value {
+			keys[entry.Url] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
