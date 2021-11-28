@@ -346,7 +346,7 @@ func huntSecrets(secretsFile []string, target string, body string) []scanner.Sec
 func SecretsMatch(url string, body string, secretsFile []string) []scanner.SecretMatched {
 	var secrets []scanner.SecretMatched
 	if len(secretsFile) == 0 {
-		for _, secret := range scanner.GetRegexes() {
+		for _, secret := range scanner.GetSecretRegexes() {
 			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(secret.Regex)
 				match := re.FindStringSubmatch(body)
