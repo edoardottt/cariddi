@@ -178,7 +178,7 @@ func main() {
 	//If needed print errors.
 	if !flags.Plain && len(finalErrors) != 0 {
 		for _, elem := range finalErrors {
-			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Url+" matched!")
+			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.Url)
 		}
 	}
 }
