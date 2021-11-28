@@ -449,11 +449,13 @@ func huntErrors(target string, body string) []scanner.ErrorMatched {
 func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 	var errors []scanner.ErrorMatched
 	for _, errorItem := range scanner.GetErrorRegexes() {
-		if matched, err := regexp.Match(errorItem.Regex, []byte(body)); err == nil && matched {
-			re := regexp.MustCompile(errorItem.Regex)
-			match := re.FindStringSubmatch(body)
-			errorFound := scanner.ErrorMatched{Error: errorItem, Url: url, Match: match[0]}
-			errors = append(errors, errorFound)
+		for _, errorRegex := range errorItem.Regex {
+			if matched, err := regexp.Match(errorRegex, []byte(body)); err == nil && matched {
+				re := regexp.MustCompile(errorRegex)
+				match := re.FindStringSubmatch(body)
+				errorFound := scanner.ErrorMatched{Error: errorItem, Url: url, Match: match[0]}
+				errors = append(errors, errorFound)
+			}
 		}
 	}
 	return errors

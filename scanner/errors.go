@@ -21,7 +21,7 @@ package scanner
 //Error struct
 type Error struct {
 	ErrorName string
-	Regex     string
+	Regex     []string
 }
 
 //ErrorMatched struct
@@ -36,15 +36,25 @@ func GetErrorRegexes() []Error {
 	var regexes = []Error{
 		{
 			"PHP error",
-			`(?i)(php warning|php error|include_path|undefined index|undefined variable|expects parameter [0-9]*)`,
+			[]string{`(?i)php warning`,
+				`(?i)php error`,
+				`(?i)include_path`,
+				`(?i)undefined index`,
+				`(?i)undefined variable`,
+				`(?i)expect(s*) parameter [A-Za-z0-9-_]{1,30}`},
 		},
 		{
 			"General error",
-			`(?i)(((fatal|critical|severe|high|medium) error)|uncaught exception)`,
+			[]string{`(?i)fatal error`,
+				`(?i)critical error`,
+				`(?i)severe error`,
+				`(?i)high error`,
+				`(?i)medium error`,
+				`(?i)uncaught exception)`},
 		},
 		{
 			"Debug information",
-			`(?i)(Debug trace|stack trace\\:)`,
+			[]string{`(?i)Debug trace`, `(?i)stack trace\\:`},
 		},
 	}
 	return regexes
