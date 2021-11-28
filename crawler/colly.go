@@ -271,10 +271,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			}
 			// HERE SCAN FOR ERRORS
 			if errors {
-				errorItem := huntErrors(r.Request.URL.String())
-				if errorItem.Url != "" {
-					FinalErrors = append(FinalErrors, errorItem)
-				}
+				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
+				FinalErrors = append(FinalErrors, errorsSlice...)
 			}
 		}
 	})
@@ -449,7 +447,6 @@ func huntErrors(target string, body string) []scanner.ErrorMatched {
 
 //ErrorsMatch hunts for extensions
 func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
-
 	var errors []scanner.ErrorMatched
 	for _, errorItem := range scanner.GetErrorRegexes() {
 		if matched, err := regexp.Match(errorItem.Regex, []byte(body)); err == nil && matched {
