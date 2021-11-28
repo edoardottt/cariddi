@@ -36,7 +36,7 @@ func GetErrorRegexes() []Error {
 	var regexes = []Error{
 		{
 			"PHP error",
-			`(?i)(php warning|php error|include_path|undefined index|undefined variable|\\?php|expects parameter [0-9]*)`,
+			`(?i)(php warning|php error|include_path|undefined index|undefined variable|expects parameter [0-9]*)`,
 		},
 		{
 			"General error",
