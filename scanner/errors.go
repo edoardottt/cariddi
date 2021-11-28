@@ -18,4 +18,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-// todo
+//Error struct
+type Error struct {
+	ErrorName string
+	Regex     string
+}
+
+//ErrorMatched struct
+type ErrorMatched struct {
+	Error Error
+	Url   string
+}
