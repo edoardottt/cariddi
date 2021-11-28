@@ -50,7 +50,7 @@ func GetErrorRegexes() []Error {
 				`(?i)severe error`,
 				`(?i)high error`,
 				`(?i)medium error`,
-				`(?i)uncaught exception)`},
+				`(?i)uncaught exception`},
 		},
 		{
 			"Debug information",
