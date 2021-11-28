@@ -136,12 +136,14 @@ func main() {
 
 	// IF TXT OUTPUT >
 	if flags.Txt != "" {
-		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints, finalExtensions)
+		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints,
+			finalExtensions, finalErrors)
 	}
 
 	// IF HTML OUTPUT >
 	if flags.Html != "" {
-		output.HtmlOutput(flags, ResultHtml, finalResults, finalSecret, finalEndpoints, finalExtensions)
+		output.HtmlOutput(flags, ResultHtml, finalResults, finalSecret,
+			finalEndpoints, finalExtensions, finalErrors)
 	}
 
 	//If needed print secrets.
