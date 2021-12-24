@@ -101,6 +101,8 @@ Get Started 🎉
 
 `cariddi -h` prints the help in the command line.
 
+*Note*: Don't rely on the CLI output, use always `-ot/-oh` to save the output.
+
 ```
 Usage of cariddi:
   -c int

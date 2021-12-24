@@ -238,11 +238,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 	c.OnResponse(func(r *colly.Response) {
 
-		if ignoreBool && !IgnoreMatch(r.Request.URL.String(), ignoreSlice) {
-			fmt.Println(r.Request.URL.String())
-		} else {
-			fmt.Println(r.Request.URL.String())
-		}
+		fmt.Println(r.Request.URL.String())
 
 		lengthOk := len(string(r.Body)) > 10
 
