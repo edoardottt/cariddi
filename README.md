@@ -101,6 +101,8 @@ Get Started 🎉
 
 `cariddi -h` prints the help in the command line.
 
+*Note*: Don't rely on the CLI output, use always `-ot/-oh` to save the output.
+
 ```
 Usage of cariddi:
   -c int
@@ -112,6 +114,8 @@ Usage of cariddi:
   -e	Hunt for juicy endpoints.
   -ef string
     	Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
+  -err
+    	Hunt for errors in websites.
   -examples
     	Print the examples.
   -ext int
@@ -172,6 +176,7 @@ Examples 💡
   - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy (http and socks5 supported))
   - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
   - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
+  - `cat urls | cariddi -err` (Hunt for errors in websites.)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
@@ -192,6 +197,7 @@ A special thanks to:
   - [go-colly](http://go-colly.org/)
   - [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go)
   - [nuclei-templates](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys)
+  - [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples)
 
 **To do:**
 

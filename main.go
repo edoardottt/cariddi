@@ -1,6 +1,6 @@
 /*
 ==========
-Cariddi v1.1.4
+Cariddi v1.1.5
 ==========
 
 This program is free software: you can redistribute it and/or modify
@@ -86,6 +86,7 @@ func main() {
 	var finalSecret []scanner.SecretMatched
 	var finalEndpoints []scanner.EndpointMatched
 	var finalExtensions []scanner.FileTypeMatched
+	var finalErrors []scanner.ErrorMatched
 
 	//Create output files if needed (txt / html).
 	var ResultTxt = ""
@@ -114,15 +115,16 @@ func main() {
 	//For each target generate a crawler and collect all the results.
 	for _, inp := range targets {
 
-		results, secrets, endpoints, extensions := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
+		results, secrets, endpoints, extensions, errors := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Cache, flags.Timeout, flags.Intensive,
 			flags.Rua, flags.Proxy, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
-			flags.Extensions, headers)
+			flags.Extensions, headers, flags.Errors)
 
 		finalResults = append(finalResults, results...)
 		finalSecret = append(finalSecret, secrets...)
 		finalEndpoints = append(finalEndpoints, endpoints...)
 		finalExtensions = append(finalExtensions, extensions...)
+		finalErrors = append(finalErrors, errors...)
 	}
 
 	//Remove duplicates from all the results.
@@ -130,15 +132,18 @@ func main() {
 	finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
 	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
 	finalExtensions = scanner.RemoveDuplicateExtensions(finalExtensions)
+	finalErrors = scanner.RemoveDuplicateErrors(finalErrors)
 
 	// IF TXT OUTPUT >
 	if flags.Txt != "" {
-		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints, finalExtensions)
+		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints,
+			finalExtensions, finalErrors)
 	}
 
 	// IF HTML OUTPUT >
 	if flags.Html != "" {
-		output.HtmlOutput(flags, ResultHtml, finalResults, finalSecret, finalEndpoints, finalExtensions)
+		output.HtmlOutput(flags, ResultHtml, finalResults, finalSecret,
+			finalEndpoints, finalExtensions, finalErrors)
 	}
 
 	//If needed print secrets.
@@ -169,6 +174,13 @@ func main() {
 	if !flags.Plain && len(finalExtensions) != 0 {
 		for _, elem := range finalExtensions {
 			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.Url+" matched!")
+		}
+	}
+
+	//If needed print errors.
+	if !flags.Plain && len(finalErrors) != 0 {
+		for _, elem := range finalErrors {
+			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.Url)
 		}
 	}
 }

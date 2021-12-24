@@ -41,7 +41,9 @@ func PrintSimpleOutput(out []string) {
 
 //TxtOutput it's the wrapper around all the txt things.
 //Actually it manages everything related to TXT output.
-func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched, finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
+func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
+	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
+	finalErrors []scanner.ErrorMatched) {
 
 	exists, err := utils.ElementExists("output-cariddi")
 	if err != nil {
@@ -91,12 +93,21 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 		}
 	}
 
+	// if errors flag enabled save also errors
+	if flags.Errors {
+		ErrorsFilename := utils.CreateOutputFile(flags.Txt, "errors", "txt")
+		for _, elem := range finalErrors {
+			AppendOutputToTxt(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.Url, ErrorsFilename)
+		}
+	}
+
 }
 
 //HtmlOutput it's the wrapper around all the html things.
 //Actually it manages everything related to HTML output.
 func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
-	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched) {
+	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
+	finalErrors []scanner.ErrorMatched) {
 	exists, err := utils.ElementExists("output-cariddi")
 
 	if err != nil {
@@ -147,6 +158,15 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 		HeaderHTML("Extensions found", ResultFilename)
 		for _, elem := range finalExtensions {
 			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.Url, "", ResultFilename, false)
+		}
+		FooterHTML(ResultFilename)
+	}
+
+	// if errors flag enabled save also errors
+	if flags.Errors {
+		HeaderHTML("Errors found", ResultFilename)
+		for _, elem := range finalErrors {
+			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.Url, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}

@@ -39,8 +39,8 @@ type SecretMatched struct {
 	Match  string
 }
 
-//GetRegexes returns all the regexes
-func GetRegexes() []Secret {
+//GetSecretRegexes returns all the secret regexes
+func GetSecretRegexes() []Secret {
 	var regexes = []Secret{
 		{
 			"AWS Access Key",
@@ -333,7 +333,7 @@ func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
 	keys := make(map[string]bool)
 	list := []SecretMatched{}
 	for _, entry := range input {
-		if _, value := keys[entry.Url]; !value {
+		if _, value := keys[entry.Match+entry.Url]; !value {
 			keys[entry.Url] = true
 			list = append(list, entry)
 		}

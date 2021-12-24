@@ -128,6 +128,9 @@ func SameDomain(url1 string, url2 string) bool {
 	if err != nil {
 		return false
 	}
+	if u1.Host == "" || u2.Host == "" {
+		return false
+	}
 	return u1.Host == u2.Host
 }
 

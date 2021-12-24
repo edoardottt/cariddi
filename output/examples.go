@@ -71,5 +71,7 @@ func PrintExamples() {
 	
 	cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"
 	
-	cat urls | cariddi -headersfile headers.txt`)
+	cat urls | cariddi -headersfile headers.txt
+
+	cat urls | cariddi -err`)
 }
