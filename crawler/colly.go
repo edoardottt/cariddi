@@ -251,7 +251,10 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR SECRETS
 			if secrets && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				FinalSecrets = append(FinalSecrets, secretsSlice...)
+				//FinalSecrets = append(FinalSecrets, secretsSlice...)
+				for _, elem := range secretsSlice {
+					FinalSecrets = append(FinalSecrets, elem)
+				}
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpoints {
@@ -272,7 +275,10 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR ERRORS
 			if errors {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				FinalErrors = append(FinalErrors, errorsSlice...)
+				//FinalErrors = append(FinalErrors, errorsSlice...)
+				for _, elem := range errorsSlice {
+					FinalErrors = append(FinalErrors, elem)
+				}
 			}
 		}
 	})
