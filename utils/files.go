@@ -33,7 +33,8 @@ import (
 	"strings"
 )
 
-//CreateOutputFolder >
+//CreateOutputFolder creates the output folder
+//If it fails exits with an error message
 func CreateOutputFolder() {
 	//Create a folder/directory at a full qualified path
 	err := os.Mkdir("output-cariddi", 0755)
@@ -43,7 +44,12 @@ func CreateOutputFolder() {
 	}
 }
 
-//CreateOutputFile >
+//CreateOutputFile takes a target (of the attack), a subcommand 
+//(PORT-DNS-DIR-SUBDOMAIN-REPORT) and a format (json-html-txt).
+//It creates the output folder if needed, then checks if the output file
+//already exists, if yes asks the user if scilla has to overwrite it; 
+//if no scilla creates it.
+//Whenever an instruction fails, it exits with an error message.
 func CreateOutputFile(target string, subcommand string, format string) string {
 	target = ReplaceBadCharacterOutput(target)
 	var filename string
@@ -83,7 +89,8 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 	return filename
 }
 
-//ReplaceBadCharacterOutput --> from / to -
+//ReplaceBadCharacterOutput replaces forward-slashes
+//with dashes (to avoid problems with output folder) 
 func ReplaceBadCharacterOutput(input string) string {
 	result := strings.ReplaceAll(input, "/", "-")
 	return result
