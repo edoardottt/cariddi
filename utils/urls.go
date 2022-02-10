@@ -30,7 +30,10 @@ import (
 	"github.com/bobesa/go-domain-util/domainutil"
 )
 
-//GetHost >
+//GetHost takes as input a string and
+//tries to parse it as url, if it's a
+//well formatted url this function returns
+//the host (the domain if you prefer)
 func GetHost(input string) string {
 	u, err := url.Parse(input)
 	if err != nil {
@@ -39,7 +42,10 @@ func GetHost(input string) string {
 	return u.Host
 }
 
-//GetProtocol >
+//GetProtocol takes as input a string and
+//tries to parse it as url, if it's a
+//well formatted url this function returns
+//the protocol (the scheme if you prefer)
 func GetProtocol(input string) string {
 	u, err := url.Parse(input)
 	if err != nil {
@@ -48,7 +54,10 @@ func GetProtocol(input string) string {
 	return u.Scheme
 }
 
-//GetRootHost >
+//GetRootHost takes as input a string and
+//tries to parse it as url, if it's a
+//well formatted url this function returns
+//the second level domain
 func GetRootHost(input string) string {
 	_, err := url.Parse(input)
 	if err != nil {
@@ -58,6 +67,8 @@ func GetRootHost(input string) string {
 }
 
 //GetScheme >
+// duplicate of GetProtocol.
+// to be deleted
 func GetScheme(input string) string {
 	u, err := url.Parse(input)
 	if err != nil {
@@ -66,13 +77,17 @@ func GetScheme(input string) string {
 	return u.Scheme
 }
 
-//HasScheme >
+//HasScheme takes as input a string and
+//checks if it has a protocol ( like in a
+//URI/URL)
 func HasScheme(input string) bool {
 	res := strings.Index(input, "://")
 	return res >= 0
 }
 
-//RemoveProtocol removes protocol from target (something://...)
+//RemoveProtocol removes the protocol from 
+//the input string (something://...)
+//If it's not present it returns the input
 func RemoveProtocol(input string) string {
 	res := strings.Index(input, "://")
 	if res >= 0 {
@@ -81,7 +96,8 @@ func RemoveProtocol(input string) string {
 	return input
 }
 
-//RemovePort removes port from target (:80...)
+//RemovePort removes port from the input string
+//If it's not present it returns the input
 func RemovePort(input string) string {
 	res := strings.Index(input, ":")
 	if res >= 0 {
@@ -90,7 +106,9 @@ func RemovePort(input string) string {
 	return input
 }
 
-//RetrieveParameters from url
+//RetrieveParameters takes as input a string and
+//if it's correctly url-formatted retuns a slice
+//of strings that are the parameters of the URL
 func RetrieveParameters(input string) []string {
 	var result []string
 	u, err := url.Parse(input)
@@ -104,8 +122,8 @@ func RetrieveParameters(input string) []string {
 	return result
 }
 
-//AbsoluteURL takes as input a path and returns the full
-//absolute URL with protocol + host + path
+//AbsoluteURL takes as input a protocol, a domain and a path 
+//and returns the absolute URL with protocol + domain + path
 func AbsoluteURL(protocol string, target string, path string) string {
 	// if the path variable starts with a scheme, it means that the
 	// path is itself an absolute path.
@@ -134,7 +152,8 @@ func SameDomain(url1 string, url2 string) bool {
 	return u1.Host == u2.Host
 }
 
-//GetPath returns the path of the input URL
+//GetPath returns the path of the input string
+//(if correctly URL-formatted)
 func GetPath(input string) (string, error) {
 	u, err := url.Parse(input)
 	if err != nil {
