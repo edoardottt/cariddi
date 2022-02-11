@@ -24,21 +24,27 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package scanner
 
 //FileType struct
+// Extension = the file extension (doc, txt ..etc..)
+// Severity = the 'importance' of the file found. Higher is better
 type FileType struct {
 	Extension string
 	Severity  int
 }
 
 //FileTypeMatched struct
+// Filetype = Filetype struct
+// Url = url of the file found
 type FileTypeMatched struct {
 	Filetype FileType
 	Url      string
 }
 
-//GetExtensions returns the useful extensions
+//GetExtensions returns all the extension structs
 func GetExtensions() []FileType {
 	//extensions contains a list of known extensions
 	//and the TYPICAL (also say `in general`) associated severity.
+	//Why in general? Because a python file can be anything, it can 
+	//contain secret data or not.
 	var extensions = []FileType{
 		{"key", 1},
 		{"env", 1},
