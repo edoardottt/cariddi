@@ -23,22 +23,22 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//isEmailUrl
+//isEmailUrl checks if the url is a link to a mail
 func isEmailUrl(inp string) bool {
 	return inp[:7] == "mailto:"
 }
 
-//isFtpUrl
+//isFtpUrl checks if the protocol is ftp
 func isFtpUrl(inp string) bool {
 	return inp[:4] == "ftp:"
 }
 
-//isHttpUrl
+//isHttpUrl checks if the protocol is http
 func isHttpUrl(inp string) bool {
 	return inp[:5] == "http:"
 }
 
-//isHttpsUrl
+//isHttpsUrl checks if the protocol is https
 func isHttpsUrl(inp string) bool {
 	return inp[:6] == "https:"
 }
