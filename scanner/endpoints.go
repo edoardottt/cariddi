@@ -23,19 +23,23 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//EndpointMatched struct
-type EndpointMatched struct {
-	Parameters []Parameter
-	Url        string
-}
-
 //Parameter struct
+// Parameter = the name of the parameter
+// Attacks = Possible attacks
 type Parameter struct {
 	Parameter string
 	Attacks   []string
 }
 
-//GetJuicyParameters returns juicy parameters
+//EndpointMatched struct
+// Parameters = a list of parameters in a particular endpoint
+// Url = url (aka endpoint)
+type EndpointMatched struct {
+	Parameters []Parameter
+	Url        string
+}
+
+//GetJuicyParameters returns juicy parameters and their possible attacks
 func GetJuicyParameters() []Parameter {
 	var juicyParameters = []Parameter{
 		{"apikey", []string{"Info"}},
