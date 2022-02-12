@@ -28,7 +28,8 @@ import (
 	"os"
 )
 
-//AppendOutputToTxt >
+//AppendOutputToTxt opens the output file and append
+//the string taken as input
 func AppendOutputToTxt(output string, filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
