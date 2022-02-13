@@ -80,6 +80,7 @@ func GetScheme(input string) string {
 //HasScheme takes as input a string and
 //checks if it has a protocol ( like in a
 //URI/URL)
+//Should be renamed to HasProtocol?
 func HasScheme(input string) bool {
 	res := strings.Index(input, "://")
 	return res >= 0
