@@ -50,6 +50,8 @@ func ScanTargets() []string {
 }
 
 //GetHeaders returns the headers provided as input
+//using the headers flag.
+//E.g. -headers \"Cookie: auth=yes;;Client: type=2\".
 func GetHeaders(input string) map[string]string {
 	result := make(map[string]string)
 	if input != "" {
