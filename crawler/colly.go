@@ -38,7 +38,9 @@ import (
 	"github.com/gocolly/colly/extensions"
 )
 
-//Crawler it's the actual crawler core
+//Crawler it's the actual crawler engine.
+//It controls all the behaviours of a scan
+//(event handlers, secrets, errors, extensions and endpoints scanning)
 func Crawler(target string, txt string, html string, delayTime int, concurrency int,
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, secrets bool, secretsFile []string, plain bool, endpoints bool,
@@ -463,7 +465,7 @@ func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 	return errors
 }
 
-//RetrieveBody retrieves the body of a url
+//RetrieveBody retrieves the body (in the response) of a url
 func RetrieveBody(target string) string {
 	sb, err := GetRequest(target)
 	if err == nil && sb != "" {
@@ -478,8 +480,7 @@ func isLinkOkay(input string) bool {
 	return err == nil
 }
 
-//IgnoreMatch checks if the URL is not in
-//the ignored ones.
+//IgnoreMatch checks if the URL should be ignored or not.
 func IgnoreMatch(url string, ignoreSlice []string) bool {
 	for _, ignore := range ignoreSlice {
 		if strings.Contains(url, ignore) {
