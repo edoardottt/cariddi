@@ -31,7 +31,9 @@ import (
 	"github.com/edoardottt/cariddi/utils"
 )
 
-//CheckDataPost > TODO
+//CheckDataPost should take as input a string and checks
+//if it's correctly formatted to be represented as post data
+//TODO - for now cariddi sends only GET requests
 func CheckDataPost(input string) (map[string]string, error) {
 
 	// ===== TODO =======
@@ -39,7 +41,7 @@ func CheckDataPost(input string) (map[string]string, error) {
 }
 
 //CheckOutputFile checks if the string provided as input
-//is formatted in correct way.
+//is formatted in a correct way.
 func CheckOutputFile(input string) bool {
 	invalid := []string{"\\", "/", "'", "\""}
 	for _, elem := range invalid {
@@ -50,7 +52,7 @@ func CheckOutputFile(input string) bool {
 	return true
 }
 
-//CheckFlags checks the flags inputted
+//CheckFlags checks the flags taken as input
 func CheckFlags(flags Input) {
 	if flags.Txt != "" {
 		if !CheckOutputFile(flags.Txt) {
