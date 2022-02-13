@@ -34,6 +34,7 @@ import (
 	"time"
 )
 
+//Firefox versions 
 var ffVersions = []float32{
 	58.0,
 	57.0,
@@ -44,6 +45,7 @@ var ffVersions = []float32{
 	35.0,
 }
 
+//Chrome versions
 var chromeVersions = []string{
 	"65.0.3325.146",
 	"64.0.3282.0",
@@ -52,6 +54,7 @@ var chromeVersions = []string{
 	"37.0.2062.124",
 }
 
+//Operating system 
 var osStrings = []string{
 	"Macintosh; Intel Mac OS X 10_10",
 	"Windows NT 10.0",
