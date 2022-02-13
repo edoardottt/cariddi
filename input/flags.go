@@ -28,6 +28,7 @@ import (
 )
 
 //Input struct
+//It contains all the possible options
 type Input struct {
 	Version       bool
 	Delay         int
@@ -54,8 +55,9 @@ type Input struct {
 	Errors        bool
 }
 
-//ScanFlag defines all the switches taken
-//as input and return them.
+//ScanFlag defines all the options taken
+//as input and scan them, then it returns
+//an Input struct.
 func ScanFlag() Input {
 
 	versionPtr := flag.Bool("version", false, "Print the version.")
