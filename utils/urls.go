@@ -86,7 +86,7 @@ func HasScheme(input string) bool {
 	return res >= 0
 }
 
-//RemoveProtocol removes the protocol from 
+//RemoveProtocol removes the protocol from
 //the input string (something://...)
 //If it's not present it returns the input
 func RemoveProtocol(input string) string {
@@ -102,7 +102,7 @@ func RemoveProtocol(input string) string {
 func RemovePort(input string) string {
 	res := strings.Index(input, ":")
 	if res >= 0 {
-		return input[:res-1]
+		return input[:res]
 	}
 	return input
 }
@@ -123,7 +123,7 @@ func RetrieveParameters(input string) []string {
 	return result
 }
 
-//AbsoluteURL takes as input a protocol, a domain and a path 
+//AbsoluteURL takes as input a protocol, a domain and a path
 //and returns the absolute URL with protocol + domain + path
 func AbsoluteURL(protocol string, target string, path string) string {
 	// if the path variable starts with a scheme, it means that the
