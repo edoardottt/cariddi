@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://github.com/edoardottt/images/blob/main/cariddi/logo.png"><br>
-  <b>Take a list of domains, crawl urls and scan for endpoints, secrets, api keys, file extensions, tokens and more...</b><br>
+  <b>Take a list of domains, crawl urls and scan for endpoints, secrets, api keys, file extensions, tokens and more</b><br>
   <br>
   <!-- go-report-card -->
   <a href="https://goreportcard.com/report/github.com/edoardottt/cariddi">
