@@ -43,7 +43,7 @@
   </a>
   <br>
   <sub>
-    Coded with 💙 by edoardottt.
+    Coded with 💙 by edoardottt
   </sub>
   <br>
   <!--Tweet button-->
