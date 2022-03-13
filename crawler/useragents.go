@@ -20,6 +20,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
 
+	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
 
 * Disclaimer *: Code partially taken from:
 https://github.com/gocolly/colly/blob/v1.2.0/extensions/random_user_agent.go
@@ -34,7 +35,7 @@ import (
 	"time"
 )
 
-//Firefox versions 
+//Firefox versions
 var ffVersions = []float32{
 	58.0,
 	57.0,
@@ -54,7 +55,7 @@ var chromeVersions = []string{
 	"37.0.2062.124",
 }
 
-//Operating system 
+//Operating system
 var osStrings = []string{
 	"Macintosh; Intel Mac OS X 10_10",
 	"Windows NT 10.0",

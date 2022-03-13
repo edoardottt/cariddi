@@ -19,6 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Repository:  https://github.com/edoardottt/cariddi
 
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
+
+	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
 */
 
 package output
@@ -29,7 +31,7 @@ import (
 	"github.com/fatih/color"
 )
 
-//EncapsulateGreen takes as input a string and 
+//EncapsulateGreen takes as input a string and
 //print a green prefix
 func EncapsulateGreen(inp string) {
 	// Create a custom print function for convenience
@@ -38,7 +40,7 @@ func EncapsulateGreen(inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateRed takes as input a string and 
+//EncapsulateRed takes as input a string and
 //print a red prefix
 func EncapsulateRed(inp string) {
 	// Create a custom print function for convenience
@@ -47,7 +49,7 @@ func EncapsulateRed(inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateYellow takes as input a string and 
+//EncapsulateYellow takes as input a string and
 //print a yellow prefix
 func EncapsulateYellow(inp string) {
 	// Create a custom print function for convenience
@@ -56,7 +58,7 @@ func EncapsulateYellow(inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateCustomGreen takes as input a string and 
+//EncapsulateCustomGreen takes as input a string and
 //print it with the green color
 func EncapsulateCustomGreen(alert string, inp string) {
 	// Create a custom print function for convenience
@@ -65,7 +67,7 @@ func EncapsulateCustomGreen(alert string, inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateCustomRed takes as input a string and 
+//EncapsulateCustomRed takes as input a string and
 //print it with the red color
 func EncapsulateCustomRed(alert string, inp string) {
 	// Create a custom print function for convenience
@@ -74,7 +76,7 @@ func EncapsulateCustomRed(alert string, inp string) {
 	fmt.Println(inp)
 }
 
-//EncapsulateCustomYellow takes as input a string and 
+//EncapsulateCustomYellow takes as input a string and
 //print it with the yellow color
 func EncapsulateCustomYellow(alert string, inp string) {
 	// Create a custom print function for convenience

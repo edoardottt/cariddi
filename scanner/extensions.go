@@ -19,6 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Repository:  https://github.com/edoardottt/cariddi
 
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
+
+	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
 */
 
 package scanner
@@ -43,7 +45,7 @@ type FileTypeMatched struct {
 func GetExtensions() []FileType {
 	//extensions contains a list of known extensions
 	//and the TYPICAL (also say `in general`) associated severity.
-	//Why in general? Because a python file can be anything, it can 
+	//Why in general? Because a python file can be anything, it can
 	//contain secret data or not.
 	var extensions = []FileType{
 		{"key", 1},

@@ -19,6 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Repository:  https://github.com/edoardottt/cariddi
 
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
+
+	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
 */
 
 package scanner
@@ -27,7 +29,7 @@ package scanner
 // Name = the name that identifies the secret
 // Description
 // Regex = The regular expression matching the secret
-// FalsePositives = A list of known false positives 
+// FalsePositives = A list of known false positives
 // PoC = cli command to check if the secret is valid or not
 type Secret struct {
 	Name           string
