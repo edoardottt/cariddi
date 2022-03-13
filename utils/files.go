@@ -19,6 +19,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Repository:  https://github.com/edoardottt/cariddi
 
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
+
+	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
 */
 
 package utils
@@ -44,10 +46,10 @@ func CreateOutputFolder() {
 	}
 }
 
-//CreateOutputFile takes a target (of the attack), a subcommand 
+//CreateOutputFile takes a target (of the attack), a subcommand
 //(PORT-DNS-DIR-SUBDOMAIN-REPORT) and a format (json-html-txt).
 //It creates the output folder if needed, then checks if the output file
-//already exists, if yes asks the user if scilla has to overwrite it; 
+//already exists, if yes asks the user if scilla has to overwrite it;
 //if no scilla creates it.
 //Whenever an instruction fails, it exits with an error message.
 func CreateOutputFile(target string, subcommand string, format string) string {
@@ -90,7 +92,7 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 }
 
 //ReplaceBadCharacterOutput replaces forward-slashes
-//with dashes (to avoid problems with output folder) 
+//with dashes (to avoid problems with output folder)
 func ReplaceBadCharacterOutput(input string) string {
 	result := strings.ReplaceAll(input, "/", "-")
 	return result
@@ -127,7 +129,7 @@ func ElementExists(path string) (bool, error) {
 
 //ReadHTTPRequestFromFile reads from a file an HTTP
 //request and returns a *http.Request object
-func ReadHTTPFromFile(inputFile string) (*http.Request, error) {
+func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 	f, err := os.Open(inputFile)
 	if err != nil {
 		fmt.Println("Cannot open input file.")
