@@ -21,6 +21,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
 
 	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
+
 */
 
 package output
@@ -37,7 +38,7 @@ func Beautify() {
 	banner2 := "   ___ __ _ _ __(_) __| | __| (_)\n"
 	banner3 := "  / __/ _` | '__| |/ _` |/ _` | |\n"
 	banner4 := " | (_| (_| | |  | | (_| | (_| | |\n"
-	banner5 := "  \\___\\__,_|_|  |_|\\__,_|\\__,_|_| v1.1.5\n"
+	banner5 := "  \\___\\__,_|_|  |_|\\__,_|\\__,_|_| v1.1.6\n"
 	banner6 := ""
 	banner7 := " > github.com/edoardottt/cariddi\n"
 	banner8 := " > edoardoottavianelli.it\n"
