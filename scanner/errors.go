@@ -65,6 +65,37 @@ func GetErrorRegexes() []Error {
 			"Debug information",
 			[]string{`(?i)Debug trace`, `(?i)stack trace\\:`},
 		},
+		{
+			"MySQL error",
+			[]string{`(?i)valid MySQL result`,
+				`(?i)check the manual that (fits|corresponds to) your MySQL server version`,
+				"(?i)MySQLSyntaxErrorException",
+				"(?i)MySqlException",
+				"(?i)MySql error",
+				"(?i)Unknown column "},
+		},
+		{
+			"MariaDB error",
+			[]string{`(?i)check the manual that (fits|corresponds to) your MariaDB server version`,
+				"(?i)MariaDB error"},
+		},
+		{
+			"PostgreSQL error",
+			[]string{`(?i)valid PostgreSQL result`,
+				"(?i)PG::SyntaxError:",
+				"(?i)PSQLException",
+				"(?i)PostgreSQL query failed",
+				"(?i)ERROR: parser: parse error at or near",
+				"(?i)PostgreSQL error"},
+		},
+		{
+			"MSSQL error",
+			[]string{`(?i)Microsoft SQL error`,
+				"(?i)Microsoft SQL Native Client error",
+				"(?i)ODBC SQL Server Driver",
+				"(?i)Unclosed quotation mark after the character string",
+				"(?i)SQLServer JDBC Driver"},
+		},
 	}
 	return regexes
 }
