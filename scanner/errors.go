@@ -18,6 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
 
 	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
+
 */
 
 package scanner

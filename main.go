@@ -1,6 +1,6 @@
 /*
 ==========
-Cariddi v1.1.5
+Cariddi v1.1.6
 ==========
 
 This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
 
 	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
+
 */
 
 package main
