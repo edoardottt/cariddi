@@ -46,7 +46,8 @@ func GetErrorRegexes() []Error {
 	var regexes = []Error{
 		{
 			"PHP error",
-			[]string{`(?i)php warning`,
+			[]string{
+				`(?i)php warning`,
 				`(?i)php error`,
 				`(?i)include_path`,
 				`(?i)undefined index`,
@@ -55,7 +56,8 @@ func GetErrorRegexes() []Error {
 		},
 		{
 			"General error",
-			[]string{`(?i)fatal error`,
+			[]string{
+				`(?i)fatal error`,
 				`(?i)critical error`,
 				`(?i)severe error`,
 				`(?i)high error`,
@@ -64,38 +66,85 @@ func GetErrorRegexes() []Error {
 		},
 		{
 			"Debug information",
-			[]string{`(?i)Debug trace`, `(?i)stack trace\\:`},
+			[]string{
+				`(?i)Debug trace`,
+				`(?i)stack trace\\:`},
 		},
 		{
 			"MySQL error",
-			[]string{`(?i)valid MySQL result`,
+			[]string{
+				`(?i)valid MySQL result`,
 				`(?i)check the manual that (fits|corresponds to) your MySQL server version`,
-				"(?i)MySQLSyntaxErrorException",
-				"(?i)MySqlException",
-				"(?i)MySql error",
-				"(?i)Unknown column "},
+				`(?i)MySQLSyntaxErrorException`,
+				`(?i)MySqlException`,
+				`(?i)MySql error`,
+				`(?i)Unknown column `,
+				`(?i)SQL syntax.*?MySQL`,
+				`(?i)Warning.*?mysqli?`,
+				`(?i)Unknown column '[^ ]+' in 'field list'`,
+				`(?i)com\\.mysql\\.jdbc`,
+				`(?i)Zend_Db_(Adapter|Statement)_Mysqli_Exception`,
+				`(?i)Syntax error or access violation`},
 		},
 		{
 			"MariaDB error",
-			[]string{`(?i)check the manual that (fits|corresponds to) your MariaDB server version`,
-				"(?i)MariaDB error"},
+			[]string{
+				`(?i)check the manual that (fits|corresponds to) your MariaDB server version`,
+				`(?i)MariaDB error`},
 		},
 		{
 			"PostgreSQL error",
-			[]string{`(?i)valid PostgreSQL result`,
-				"(?i)PG::SyntaxError:",
-				"(?i)PSQLException",
-				"(?i)PostgreSQL query failed",
-				"(?i)ERROR: parser: parse error at or near",
-				"(?i)PostgreSQL error"},
+			[]string{
+				`(?i)valid PostgreSQL result`,
+				`(?i)PG::SyntaxError:`,
+				`(?i)PSQLException`,
+				`(?i)PostgreSQL query failed`,
+				`(?i)ERROR: parser: parse error at or near`,
+				`(?i)PostgreSQL error`,
+				`(?i)PostgreSQL.*?ERROR`,
+				`(?i)Warning.*?\\Wpg_`,
+				`(?i)Npgsql\\.`,
+				`(?i)org\\.postgresql\\.util\\.PSQLException`,
+				`(?i)ERROR:\\s\\ssyntax error at or near`,
+				`(?i)org\\.postgresql\\.jdbc`},
 		},
 		{
 			"MSSQL error",
-			[]string{`(?i)Microsoft SQL error`,
-				"(?i)Microsoft SQL Native Client error",
-				"(?i)ODBC SQL Server Driver",
-				"(?i)Unclosed quotation mark after the character string",
-				"(?i)SQLServer JDBC Driver"},
+			[]string{
+				`(?i)Microsoft SQL error`,
+				`(?i)Microsoft SQL Native Client error`,
+				`(?i)ODBC SQL Server Driver`,
+				`(?i)Unclosed quotation mark after the character string`,
+				`(?i)SQLServer JDBC Driver`,
+				`(?i)Driver.*? SQL[\\-\\_\\ ]*Server`,
+				`(?i)OLE DB.*? SQL Server`,
+				`(?i)\bSQL Server[^&lt;&quot;]+Driver`,
+				`(?i)Warning.*?\\W(mssql|sqlsrv)_`,
+				`(?i)\bSQL Server[^&lt;&quot;]+[0-9a-fA-F]{8}`,
+				`(?i)System\\.Data\\.SqlClient\\.SqlException`,
+				`(?is)Exception.*?\bRoadhouse\\.Cms\\.`,
+				`(?i)\\[SQL Server\\]`,
+				`(?i)ODBC Driver \\d+ for SQL Server`,
+				`(?i)com\\.jnetdirect\\.jsql`,
+				`(?i)macromedia\\.jdbc\\.sqlserver`,
+				`(?i)Zend_Db_(Adapter|Statement)_Sqlsrv_Exception`,
+				`(?i)com\\.microsoft\\.sqlserver\\.jdbc`,
+				`(?i)SQL(Srv|Server)Exception`},
+		},
+		{
+			"OracleDB error",
+			[]string{
+				`(?i)(\\bORA-\\d{5}|Oracle error|Oracle.*Driver|Warning.*\\Woci_.*|Warning.*\\Wora_.*)`},
+		},
+		{
+			"IBMDB2 error",
+			[]string{
+				`(?i)(CLI Driver.*DB2|DB2 SQL error|\\bdb2_\\w+\\(|SQLSTATE.+SQLCODE)`},
+		},
+		{
+			"SQLite error",
+			[]string{
+				`(?i)(SQLite\\/JDBCDriver|SQLite.Exception|System.Data.SQLite.SQLiteException|Warning.*sqlite_.*|Warning.*SQLite3::|\\[SQLITE_ERROR\\])`},
 		},
 	}
 	return regexes
