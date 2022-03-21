@@ -111,7 +111,7 @@ func RemovePort(input string) string {
 }
 
 //RetrieveParameters takes as input a string and
-//if it's correctly url-formatted retuns a slice
+//if it's correctly url-formatted returns a slice
 //of strings that are the parameters of the URL
 func RetrieveParameters(input string) []string {
 	var result []string
