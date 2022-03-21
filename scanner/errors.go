@@ -46,7 +46,8 @@ func GetErrorRegexes() []Error {
 	var regexes = []Error{
 		{
 			"PHP error",
-			[]string{`(?i)php warning`,
+			[]string{
+				`(?i)php warning`,
 				`(?i)php error`,
 				`(?i)include_path`,
 				`(?i)undefined index`,
@@ -55,7 +56,8 @@ func GetErrorRegexes() []Error {
 		},
 		{
 			"General error",
-			[]string{`(?i)fatal error`,
+			[]string{
+				`(?i)fatal error`,
 				`(?i)critical error`,
 				`(?i)severe error`,
 				`(?i)high error`,
@@ -64,11 +66,14 @@ func GetErrorRegexes() []Error {
 		},
 		{
 			"Debug information",
-			[]string{`(?i)Debug trace`, `(?i)stack trace\\:`},
+			[]string{
+				`(?i)Debug trace`,
+				`(?i)stack trace\\:`},
 		},
 		{
 			"MySQL error",
-			[]string{`(?i)valid MySQL result`,
+			[]string{
+				`(?i)valid MySQL result`,
 				`(?i)check the manual that (fits|corresponds to) your MySQL server version`,
 				"(?i)MySQLSyntaxErrorException",
 				"(?i)MySqlException",
@@ -77,12 +82,14 @@ func GetErrorRegexes() []Error {
 		},
 		{
 			"MariaDB error",
-			[]string{`(?i)check the manual that (fits|corresponds to) your MariaDB server version`,
+			[]string{
+				`(?i)check the manual that (fits|corresponds to) your MariaDB server version`,
 				"(?i)MariaDB error"},
 		},
 		{
 			"PostgreSQL error",
-			[]string{`(?i)valid PostgreSQL result`,
+			[]string{
+				`(?i)valid PostgreSQL result`,
 				"(?i)PG::SyntaxError:",
 				"(?i)PSQLException",
 				"(?i)PostgreSQL query failed",
@@ -91,7 +98,8 @@ func GetErrorRegexes() []Error {
 		},
 		{
 			"MSSQL error",
-			[]string{`(?i)Microsoft SQL error`,
+			[]string{
+				`(?i)Microsoft SQL error`,
 				"(?i)Microsoft SQL Native Client error",
 				"(?i)ODBC SQL Server Driver",
 				"(?i)Unclosed quotation mark after the character string",
