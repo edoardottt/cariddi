@@ -136,6 +136,11 @@ func GetErrorRegexes() []Error {
 			[]string{
 				`(?i)(\\bORA-\\d{5}|Oracle error|Oracle.*Driver|Warning.*\\Woci_.*|Warning.*\\Wora_.*)`},
 		},
+		{
+			"IBMDB2 error",
+			[]string{
+				`(?i)(CLI Driver.*DB2|DB2 SQL error|\\bdb2_\\w+\\(|SQLSTATE.+SQLCODE)`},
+		},
 	}
 	return regexes
 }
