@@ -131,6 +131,11 @@ func GetErrorRegexes() []Error {
 				"(?i)com\\.microsoft\\.sqlserver\\.jdbc",
 				"(?i)SQL(Srv|Server)Exception"},
 		},
+		{
+			"OracleDB error",
+			[]string{
+				`(?i)(\\bORA-\\d{5}|Oracle error|Oracle.*Driver|Warning.*\\Woci_.*|Warning.*\\Wora_.*)`},
+		},
 	}
 	return regexes
 }
