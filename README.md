@@ -192,7 +192,7 @@ See also [CONTRIBUTING](https://github.com/edoardottt/cariddi/blob/master/CONTRI
 
 **Help me building this!**
 
-Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples).
+Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples) and [RegexPassive](https://github.com/hahwul/RegexPassive).
 
 **To do:**
 
