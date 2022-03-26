@@ -49,13 +49,15 @@ func GetErrorRegexes() []Error {
 			[]string{
 				`(?i)php warning`,
 				`(?i)php error`,
-				`(?i)Fatal error`,
+				`(?i)fatal error`,
 				`(?i)include_path`,
 				`(?i)undefined index`,
 				`(?i)undefined variable`,
 				`(?i)expect(s*) parameter [A-Za-z0-9-_]{1,30}`,
-				`(?i)Call to undefined method`,
+				`(?i)call to undefined method`,
 				`(?i)failed to open stream`,
+				`(?i)cannot modify header information`,
+				`(?i)(syntax|parse) error`,
 				`(?i)safe mode restriction in effect`},
 		},
 		{
