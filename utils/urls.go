@@ -165,3 +165,11 @@ func GetPath(input string) (string, error) {
 	}
 	return u.Path, nil
 }
+
+//IsEmailURL checks if the input string is a mail URL.
+func IsEmailURL(input string) (bool, string) {
+	if input[:7] == "mailto:" {
+		return true, input[7:]
+	}
+	return false, ""
+}
