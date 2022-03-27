@@ -57,7 +57,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var protocolTemp string
 
 	// if there isn't a scheme use http.
-	if !utils.HasScheme(target) {
+	if !utils.HasProtocol(target) {
 		protocolTemp = "http"
 		targetTemp = utils.GetHost(protocolTemp + "://" + target)
 	} else {
