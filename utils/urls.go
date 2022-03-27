@@ -69,22 +69,10 @@ func GetRootHost(input string) string {
 	return domainutil.Domain(input)
 }
 
-//GetScheme >
-// duplicate of GetProtocol.
-// to be deleted
-func GetScheme(input string) string {
-	u, err := url.Parse(input)
-	if err != nil {
-		return ""
-	}
-	return u.Scheme
-}
-
-//HasScheme takes as input a string and
+//HasProtocol takes as input a string and
 //checks if it has a protocol ( like in a
 //URI/URL)
-//Should be renamed to HasProtocol?
-func HasScheme(input string) bool {
+func HasProtocol(input string) bool {
 	res := strings.Index(input, "://")
 	return res >= 0
 }
@@ -131,7 +119,7 @@ func RetrieveParameters(input string) []string {
 func AbsoluteURL(protocol string, target string, path string) string {
 	// if the path variable starts with a scheme, it means that the
 	// path is itself an absolute path.
-	if HasScheme(path) {
+	if HasProtocol(path) {
 		return path
 	}
 	if len(path) != 0 && path[0] == '/' {
