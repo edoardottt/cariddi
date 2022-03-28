@@ -49,6 +49,11 @@ func GetInfoRegexes() []Info {
 			[]string{
 				`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`},
 		},
+		{
+			"HTML comment",
+			[]string{
+				`(?i)(\<![\s]*--[\-!@#$%^&*:;ºª.,"'(){}\w\s\/\\[\]]*--[\s]*\>)`},
+		},
 	}
 	return regexes
 }
