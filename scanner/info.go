@@ -22,3 +22,46 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 */
 
 package scanner
+
+//Info struct
+// Name = the name that identifies the information
+// Regex = The regular expression to be matched
+type Info struct {
+	Name  string
+	Regex []string
+}
+
+//InfoMatched struct
+// Info = Info struct
+// Url = url in which the information is found
+// Match = the string matching the regex
+type InfoMatched struct {
+	Info  Info
+	Url   string
+	Match string
+}
+
+//GetInfoRegexes returns all the info structs
+func GetInfoRegexes() []Info {
+	var regexes = []Info{
+		{
+			"Email address",
+			[]string{
+				`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`},
+		},
+	}
+	return regexes
+}
+
+//RemoveDuplicateInfos removes duplicates from Infos found
+func RemoveDuplicateInfos(input []InfoMatched) []InfoMatched {
+	keys := make(map[string]bool)
+	list := []InfoMatched{}
+	for _, entry := range input {
+		if _, value := keys[entry.Match+entry.Url]; !value {
+			keys[entry.Url] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
