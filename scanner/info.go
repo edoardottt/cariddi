@@ -59,6 +59,11 @@ func GetInfoRegexes() []Info {
 			[]string{
 				`((172\.\d{1,3}\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|([fF][eE][89aAbBcCdDeEfF]::))`},
 		},
+		{
+			"JSON base64-encoded",
+			[]string{
+				`ey[A-Za-z0-9+\/]{20,}(={0,2})`},
+		},
 	}
 	return regexes
 }
