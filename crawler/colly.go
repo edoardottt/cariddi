@@ -48,8 +48,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, secrets bool, secretsFile []string, plain bool, endpoints bool,
 	endpointsFile []string, fileType int, headers map[string]string,
-	errors bool) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
-	[]scanner.FileTypeMatched, []scanner.ErrorMatched) {
+	errors bool, info bool) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
+	[]scanner.FileTypeMatched, []scanner.ErrorMatched, []scanner.InfoMatched) {
 
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
@@ -96,6 +96,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalEndpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
 	var FinalErrors []scanner.ErrorMatched
+	var FinalInfos []scanner.InfoMatched
 
 	//crawler creation
 	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy)
@@ -300,7 +301,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	if html != "" {
 		output.FooterHTML(html)
 	}
-	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions, FinalErrors
+	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions, FinalErrors, FinalInfos
 }
 
 //CreateColly takes as input all the settings needed to instantiate

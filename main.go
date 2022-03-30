@@ -90,6 +90,7 @@ func main() {
 	var finalEndpoints []scanner.EndpointMatched
 	var finalExtensions []scanner.FileTypeMatched
 	var finalErrors []scanner.ErrorMatched
+	var finalInfos []scanner.InfoMatched
 
 	//Create output files if needed (txt / html).
 	var ResultTxt = ""
@@ -118,16 +119,17 @@ func main() {
 	//For each target generate a crawler and collect all the results.
 	for _, inp := range targets {
 
-		results, secrets, endpoints, extensions, errors := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
+		results, secrets, endpoints, extensions, errors, infos := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Cache, flags.Timeout, flags.Intensive,
 			flags.Rua, flags.Proxy, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
-			flags.Extensions, headers, flags.Errors)
+			flags.Extensions, headers, flags.Errors, flags.Info)
 
 		finalResults = append(finalResults, results...)
 		finalSecret = append(finalSecret, secrets...)
 		finalEndpoints = append(finalEndpoints, endpoints...)
 		finalExtensions = append(finalExtensions, extensions...)
 		finalErrors = append(finalErrors, errors...)
+		finalInfos = append(finalInfos, infos...)
 	}
 
 	//Remove duplicates from all the results.
@@ -136,6 +138,7 @@ func main() {
 	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
 	finalExtensions = scanner.RemoveDuplicateExtensions(finalExtensions)
 	finalErrors = scanner.RemoveDuplicateErrors(finalErrors)
+	finalInfos = scanner.RemoveDuplicateInfos(finalInfos)
 
 	// IF TXT OUTPUT >
 	if flags.Txt != "" {
