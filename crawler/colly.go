@@ -249,7 +249,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		lengthOk := len(string(r.Body)) > 10
 
 		//if endpoints or secrets or filetype: scan
-		if endpoints || secrets || (1 <= fileType && fileType <= 7) || errors {
+		if endpoints || secrets || (1 <= fileType && fileType <= 7) || errors || info {
 			// HERE SCAN FOR SECRETS
 			if secrets && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
@@ -276,6 +276,15 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			}
 			// HERE SCAN FOR ERRORS
 			if errors {
+				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
+				//FinalErrors = append(FinalErrors, errorsSlice...)
+				for _, elem := range errorsSlice {
+					FinalErrors = append(FinalErrors, elem)
+				}
+			}
+
+			// HERE SCAN FOR INFOS
+			if info {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
 				//FinalErrors = append(FinalErrors, errorsSlice...)
 				for _, elem := range errorsSlice {
@@ -447,13 +456,13 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 	return extension
 }
 
-//huntErrors hunts for secrets
+//huntErrors hunts for errors
 func huntErrors(target string, body string) []scanner.ErrorMatched {
 	errorsSlice := ErrorsMatch(target, body)
 	return errorsSlice
 }
 
-//ErrorsMatch hunts for extensions
+//ErrorsMatch checks the patterns for errors
 func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 	var errors []scanner.ErrorMatched
 	for _, errorItem := range scanner.GetErrorRegexes() {
@@ -467,6 +476,28 @@ func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 		}
 	}
 	return errors
+}
+
+//huntInfos hunts for infos
+func huntInfos(target string, body string) []scanner.InfoMatched {
+	infosSlice := InfoMatch(target, body)
+	return infosSlice
+}
+
+//InfoMatch checks the patterns for infos
+func InfoMatch(url string, body string) []scanner.InfoMatched {
+	var infos []scanner.InfoMatched
+	for _, infoItem := range scanner.GetInfoRegexes() {
+		for _, infoRegex := range infoItem.Regex {
+			if matched, err := regexp.Match(infoRegex, []byte(body)); err == nil && matched {
+				re := regexp.MustCompile(infoRegex)
+				match := re.FindStringSubmatch(body)
+				infoFound := scanner.InfoMatched{Info: infoItem, Url: url, Match: match[0]}
+				infos = append(infos, infoFound)
+			}
+		}
+	}
+	return infos
 }
 
 //RetrieveBody retrieves the body (in the response) of a url
