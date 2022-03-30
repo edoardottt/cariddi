@@ -48,8 +48,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, secrets bool, secretsFile []string, plain bool, endpoints bool,
 	endpointsFile []string, fileType int, headers map[string]string,
-	errors bool) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
-	[]scanner.FileTypeMatched, []scanner.ErrorMatched) {
+	errors bool, info bool) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
+	[]scanner.FileTypeMatched, []scanner.ErrorMatched, []scanner.InfoMatched) {
 
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
@@ -96,6 +96,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalEndpoints []scanner.EndpointMatched
 	var FinalExtensions []scanner.FileTypeMatched
 	var FinalErrors []scanner.ErrorMatched
+	var FinalInfos []scanner.InfoMatched
 
 	//crawler creation
 	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy)
@@ -248,7 +249,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		lengthOk := len(string(r.Body)) > 10
 
 		//if endpoints or secrets or filetype: scan
-		if endpoints || secrets || (1 <= fileType && fileType <= 7) || errors {
+		if endpoints || secrets || (1 <= fileType && fileType <= 7) || errors || info {
 			// HERE SCAN FOR SECRETS
 			if secrets && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
@@ -281,6 +282,15 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 					FinalErrors = append(FinalErrors, elem)
 				}
 			}
+
+			// HERE SCAN FOR INFOS
+			if info {
+				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
+				//FinalInfos = append(FinalInfos, infosSlice...)
+				for _, elem := range infosSlice {
+					FinalInfos = append(FinalInfos, elem)
+				}
+			}
 		}
 	})
 
@@ -300,7 +310,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	if html != "" {
 		output.FooterHTML(html)
 	}
-	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions, FinalErrors
+	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions, FinalErrors, FinalInfos
 }
 
 //CreateColly takes as input all the settings needed to instantiate
@@ -446,13 +456,13 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 	return extension
 }
 
-//huntErrors hunts for secrets
+//huntErrors hunts for errors
 func huntErrors(target string, body string) []scanner.ErrorMatched {
 	errorsSlice := ErrorsMatch(target, body)
 	return errorsSlice
 }
 
-//ErrorsMatch hunts for extensions
+//ErrorsMatch checks the patterns for errors
 func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 	var errors []scanner.ErrorMatched
 	for _, errorItem := range scanner.GetErrorRegexes() {
@@ -466,6 +476,28 @@ func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 		}
 	}
 	return errors
+}
+
+//huntInfos hunts for infos
+func huntInfos(target string, body string) []scanner.InfoMatched {
+	infosSlice := InfoMatch(target, body)
+	return infosSlice
+}
+
+//InfoMatch checks the patterns for infos
+func InfoMatch(url string, body string) []scanner.InfoMatched {
+	var infos []scanner.InfoMatched
+	for _, infoItem := range scanner.GetInfoRegexes() {
+		for _, infoRegex := range infoItem.Regex {
+			if matched, err := regexp.Match(infoRegex, []byte(body)); err == nil && matched {
+				re := regexp.MustCompile(infoRegex)
+				match := re.FindStringSubmatch(body)
+				infoFound := scanner.InfoMatched{Info: infoItem, Url: url, Match: match[0]}
+				infos = append(infos, infoFound)
+			}
+		}
+	}
+	return infos
 }
 
 //RetrieveBody retrieves the body (in the response) of a url
