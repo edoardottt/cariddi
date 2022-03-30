@@ -138,11 +138,11 @@ Usage of cariddi:
   -ot string
     	Write the output into a TXT file.
   -plain
-      Print only the results.
+    	Print only the results.
   -proxy string
     	Set a Proxy to be used (http and socks5 supported).
   -rua
-      Use a random browser user agent on every request.
+    	Use a random browser user agent on every request.
   -s	Hunt for secrets.
   -sf string
     	Use an external file (txt, one per line) to use custom regexes for secrets hunting.
