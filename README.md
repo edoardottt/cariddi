@@ -108,7 +108,7 @@ Usage of cariddi:
   -c int
     	Concurrency level. (default 20)
   -cache
-	Use the .cariddi_cache folder as cache.
+    	Use the .cariddi_cache folder as cache.
   -d int
     	Delay between a page crawled and another.
   -e	Hunt for juicy endpoints.
@@ -127,6 +127,8 @@ Usage of cariddi:
     	Read from an external file custom headers (same format of headers flag).
   -i string
     	Ignore the URL containing at least one of the elements of this array.
+  -info
+    	Hunt for useful informations in websites.
   -intensive
     	Crawl searching for resources matching 2nd level domain.
   -it string
@@ -145,7 +147,7 @@ Usage of cariddi:
   -sf string
     	Use an external file (txt, one per line) to use custom regexes for secrets hunting.
   -t int
-  	Set timeout for the requests. (default 10)
+    	Set timeout for the requests. (default 10)
   -version
     	Print the version.
 ```
@@ -177,6 +179,7 @@ Examples 💡
   - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
   - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
   - `cat urls | cariddi -err` (Hunt for errors in websites.)
+  - `cat urls | cariddi -info` (Hunt for useful informations in websites.)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
