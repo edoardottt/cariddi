@@ -67,7 +67,7 @@ func GetInfoRegexes() []Info {
 		{
 			"Base64-encoded JSON",
 			[]string{
-				`ey[A-Za-z0-9+\/]{20,}(={0,2})`},
+				`ey(A|B)[A-Za-z0-9+\/]{20,}(={0,2})`},
 		},
 	}
 	return regexes
