@@ -74,7 +74,7 @@ func GetErrorRegexes() []Error {
 			"Debug information",
 			[]string{
 				`(?i)Debug trace`,
-				`(?i)stack trace\\:`},
+				`(?i)stack trace\:`},
 		},
 		{
 			"MySQL error",
@@ -88,7 +88,7 @@ func GetErrorRegexes() []Error {
 				`(?i)SQL syntax.*?MySQL`,
 				`(?i)Warning.*?mysqli?`,
 				`(?i)Unknown column '[^ ]+' in 'field list'`,
-				`(?i)com\\.mysql\\.jdbc`,
+				`(?i)com\.mysql\.jdbc`,
 				`(?i)Zend_Db_(Adapter|Statement)_Mysqli_Exception`,
 				`(?i)Syntax error or access violation`},
 		},
@@ -109,10 +109,10 @@ func GetErrorRegexes() []Error {
 				`(?i)PostgreSQL error`,
 				`(?i)PostgreSQL.*?ERROR`,
 				`(?i)Warning.*?\\Wpg_`,
-				`(?i)Npgsql\\.`,
-				`(?i)org\\.postgresql\\.util\\.PSQLException`,
-				`(?i)ERROR:\\s\\ssyntax error at or near`,
-				`(?i)org\\.postgresql\\.jdbc`},
+				`(?i)Npgsql\.`,
+				`(?i)org\.postgresql\.util\.PSQLException`,
+				`(?i)ERROR:\s\ssyntax error at or near`,
+				`(?i)org\.postgresql\.jdbc`},
 		},
 		{
 			"MSSQL error",
@@ -122,35 +122,35 @@ func GetErrorRegexes() []Error {
 				`(?i)ODBC SQL Server Driver`,
 				`(?i)Unclosed quotation mark after the character string`,
 				`(?i)SQLServer JDBC Driver`,
-				`(?i)Driver.*? SQL[\\-\\_\\ ]*Server`,
+				`(?i)Driver.*? SQL[\-\_\ ]*Server`,
 				`(?i)OLE DB.*? SQL Server`,
 				`(?i)\bSQL Server[^&lt;&quot;]+Driver`,
-				`(?i)Warning.*?\\W(mssql|sqlsrv)_`,
+				`(?i)Warning.*?\W(mssql|sqlsrv)_`,
 				`(?i)\bSQL Server[^&lt;&quot;]+[0-9a-fA-F]{8}`,
-				`(?i)System\\.Data\\.SqlClient\\.SqlException`,
-				`(?is)Exception.*?\bRoadhouse\\.Cms\\.`,
-				`(?i)\\[SQL Server\\]`,
-				`(?i)ODBC Driver \\d+ for SQL Server`,
-				`(?i)com\\.jnetdirect\\.jsql`,
-				`(?i)macromedia\\.jdbc\\.sqlserver`,
+				`(?i)System\.Data\.SqlClient\.SqlException`,
+				`(?is)Exception.*?\bRoadhouse\.Cms\.`,
+				`(?i)\[SQL Server\]`,
+				`(?i)ODBC Driver \d+ for SQL Server`,
+				`(?i)com\.jnetdirect\.jsql`,
+				`(?i)macromedia\.jdbc\.sqlserver`,
 				`(?i)Zend_Db_(Adapter|Statement)_Sqlsrv_Exception`,
-				`(?i)com\\.microsoft\\.sqlserver\\.jdbc`,
+				`(?i)com\.microsoft\.sqlserver\.jdbc`,
 				`(?i)SQL(Srv|Server)Exception`},
 		},
 		{
 			"OracleDB error",
 			[]string{
-				`(?i)(\\bORA-\\d{5}|Oracle error|Oracle.*Driver|Warning.*\\Woci_.*|Warning.*\\Wora_.*)`},
+				`(?i)(\bORA-\d{5}|Oracle error|Oracle.*Driver|Warning.*\Woci_.*|Warning.*\Wora_.*)`},
 		},
 		{
 			"IBMDB2 error",
 			[]string{
-				`(?i)(CLI Driver.*DB2|DB2 SQL error|\\bdb2_\\w+\\(|SQLSTATE.+SQLCODE)`},
+				`(?i)(CLI Driver.*DB2|DB2 SQL error|\bdb2_\w+\(|SQLSTATE.+SQLCODE)`},
 		},
 		{
 			"SQLite error",
 			[]string{
-				`(?i)(SQLite\\/JDBCDriver|SQLite.Exception|System.Data.SQLite.SQLiteException|Warning.*sqlite_.*|Warning.*SQLite3::|\\[SQLITE_ERROR\\])`},
+				`(?i)(SQLite\/JDBCDriver|SQLite.Exception|System.Data.SQLite.SQLiteException|Warning.*sqlite_.*|Warning.*SQLite3::|\[SQLITE_ERROR\])`},
 		},
 	}
 	return regexes
@@ -162,7 +162,7 @@ func RemoveDuplicateErrors(input []ErrorMatched) []ErrorMatched {
 	list := []ErrorMatched{}
 	for _, entry := range input {
 		if _, value := keys[entry.Match+entry.Url]; !value {
-			keys[entry.Url] = true
+			keys[entry.Match+entry.Url] = true
 			list = append(list, entry)
 		}
 	}
