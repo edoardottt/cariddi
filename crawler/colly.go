@@ -285,10 +285,10 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 			// HERE SCAN FOR INFOS
 			if info {
-				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				//FinalErrors = append(FinalErrors, errorsSlice...)
-				for _, elem := range errorsSlice {
-					FinalErrors = append(FinalErrors, elem)
+				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
+				//FinalInfos = append(FinalInfos, infosSlice...)
+				for _, elem := range infosSlice {
+					FinalInfos = append(FinalInfos, elem)
 				}
 			}
 		}
