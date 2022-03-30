@@ -29,6 +29,7 @@ package output
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/edoardottt/cariddi/input"
 	"github.com/edoardottt/cariddi/scanner"
@@ -186,7 +187,10 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 	if flags.Info {
 		HeaderHTML("Useful informations found", ResultFilename)
 		for _, elem := range finalInfos {
-			AppendOutputToHTML(elem.Info.Name+" - "+elem.Match+" in "+elem.Url, "", ResultFilename, false)
+			// Escape HTML comment to be shown on the result page
+			AppendOutputToHTML(elem.Info.Name+" - "+
+				strings.Replace(strings.Replace(elem.Match, "<", "&lt;", 10), ">", "&gt;", 10)+
+				" in "+elem.Url, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
