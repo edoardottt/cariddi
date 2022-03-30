@@ -64,11 +64,14 @@ func GetInfoRegexes() []Info {
 			[]string{
 				`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`},
 		},
-		{
-			"Base64-encoded JSON",
-			[]string{
-				`ey(A|B)[A-Za-z0-9+\/]{20,}(={0,2})`},
-		},
+		/*
+			HOW TO AVOID VERY VERY LONG BASE64 IMAGES ???
+				{
+					"Base64-encoded JSON",
+					[]string{
+						`ey(A|B)[A-Za-z0-9+\/]{20,}(={0,2})`},
+				},
+		*/
 	}
 	return regexes
 }
