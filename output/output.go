@@ -46,7 +46,7 @@ func PrintSimpleOutput(out []string) {
 //Actually it manages everything related to TXT output.
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
-	finalErrors []scanner.ErrorMatched) {
+	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
 
 	exists, err := utils.ElementExists("output-cariddi")
 	if err != nil {
@@ -104,13 +104,21 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 		}
 	}
 
+	// if info flag enabled save also infos
+	if flags.Info {
+		InfosFilename := utils.CreateOutputFile(flags.Txt, "info", "txt")
+		for _, elem := range finalInfos {
+			AppendOutputToTxt(elem.Info.Name+" - "+elem.Match+" in "+elem.Url, InfosFilename)
+		}
+	}
+
 }
 
 //HtmlOutput it's the wrapper around all the html things.
 //Actually it manages everything related to HTML output.
 func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
-	finalErrors []scanner.ErrorMatched) {
+	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
 	exists, err := utils.ElementExists("output-cariddi")
 
 	if err != nil {
@@ -170,6 +178,15 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 		HeaderHTML("Errors found", ResultFilename)
 		for _, elem := range finalErrors {
 			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.Url, "", ResultFilename, false)
+		}
+		FooterHTML(ResultFilename)
+	}
+
+	// if info flag enabled save also infos
+	if flags.Info {
+		HeaderHTML("Useful informations found", ResultFilename)
+		for _, elem := range finalInfos {
+			AppendOutputToHTML(elem.Info.Name+" - "+elem.Match+" in "+elem.Url, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
