@@ -76,5 +76,7 @@ func PrintExamples() {
 	
 	cat urls | cariddi -headersfile headers.txt
 
-	cat urls | cariddi -err`)
+	cat urls | cariddi -err
+	
+	cat urls | cariddi -info`)
 }
