@@ -189,4 +189,11 @@ func main() {
 			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.Url)
 		}
 	}
+
+	//If needed print infos.
+	if !flags.Plain && len(finalInfos) != 0 {
+		for _, elem := range finalInfos {
+			output.EncapsulateCustomGreen(elem.Info.Name, elem.Match+" in "+elem.Url)
+		}
+	}
 }
