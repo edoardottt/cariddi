@@ -345,8 +345,8 @@ func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
 	keys := make(map[string]bool)
 	list := []SecretMatched{}
 	for _, entry := range input {
-		if _, value := keys[entry.Match+entry.Url]; !value {
-			keys[entry.Url] = true
+		if _, value := keys[entry.Match]; !value {
+			keys[entry.Match] = true
 			list = append(list, entry)
 		}
 	}
