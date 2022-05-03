@@ -57,6 +57,7 @@ type Input struct {
 	HeadersFile   string
 	Errors        bool
 	Info          bool
+	Debug         bool
 }
 
 //ScanFlag defines all the options taken
@@ -95,6 +96,8 @@ func ScanFlag() Input {
 
 	infoPtr := flag.Bool("info", false, "Hunt for useful informations in websites.")
 
+	debugPtr := flag.Bool("debug", false, "Print debug information while crawling.")
+
 	flag.Parse()
 
 	result := Input{
@@ -122,6 +125,7 @@ func ScanFlag() Input {
 		*headersFilePtr,
 		*errorsPtr,
 		*infoPtr,
+		*debugPtr,
 	}
 
 	return result

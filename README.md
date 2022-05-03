@@ -111,6 +111,8 @@ Usage of cariddi:
     	Use the .cariddi_cache folder as cache.
   -d int
     	Delay between a page crawled and another.
+  -debug
+    	Print debug information while crawling.
   -e	Hunt for juicy endpoints.
   -ef string
     	Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
@@ -180,6 +182,7 @@ Examples 💡
   - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
   - `cat urls | cariddi -err` (Hunt for errors in websites.)
   - `cat urls | cariddi -info` (Hunt for useful informations in websites.)
+  - `cat urls | cariddi -debug` (Print debug information while crawling.)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt

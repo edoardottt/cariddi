@@ -106,6 +106,11 @@ func CheckFlags(flags Input) {
 		}
 	}
 
+	if flags.Plain && flags.Debug {
+		fmt.Println("You cannot use both plain and debug mode.")
+		os.Exit(1)
+	}
+
 	if flags.IgnoreTxt != "" {
 		_ = utils.ReadFile(flags.IgnoreTxt)
 	}
