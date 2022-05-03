@@ -18,6 +18,9 @@ update:
 	@make linux
 	@echo "Done."
 
+lint:
+	@golangci-lint run
+
 linux:
 	@go build -o ./cariddi
 	@sudo mv ./cariddi /usr/bin/
