@@ -22,6 +22,11 @@ IF "%ARG%"=="fmt" (
   GOTO Done
 )
 
+IF "%ARG%"=="lint" (
+  CALL :Lint
+  GOTO Done
+)
+
 IF "%ARG%"=="remod" (
   del go.mod
   del go.sum
@@ -50,6 +55,10 @@ set GO111MODULE=on
 echo Formatting ...
 go fmt ./...
 echo Done.
+EXIT /B 0
+
+:Lint
+golangci-lint run
 EXIT /B 0
 
 :Update
