@@ -78,5 +78,7 @@ func PrintExamples() {
 
 	cat urls | cariddi -err
 	
-	cat urls | cariddi -info`)
+	cat urls | cariddi -info
+	
+	cat urls | cariddi -debug`)
 }

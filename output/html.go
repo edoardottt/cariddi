@@ -38,11 +38,13 @@ func BannerHTML(filename string) {
 		log.Println(err)
 		os.Exit(1)
 	}
-	file.WriteString("<html><body><div style='" + "background-color:#4adeff;color:white" + "'><h1>Cariddi</h1>")
-	file.WriteString("<ul>")
-	file.WriteString("<li><a href='" + "https://github.com/edoardottt/cariddi'" + ">github.com/edoardottt/cariddi</a></li>")
-	file.WriteString("<li>edoardottt, <a href='" + "https://www.edoardoottavianelli.it'" + ">edoardoottavianelli.it</a></li>")
-	file.WriteString("<li>Released under <a href='" + "http://www.gnu.org/licenses/gpl-3.0.html'" + ">GPLv3 License</a></li></ul></div>")
+	_, err = file.WriteString(`<html><body><div style='background-color:#4adeff;color:white'><h1>Cariddi</h1>
+	<ul><li><a href='https://github.com/edoardottt/cariddi'>github.com/edoardottt/cariddi</a></li>
+	<li>edoardottt, <a href='https://www.edoardoottavianelli.it'>edoardoottavianelli.it</a></li>
+	<li>Released under <a href='http://www.gnu.org/licenses/gpl-3.0.html'>GPLv3 License</a></li></ul></div>`)
+	if err != nil {
+		log.Fatal(err)
+	}
 	file.Close()
 }
 
@@ -108,8 +110,11 @@ func BannerFooterHTML(filename string) {
 	if err != nil {
 		log.Println(err)
 	}
-	file.WriteString("<div style='" + "background-color:#4adeff;color:white" + "'>")
-	file.WriteString("<ul><li><a href='" + "https://github.com/edoardottt/cariddi'" + ">Contribute to cariddi</a></li>")
-	file.WriteString("<li>Released under <a href='" + "http://www.gnu.org/licenses/gpl-3.0.html'" + ">GPLv3 License</a></li></ul></div>")
+	_, err = file.WriteString(`<div style='background-color:#4adeff;color:white'>
+	<ul><li><a href='https://github.com/edoardottt/cariddi'>Contribute to cariddi</a></li>
+	<li>Released under <a href='http://www.gnu.org/licenses/gpl-3.0.html'>GPLv3 License</a></li></ul></div>`)
+	if err != nil {
+		log.Fatal(err)
+	}
 	file.Close()
 }

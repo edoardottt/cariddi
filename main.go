@@ -1,6 +1,6 @@
 /*
 ==========
-Cariddi v1.1.6
+Cariddi v1.1.7
 ==========
 
 This program is free software: you can redistribute it and/or modify
@@ -122,7 +122,7 @@ func main() {
 		results, secrets, endpoints, extensions, errors, infos := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Cache, flags.Timeout, flags.Intensive,
 			flags.Rua, flags.Proxy, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
-			flags.Extensions, headers, flags.Errors, flags.Info)
+			flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug)
 
 		finalResults = append(finalResults, results...)
 		finalSecret = append(finalSecret, secrets...)

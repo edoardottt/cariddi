@@ -28,6 +28,7 @@ package crawler
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 	"regexp"
@@ -48,7 +49,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, secrets bool, secretsFile []string, plain bool, endpoints bool,
 	endpointsFile []string, fileType int, headers map[string]string,
-	errors bool, info bool) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
+	errors bool, info bool, debug bool) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
 	[]scanner.FileTypeMatched, []scanner.ErrorMatched, []scanner.InfoMatched) {
 
 	// This is to avoid to insert into the crawler target regular
@@ -99,7 +100,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalInfos []scanner.InfoMatched
 
 	//crawler creation
-	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy)
+	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, target)
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
@@ -113,11 +114,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
 						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
+						err := c.Visit(absoluteUrl)
+						if err != nil && debug && err != colly.ErrAlreadyVisited {
+							log.Println(err)
+						}
 					}
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
-					c.Visit(absoluteUrl)
+					err := c.Visit(absoluteUrl)
+					if err != nil && debug && err != colly.ErrAlreadyVisited {
+						log.Println(err)
+					}
 				}
 			}
 		}
@@ -135,11 +142,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
 						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
+						err := c.Visit(absoluteUrl)
+						if err != nil && debug && err != colly.ErrAlreadyVisited {
+							log.Println(err)
+						}
 					}
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
-					c.Visit(absoluteUrl)
+					err := c.Visit(absoluteUrl)
+					if err != nil && debug && err != colly.ErrAlreadyVisited {
+						log.Println(err)
+					}
 				}
 			}
 		}
@@ -157,11 +170,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
 						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
+						err := c.Visit(absoluteUrl)
+						if err != nil && debug && err != colly.ErrAlreadyVisited {
+							log.Println(err)
+						}
 					}
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
-					c.Visit(absoluteUrl)
+					err := c.Visit(absoluteUrl)
+					if err != nil && debug && err != colly.ErrAlreadyVisited {
+						log.Println(err)
+					}
 				}
 			}
 		}
@@ -179,11 +198,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
 						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
+						err := c.Visit(absoluteUrl)
+						if err != nil && debug && err != colly.ErrAlreadyVisited {
+							log.Println(err)
+						}
 					}
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
-					c.Visit(absoluteUrl)
+					err := c.Visit(absoluteUrl)
+					if err != nil && debug && err != colly.ErrAlreadyVisited {
+						log.Println(err)
+					}
 				}
 			}
 		}
@@ -201,11 +226,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
 						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
+						err := c.Visit(absoluteUrl)
+						if err != nil && debug && err != colly.ErrAlreadyVisited {
+							log.Println(err)
+						}
 					}
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
-					c.Visit(absoluteUrl)
+					err := c.Visit(absoluteUrl)
+					if err != nil && debug && err != colly.ErrAlreadyVisited {
+						log.Println(err)
+					}
 				}
 			}
 		}
@@ -223,11 +254,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
 						FinalResults = append(FinalResults, absoluteUrl)
-						c.Visit(absoluteUrl)
+						err := c.Visit(absoluteUrl)
+						if err != nil && debug && err != colly.ErrAlreadyVisited {
+							log.Println(err)
+						}
 					}
 				} else {
 					FinalResults = append(FinalResults, absoluteUrl)
-					c.Visit(absoluteUrl)
+					err := c.Visit(absoluteUrl)
+					if err != nil && debug && err != colly.ErrAlreadyVisited {
+						log.Println(err)
+					}
 				}
 			}
 		}
@@ -253,10 +290,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR SECRETS
 			if secrets && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				//FinalSecrets = append(FinalSecrets, secretsSlice...)
-				for _, elem := range secretsSlice {
-					FinalSecrets = append(FinalSecrets, elem)
-				}
+				FinalSecrets = append(FinalSecrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpoints {
@@ -277,19 +311,13 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR ERRORS
 			if errors {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				//FinalErrors = append(FinalErrors, errorsSlice...)
-				for _, elem := range errorsSlice {
-					FinalErrors = append(FinalErrors, elem)
-				}
+				FinalErrors = append(FinalErrors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
 			if info {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
-				//FinalInfos = append(FinalInfos, infosSlice...)
-				for _, elem := range infosSlice {
-					FinalInfos = append(FinalInfos, elem)
-				}
+				FinalInfos = append(FinalInfos, infosSlice...)
 			}
 		}
 	})
@@ -298,14 +326,29 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	path, err := utils.GetPath(protocolTemp + "://" + target)
 	if err == nil {
 		if path == "" {
-			c.Visit(protocolTemp + "://" + target + "/" + "robots.txt")
-			c.Visit(protocolTemp + "://" + target + "/" + "sitemap.xml")
+			err = c.Visit(protocolTemp + "://" + target + "/" + "robots.txt")
+			if err != nil && debug && err != colly.ErrAlreadyVisited {
+				log.Println(err)
+			}
+			err = c.Visit(protocolTemp + "://" + target + "/" + "sitemap.xml")
+			if err != nil && debug && err != colly.ErrAlreadyVisited {
+				log.Println(err)
+			}
 		} else if path == "/" {
-			c.Visit(protocolTemp + "://" + target + "robots.txt")
-			c.Visit(protocolTemp + "://" + target + "sitemap.xml")
+			err = c.Visit(protocolTemp + "://" + target + "robots.txt")
+			if err != nil && debug && err != colly.ErrAlreadyVisited {
+				log.Println(err)
+			}
+			err = c.Visit(protocolTemp + "://" + target + "sitemap.xml")
+			if err != nil && debug && err != colly.ErrAlreadyVisited {
+				log.Println(err)
+			}
 		}
 	}
-	c.Visit(protocolTemp + "://" + target)
+	err = c.Visit(protocolTemp + "://" + target)
+	if err != nil && debug && err != colly.ErrAlreadyVisited {
+		log.Println(err)
+	}
 	c.Wait()
 	if html != "" {
 		output.FooterHTML(html)
@@ -316,20 +359,24 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 //CreateColly takes as input all the settings needed to instantiate
 //a new Colly Collector object and it returns this object.
 func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
-	intensive bool, rua bool, proxy string) *colly.Collector {
+	intensive bool, rua bool, proxy string, target string) *colly.Collector {
 
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
 	c.IgnoreRobotsTxt = false
+	c.AllowURLRevisit = false
 
-	c.Limit(
+	err := c.Limit(
 		&colly.LimitRule{
 			Parallelism: concurrency,
 			Delay:       time.Duration(delayTime) * time.Second,
+			DomainGlob:  "*" + target,
 		},
 	)
-	c.AllowURLRevisit = false
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Using timeout if needed
 	if timeout != 10 {
@@ -507,12 +554,6 @@ func RetrieveBody(target string) string {
 		return sb
 	}
 	return ""
-}
-
-//isLinkOkay checks if a link is built in a proper way
-func isLinkOkay(input string) bool {
-	_, err := url.Parse(input)
-	return err == nil
 }
 
 //IgnoreMatch checks if the URL should be ignored or not.

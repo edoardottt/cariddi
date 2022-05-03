@@ -38,6 +38,8 @@ func PrintHelp() {
 		Use the .cariddi_cache folder as cache.
 	-d int
 		Delay between a page crawled and another.
+	-debug
+		Print debug information while crawling.
 	-e	Hunt for juicy endpoints.
 	-ef string
 		Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
