@@ -189,7 +189,11 @@ Examples 💡
   	- or just `cat urls | cariddi.exe` using PowerShell
 
   - To integrate cariddi with Burpsuite [make sure to follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration).
-  
+
+Changelog 📌
+-------
+Detailed changes for each release are documented in the [release notes](https://github.com/edoardottt/cariddi/releases).
+
 Contributing 🛠
 -------
 
