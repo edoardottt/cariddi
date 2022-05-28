@@ -17,3 +17,6 @@ output-cariddi/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# VScode Debugging folder
+.vscode/
