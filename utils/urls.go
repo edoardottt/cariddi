@@ -27,10 +27,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package utils
 
 import (
+	"errors"
 	"net/url"
 	"strings"
-
-	"github.com/bobesa/go-domain-util/domainutil"
 )
 
 //GetHost takes as input a string and
@@ -61,12 +60,18 @@ func GetProtocol(input string) string {
 //tries to parse it as url, if it's a
 //well formatted url this function returns
 //the second level domain
-func GetRootHost(input string) string {
-	_, err := url.Parse(input)
+func GetRootHost(input string) (string, error) {
+	u, err := url.Parse(input)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return domainutil.Domain(input)
+	//divide host and port, then split by dot
+	parts := strings.Split(strings.Split(u.Host, ":")[0], ".")
+	//return the last two parts
+	if len(parts) > 1 {
+		return parts[len(parts)-2] + "." + parts[len(parts)-1], nil
+	}
+	return "", errors.New("domain formatted in a bad way")
 }
 
 //HasProtocol takes as input a string and

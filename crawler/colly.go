@@ -29,7 +29,6 @@ package crawler
 import (
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -67,7 +66,12 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	}
 
 	if intensive {
-		targetTemp = utils.GetRootHost(targetTemp)
+		var err error
+		targetTemp, err = utils.GetRootHost(protocolTemp + "://" + targetTemp)
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
 	}
 
 	if targetTemp == "" {
@@ -570,9 +574,10 @@ func IgnoreMatch(url string, ignoreSlice []string) bool {
 //in intensive mode (if the 2nd level domain matches with
 //the inputted target).
 func intensiveOk(target string, urlInput string) bool {
-	u, err := url.Parse(urlInput)
+	root, err := utils.GetRootHost(urlInput)
 	if err != nil {
-		return false
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
-	return utils.GetRootHost(u.Host) == target
+	return root == target
 }
