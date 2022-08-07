@@ -216,13 +216,6 @@ func GetSecretRegexes() []Secret {
 			"?",
 		},
 		{
-			"Pictatic API Key",
-			"Pictatic API Key",
-			`sk\_live\_[0-9a-z]{32}`,
-			[]string{},
-			"?",
-		},
-		{
 			"PayPal Braintree access token",
 			"PayPal Braintree access token",
 			`access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}`,
