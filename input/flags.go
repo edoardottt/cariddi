@@ -58,6 +58,7 @@ type Input struct {
 	Errors        bool
 	Info          bool
 	Debug         bool
+	UserAgent     string
 }
 
 //ScanFlag defines all the options taken
@@ -98,6 +99,8 @@ func ScanFlag() Input {
 
 	debugPtr := flag.Bool("debug", false, "Print debug information while crawling.")
 
+	userAgentPtr := flag.String("ua", "", "Use a custom User Agent.")
+
 	flag.Parse()
 
 	result := Input{
@@ -126,6 +129,7 @@ func ScanFlag() Input {
 		*errorsPtr,
 		*infoPtr,
 		*debugPtr,
+		*userAgentPtr,
 	}
 
 	return result
