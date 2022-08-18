@@ -77,6 +77,8 @@ func PrintHelp() {
 		Use an external file (txt, one per line) to use custom regexes for secrets hunting.
 	-t int
 		Set timeout for the requests. (default 10)
+	-ua string
+		Use a Custom User Agent.	
 	-version
 		Print the version.`)
 }

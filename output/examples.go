@@ -80,5 +80,7 @@ func PrintExamples() {
 	
 	cat urls | cariddi -info
 	
-	cat urls | cariddi -debug`)
+	cat urls | cariddi -debug
+	
+	cat urls | cariddi -ua "Custom User Agent"`)
 }
