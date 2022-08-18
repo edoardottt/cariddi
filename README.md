@@ -151,6 +151,8 @@ Usage of cariddi:
     	Use an external file (txt, one per line) to use custom regexes for secrets hunting.
   -t int
     	Set timeout for the requests. (default 10)
+  -ua string
+    	Use a custom User Agent.
   -version
     	Print the version.
 ```
@@ -184,6 +186,7 @@ Examples 💡
   - `cat urls | cariddi -err` (Hunt for errors in websites.)
   - `cat urls | cariddi -info` (Hunt for useful informations in websites.)
   - `cat urls | cariddi -debug` (Print debug information while crawling.)
+  - `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent.)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
