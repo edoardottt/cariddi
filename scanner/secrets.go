@@ -216,13 +216,6 @@ func GetSecretRegexes() []Secret {
 			"?",
 		},
 		{
-			"Pictatic API Key",
-			"Pictatic API Key",
-			`sk\_live\_[0-9a-z]{32}`,
-			[]string{},
-			"?",
-		},
-		{
 			"PayPal Braintree access token",
 			"PayPal Braintree access token",
 			`access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}`,
@@ -324,6 +317,13 @@ func GetSecretRegexes() []Secret {
 			"Bugsnag API Key",
 			"Bugsnag API Key",
 			`(?i)(bs|bugsnag)(.{0,20})?[0-9a-f]{32}`,
+			[]string{},
+			"?",
+		},
+		{
+			"AWS cognito pool",
+			"AWS Cognito pool",
+			`(us-east-1|us-east-2|us-west-1|us-west-2|sa-east-1):[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12}`,
 			[]string{},
 			"?",
 		},
