@@ -152,7 +152,7 @@ Usage of cariddi:
   -t int
     	Set timeout for the requests. (default 10)
   -ua string
-    	Use a Custom User Agent.
+    	Use a custom User Agent.
   -version
     	Print the version.
 ```

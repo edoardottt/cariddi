@@ -29,7 +29,6 @@ package crawler
 import (
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -49,7 +48,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, secrets bool, secretsFile []string, plain bool, endpoints bool,
 	endpointsFile []string, fileType int, headers map[string]string,
-	errors bool, info bool, debug bool) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
+	errors bool, info bool, debug bool, userAgent string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
 	[]scanner.FileTypeMatched, []scanner.ErrorMatched, []scanner.InfoMatched) {
 
 	// This is to avoid to insert into the crawler target regular
@@ -67,7 +66,12 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	}
 
 	if intensive {
-		targetTemp = utils.GetRootHost(targetTemp)
+		var err error
+		targetTemp, err = utils.GetRootHost(protocolTemp + "://" + targetTemp)
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
 	}
 
 	if targetTemp == "" {
@@ -100,7 +104,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalInfos []scanner.InfoMatched
 
 	//crawler creation
-	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, target)
+	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, userAgent, target)
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
@@ -359,13 +363,16 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 //CreateColly takes as input all the settings needed to instantiate
 //a new Colly Collector object and it returns this object.
 func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
-	intensive bool, rua bool, proxy string, target string) *colly.Collector {
+	intensive bool, rua bool, proxy string, userAgent string, target string) *colly.Collector {
 
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
 	c.IgnoreRobotsTxt = true
 	c.AllowURLRevisit = false
+	if userAgent != "" {
+		c.UserAgent = userAgent
+	}
 
 	err := c.Limit(
 		&colly.LimitRule{
@@ -570,9 +577,10 @@ func IgnoreMatch(url string, ignoreSlice []string) bool {
 //in intensive mode (if the 2nd level domain matches with
 //the inputted target).
 func intensiveOk(target string, urlInput string) bool {
-	u, err := url.Parse(urlInput)
+	root, err := utils.GetRootHost(urlInput)
 	if err != nil {
-		return false
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
-	return utils.GetRootHost(u.Host) == target
+	return root == target
 }

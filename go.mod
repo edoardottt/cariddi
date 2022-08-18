@@ -3,7 +3,6 @@ module github.com/edoardottt/cariddi
 go 1.17
 
 require (
-	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/fatih/color v1.13.0
 	github.com/gocolly/colly v1.2.0
 )
