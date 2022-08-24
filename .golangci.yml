@@ -1,0 +1,4 @@
+linters:
+  # Enable all available linters.
+  # Default: false
+  enable-all: true
