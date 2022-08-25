@@ -2,3 +2,14 @@ linters:
   # Enable all available linters.
   # Default: false
   enable-all: true
+  disable:
+    - structcheck
+    - maligned
+    - deadcode
+    - scopelint
+    - nosnakecase
+    - varcheck
+    - exhaustivestruct
+    - interfacer
+    - golint
+    - ifshort
