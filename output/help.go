@@ -58,6 +58,8 @@ func PrintHelp() {
 		Ignore the URL containing at least one of the elements of this array.
 	-info
 		Hunt for useful informations in websites.
+	-insecure
+		Ignore invalid HTTPS certificates.
 	-intensive
 		Crawl searching for resources matching 2nd level domain.
 	-it string
