@@ -27,8 +27,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+  "crypto/tls"
 	"fmt"
 	"log"
+  "net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -46,7 +48,7 @@ import (
 //(event handlers, secrets, errors, extensions and endpoints scanning)
 func Crawler(target string, txt string, html string, delayTime int, concurrency int,
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
-	proxy string, secrets bool, secretsFile []string, plain bool, endpoints bool,
+	proxy string, insecure bool, secrets bool, secretsFile []string, plain bool, endpoints bool,
 	endpointsFile []string, fileType int, headers map[string]string,
 	errors bool, info bool, debug bool, userAgent string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
 	[]scanner.FileTypeMatched, []scanner.ErrorMatched, []scanner.InfoMatched) {
@@ -104,7 +106,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	var FinalInfos []scanner.InfoMatched
 
 	//crawler creation
-	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, userAgent, target)
+	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, insecure, userAgent, target)
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
@@ -363,7 +365,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 //CreateColly takes as input all the settings needed to instantiate
 //a new Colly Collector object and it returns this object.
 func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
-	intensive bool, rua bool, proxy string, userAgent string, target string) *colly.Collector {
+	intensive bool, rua bool, proxy string, insecure bool, userAgent string, target string) *colly.Collector {
 
 	c := colly.NewCollector(
 		colly.Async(true),
@@ -411,6 +413,12 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 			os.Exit(1)
 		}
 	}
+
+  if insecure {
+    c.WithTransport(&http.Transport{
+      TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+    })
+  }
 
 	return c
 }
