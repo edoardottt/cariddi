@@ -132,6 +132,8 @@ Usage of cariddi:
     	Ignore the URL containing at least one of the elements of this array.
   -info
     	Hunt for useful informations in websites.
+  -insecure
+    	Ignore invalid HTTPS certificates.
   -intensive
     	Crawl searching for resources matching 2nd level domain.
   -it string
@@ -183,10 +185,11 @@ Examples 💡
   - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy (http and socks5 supported))
   - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
   - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
-  - `cat urls | cariddi -err` (Hunt for errors in websites.)
-  - `cat urls | cariddi -info` (Hunt for useful informations in websites.)
-  - `cat urls | cariddi -debug` (Print debug information while crawling.)
-  - `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent.)
+  - `cat urls | cariddi -err` (Hunt for errors in websites)
+  - `cat urls | cariddi -info` (Hunt for useful informations in websites)
+  - `cat urls | cariddi -debug` (Print debug information while crawling)
+  - `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
+  - `cat urls | cariddi -insecure` (Ignore invalid HTTPS certificates)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt

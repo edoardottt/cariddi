@@ -121,7 +121,7 @@ func main() {
 
 		results, secrets, endpoints, extensions, errors, infos := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Cache, flags.Timeout, flags.Intensive,
-			flags.Rua, flags.Proxy, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
+			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
 			flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
 
 		finalResults = append(finalResults, results...)
