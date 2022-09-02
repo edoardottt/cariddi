@@ -1,15 +1,48 @@
 linters:
   # Enable all available linters.
   # Default: false
-  enable-all: true
-  disable:
-    - structcheck
-    - maligned
-    - deadcode
-    - scopelint
-    - nosnakecase
-    - varcheck
-    - exhaustivestruct
-    - interfacer
-    - golint
-    - ifshort
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+    - exhaustive
+    - exportloopref
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - godot
+    - godox
+    - goerr113
+    - goheader
+    - gomnd
+    - gomodguard
+    - goprintffuncname
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nolintlint
+    - prealloc
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - stylecheck
+    - testpackage
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+    - wsl
+
+linters-settings:
+  wsl:
+    strict-append: false
+    enforce-err-cuddling: true
