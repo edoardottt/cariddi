@@ -79,6 +79,7 @@ func GetInfoRegexes() []Info {
 				},
 		*/
 	}
+
 	return regexes
 }
 
@@ -86,11 +87,13 @@ func GetInfoRegexes() []Info {
 func RemoveDuplicateInfos(input []InfoMatched) []InfoMatched {
 	keys := make(map[string]bool)
 	list := []InfoMatched{}
+
 	for _, entry := range input {
 		if _, value := keys[entry.Match]; !value {
 			keys[entry.Match] = true
 			list = append(list, entry)
 		}
 	}
+
 	return list
 }

@@ -36,12 +36,14 @@ import (
 func RemoveDuplicateValues(strSlice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
+
 	for _, entry := range strSlice {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true
 			list = append(list, entry)
 		}
 	}
+
 	return list
 }
 
@@ -54,11 +56,13 @@ func CheckInputArray(input string) []string {
 	sliceOut := strings.Split(input, string(delimiter))
 	sliceOut = RemoveDuplicateValues(sliceOut)
 	result := []string{}
+
 	for _, elem := range sliceOut {
 		if elem != "" {
 			result = append(result, elem)
 		}
 	}
+
 	return result
 }
 
@@ -76,16 +80,19 @@ func CheckCookies(input string) []*http.Cookie {
 	if len(pairs) == 0 {
 		return result
 	}
+
 	for _, pair := range pairs {
 		couple := strings.Split(pair, ":")
 		if len(couple) == 0 {
 			continue
 		}
+
 		if len(couple) == 2 {
 			result = append(result, &http.Cookie{Name: couple[0], Value: couple[1]})
 		} else {
 			continue
 		}
 	}
+
 	return result
 }

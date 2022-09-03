@@ -55,8 +55,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
-	var targetTemp string
-	var protocolTemp string
+	var targetTemp, protocolTemp string
 
 	// if there isn't a scheme use http.
 	if !utils.HasProtocol(target) {
@@ -70,6 +69,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	if intensive {
 		var err error
 		targetTemp, err = utils.GetRootHost(protocolTemp + "://" + targetTemp)
+
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
@@ -84,8 +84,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	//clean target input
 	target = utils.RemoveProtocol(target)
 
-	var ignoreSlice []string
+	ignoreSlice := []string{}
 	ignoreBool := false
+
 	//if ignore -> produce the slice
 	if ignore != "" {
 		ignoreBool = true
@@ -98,12 +99,12 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		ignoreSlice = utils.ReadFile(ignoreTxt)
 	}
 
-	var FinalResults []string
-	var FinalSecrets []scanner.SecretMatched
-	var FinalEndpoints []scanner.EndpointMatched
-	var FinalExtensions []scanner.FileTypeMatched
-	var FinalErrors []scanner.ErrorMatched
-	var FinalInfos []scanner.InfoMatched
+	FinalResults := []string{}
+	FinalSecrets := []scanner.SecretMatched{}
+	FinalEndpoints := []scanner.EndpointMatched{}
+	FinalExtensions := []scanner.FileTypeMatched{}
+	FinalErrors := []scanner.ErrorMatched{}
+	FinalInfos := []scanner.InfoMatched{}
 
 	//crawler creation
 	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, insecure, userAgent, target)
@@ -336,6 +337,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			if err != nil && debug && err != colly.ErrAlreadyVisited {
 				log.Println(err)
 			}
+
 			err = c.Visit(protocolTemp + "://" + target + "/" + "sitemap.xml")
 			if err != nil && debug && err != colly.ErrAlreadyVisited {
 				log.Println(err)
@@ -345,20 +347,25 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			if err != nil && debug && err != colly.ErrAlreadyVisited {
 				log.Println(err)
 			}
+
 			err = c.Visit(protocolTemp + "://" + target + "sitemap.xml")
 			if err != nil && debug && err != colly.ErrAlreadyVisited {
 				log.Println(err)
 			}
 		}
 	}
+
 	err = c.Visit(protocolTemp + "://" + target)
 	if err != nil && debug && err != colly.ErrAlreadyVisited {
 		log.Println(err)
 	}
+
 	c.Wait()
+
 	if html != "" {
 		output.FooterHTML(html)
 	}
+
 	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions, FinalErrors, FinalInfos
 }
 
@@ -372,6 +379,7 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	)
 	c.IgnoreRobotsTxt = true
 	c.AllowURLRevisit = false
+
 	if userAgent != "" {
 		c.UserAgent = userAgent
 	}
@@ -432,19 +440,23 @@ func huntSecrets(secretsFile []string, target string, body string) []scanner.Sec
 //SecretsMatch checks if a body matches some secrets
 func SecretsMatch(url string, body string, secretsFile []string) []scanner.SecretMatched {
 	var secrets []scanner.SecretMatched
+
 	if len(secretsFile) == 0 {
 		for _, secret := range scanner.GetSecretRegexes() {
 			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(secret.Regex)
 				match := re.FindStringSubmatch(body)
+
 				// Avoiding false positives
 				var isFalsePositive = false
+
 				for _, falsePositive := range secret.FalsePositives {
 					if strings.Contains(strings.ToLower(match[0]), falsePositive) {
 						isFalsePositive = true
 						break
 					}
 				}
+
 				if !isFalsePositive {
 					secretFound := scanner.SecretMatched{Secret: secret, URL: url, Match: match[0]}
 					secrets = append(secrets, secretFound)
@@ -462,6 +474,7 @@ func SecretsMatch(url string, body string, secretsFile []string) []scanner.Secre
 			}
 		}
 	}
+
 	return secrets
 }
 
@@ -473,9 +486,10 @@ func huntEndpoints(endpointsFile []string, target string) []scanner.EndpointMatc
 
 //EndpointsMatch check if an endpoint matches a juicy parameter
 func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMatched {
-	var endpoints []scanner.EndpointMatched
+	endpoints := []scanner.EndpointMatched{}
 	matched := []scanner.Parameter{}
 	parameters := utils.RetrieveParameters(target)
+
 	if len(endpointsFile) == 0 {
 		for _, parameter := range scanner.GetJuicyParameters() {
 			for _, param := range parameters {
@@ -496,25 +510,29 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 			}
 		}
 	}
+
 	return endpoints
 }
 
 //huntExtensions hunts for extensions
 func huntExtensions(target string, severity int) scanner.FileTypeMatched {
-	var extension scanner.FileTypeMatched
+	extension := scanner.FileTypeMatched{}
 	copyTarget := target
+
 	for _, ext := range scanner.GetExtensions() {
 		if ext.Severity <= severity {
 			firstIndex := strings.Index(target, "?")
 			if firstIndex > -1 {
 				target = target[:firstIndex]
 			}
+
 			i := strings.LastIndex(target, ".")
 			if i >= 0 && strings.ToLower(target[i:]) == "."+ext.Extension {
 				extension = scanner.FileTypeMatched{Filetype: ext, URL: copyTarget}
 			}
 		}
 	}
+
 	return extension
 }
 
@@ -526,7 +544,8 @@ func huntErrors(target string, body string) []scanner.ErrorMatched {
 
 //ErrorsMatch checks the patterns for errors
 func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
-	var errors []scanner.ErrorMatched
+	errors := []scanner.ErrorMatched{}
+
 	for _, errorItem := range scanner.GetErrorRegexes() {
 		for _, errorRegex := range errorItem.Regex {
 			if matched, err := regexp.Match(errorRegex, []byte(body)); err == nil && matched {
@@ -537,6 +556,7 @@ func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 			}
 		}
 	}
+
 	return errors
 }
 
@@ -548,7 +568,8 @@ func huntInfos(target string, body string) []scanner.InfoMatched {
 
 //InfoMatch checks the patterns for infos
 func InfoMatch(url string, body string) []scanner.InfoMatched {
-	var infos []scanner.InfoMatched
+	infos := []scanner.InfoMatched{}
+
 	for _, infoItem := range scanner.GetInfoRegexes() {
 		for _, infoRegex := range infoItem.Regex {
 			if matched, err := regexp.Match(infoRegex, []byte(body)); err == nil && matched {
@@ -559,6 +580,7 @@ func InfoMatch(url string, body string) []scanner.InfoMatched {
 			}
 		}
 	}
+
 	return infos
 }
 
@@ -568,6 +590,7 @@ func RetrieveBody(target string) string {
 	if err == nil && sb != "" {
 		return sb
 	}
+
 	return ""
 }
 
@@ -578,6 +601,7 @@ func IgnoreMatch(url string, ignoreSlice []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -590,5 +614,6 @@ func intensiveOk(target string, urlInput string) bool {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+
 	return root == target
 }

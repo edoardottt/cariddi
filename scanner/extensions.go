@@ -115,11 +115,13 @@ func GetExtensions() []FileType {
 func RemoveDuplicateExtensions(input []FileTypeMatched) []FileTypeMatched {
 	keys := make(map[string]bool)
 	list := []FileTypeMatched{}
+
 	for _, entry := range input {
 		if _, value := keys[entry.URL]; !value {
 			keys[entry.URL] = true
 			list = append(list, entry)
 		}
 	}
+
 	return list
 }

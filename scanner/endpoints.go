@@ -182,6 +182,7 @@ func GetJuicyParameters() []Parameter {
 		{"s", []string{"XSS"}},
 		{"list_type", []string{"XSS"}},
 	}
+
 	return juicyParameters
 }
 
@@ -189,11 +190,13 @@ func GetJuicyParameters() []Parameter {
 func RemovDuplicateEndpoints(input []EndpointMatched) []EndpointMatched {
 	keys := make(map[string]bool)
 	list := []EndpointMatched{}
+
 	for _, entry := range input {
 		if _, value := keys[entry.URL]; !value {
 			keys[entry.URL] = true
 			list = append(list, entry)
 		}
 	}
+
 	return list
 }

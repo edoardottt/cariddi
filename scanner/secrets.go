@@ -338,6 +338,7 @@ func GetSecretRegexes() []Secret {
 			"?",
 		},
 	}
+
 	return regexes
 }
 
@@ -345,11 +346,13 @@ func GetSecretRegexes() []Secret {
 func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
 	keys := make(map[string]bool)
 	list := []SecretMatched{}
+
 	for _, entry := range input {
 		if _, value := keys[entry.Match]; !value {
 			keys[entry.Match] = true
 			list = append(list, entry)
 		}
 	}
+
 	return list
 }

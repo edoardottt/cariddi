@@ -49,6 +49,7 @@ func ScanTargets() []string {
 			result = append(result, domain)
 		}
 	}
+
 	return utils.RemoveDuplicateValues(result)
 }
 
@@ -57,11 +58,13 @@ func ScanTargets() []string {
 //E.g. -headers \"Cookie: auth=yes;;Client: type=2\".
 func GetHeaders(input string) map[string]string {
 	result := make(map[string]string)
+
 	if input != "" {
 		if !strings.Contains(input, ":") {
 			fmt.Println("The headers provided don't contains the : separator.")
 			os.Exit(1)
 		}
+
 		headers := strings.Split(input, ";;")
 		for _, header := range headers {
 			var parts []string
@@ -70,15 +73,18 @@ func GetHeaders(input string) map[string]string {
 			} else {
 				continue
 			}
+
 			result[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 		}
 	} else {
 		fmt.Println("Headers or HeadersFile flag provided, but the content is empty.")
 		os.Exit(1)
 	}
+
 	if len(result) == 0 {
 		fmt.Println("Headers or HeadersFile flag provided, but the content is empty.")
 		os.Exit(1)
 	}
+
 	return result
 }

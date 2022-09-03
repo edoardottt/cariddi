@@ -38,8 +38,10 @@ func AppendOutputToTxt(output string, filename string) {
 	if err != nil {
 		log.Println(err)
 	}
+
 	if _, err := file.WriteString(output + "\n"); err != nil {
 		log.Fatal(err)
 	}
+
 	file.Close()
 }

@@ -54,6 +54,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 		fmt.Println("Error while creating the output directory.")
 		os.Exit(1)
 	}
+
 	if !exists {
 		utils.CreateOutputFolder()
 	}
@@ -74,16 +75,18 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints {
 		EndpointFilename := utils.CreateOutputFile(flags.TXT, "endpoints", "txt")
+
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
-				finalString := ""
-				finalString += parameter.Parameter
+
+				finalString := "" + parameter.Parameter
 				if len(parameter.Attacks) != 0 {
 					finalString += " -"
 					for _, attack := range parameter.Attacks {
 						finalString += " " + attack
 					}
 				}
+
 				AppendOutputToTxt(finalString+" in "+elem.URL, EndpointFilename)
 			}
 		}
@@ -112,7 +115,6 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 			AppendOutputToTxt(elem.Info.Name+" - "+elem.Match+" in "+elem.URL, InfosFilename)
 		}
 	}
-
 }
 
 //HtmlOutput it's the wrapper around all the html things.
@@ -132,66 +134,79 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 	}
 
 	HeaderHTML("Results found", ResultFilename)
+
 	for _, elem := range finalResults {
 		AppendOutputToHTML(elem, "", ResultFilename, true)
 	}
+
 	FooterHTML(ResultFilename)
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {
 		HeaderHTML("Secrets found", ResultFilename)
+
 		for _, elem := range finalSecret {
 			AppendOutputToHTML(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, "", ResultFilename, false)
 		}
+
 		FooterHTML(ResultFilename)
 	}
 
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints {
 		HeaderHTML("Endpoints found", ResultFilename)
+
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
-				finalString := ""
-				finalString += parameter.Parameter
+
+				finalString := "" + parameter.Parameter
 				if len(parameter.Attacks) != 0 {
 					finalString += " -"
 					for _, attack := range parameter.Attacks {
 						finalString += " " + attack
 					}
 				}
+
 				AppendOutputToHTML(finalString+" in "+elem.URL, "", ResultFilename, false)
 			}
 		}
+
 		FooterHTML(ResultFilename)
 	}
 
 	// if extensions flag enabled save also extensions
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
 		HeaderHTML("Extensions found", ResultFilename)
+
 		for _, elem := range finalExtensions {
 			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.URL, "", ResultFilename, false)
 		}
+
 		FooterHTML(ResultFilename)
 	}
 
 	// if errors flag enabled save also errors
 	if flags.Errors {
 		HeaderHTML("Errors found", ResultFilename)
+
 		for _, elem := range finalErrors {
 			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, "", ResultFilename, false)
 		}
+
 		FooterHTML(ResultFilename)
 	}
 
 	// if info flag enabled save also infos
 	if flags.Info {
 		HeaderHTML("Useful informations found", ResultFilename)
+
 		for _, elem := range finalInfos {
 			// Escape HTML comment to be shown on the result page
 			AppendOutputToHTML(elem.Info.Name+" - "+
 				strings.Replace(strings.Replace(elem.Match, "<", "&lt;", 10), ">", "&gt;", 10)+
 				" in "+elem.URL, "", ResultFilename, false)
 		}
+
 		FooterHTML(ResultFilename)
 	}
 

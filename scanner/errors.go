@@ -146,6 +146,7 @@ func GetErrorRegexes() []Error {
 					`|Warning.*sqlite_.*|Warning.*SQLite3::|\[SQLITE_ERROR\])`},
 		},
 	}
+
 	return regexes
 }
 
@@ -153,11 +154,13 @@ func GetErrorRegexes() []Error {
 func RemoveDuplicateErrors(input []ErrorMatched) []ErrorMatched {
 	keys := make(map[string]bool)
 	list := []ErrorMatched{}
+
 	for _, entry := range input {
 		if _, value := keys[entry.Match+entry.URL]; !value {
 			keys[entry.Match+entry.URL] = true
 			list = append(list, entry)
 		}
 	}
+
 	return list
 }

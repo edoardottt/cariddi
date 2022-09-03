@@ -52,6 +52,7 @@ func CheckOutputFile(input string) bool {
 			return false
 		}
 	}
+
 	return true
 }
 

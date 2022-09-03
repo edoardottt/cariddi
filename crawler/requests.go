@@ -41,6 +41,7 @@ func GetRequest(target string) (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
+
 	//We Read the response body on the line below.
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -48,6 +49,7 @@ func GetRequest(target string) (string, error) {
 	}
 	//Convert the body to type string
 	sb := string(body)
+
 	return sb, nil
 }
 
@@ -71,7 +73,9 @@ func PostRequest(target string, data map[string]string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	sb := string(body)
+
 	return sb, nil
 }
 
@@ -88,6 +92,8 @@ func HeadRequest(target string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	sb := string(body)
+
 	return sb, nil
 }

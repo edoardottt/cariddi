@@ -55,12 +55,14 @@ func CreateOutputFolder() {
 //Whenever an instruction fails, it exits with an error message.
 func CreateOutputFile(target string, subcommand string, format string) string {
 	target = ReplaceBadCharacterOutput(target)
+
 	var filename string
 	if subcommand != "" {
 		filename = "output-cariddi" + "/" + target + "." + subcommand + "." + format
 	} else {
 		filename = "output-cariddi" + "/" + target + "." + format
 	}
+
 	_, err := os.Stat(filename)
 
 	if os.IsNotExist(err) {
@@ -73,6 +75,7 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 			fmt.Println("Can't create output file.")
 			os.Exit(1)
 		}
+
 		f.Close()
 	} else {
 		// The file already exists, overwrite.
@@ -89,6 +92,7 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 		}
 		f.Close()
 	}
+
 	return filename
 }
 
@@ -106,13 +110,16 @@ func ReadFile(inputFile string) []string {
 	if err != nil {
 		log.Fatalf("failed to open %s ", inputFile)
 	}
+
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
+
 	var text []string
 	for scanner.Scan() {
 		text = append(text, scanner.Text())
 	}
 	file.Close()
+
 	return text
 }
 
@@ -122,9 +129,11 @@ func ElementExists(path string) (bool, error) {
 	if err == nil {
 		return true, nil
 	}
+
 	if os.IsNotExist(err) {
 		return false, nil
 	}
+
 	return false, err
 }
 
@@ -140,12 +149,13 @@ func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 
 	buf := bufio.NewReader(f)
 	req, err := http.ReadRequest(buf)
+
 	if err != nil {
 		fmt.Println("Cannot read request from input file.")
 		os.Exit(1)
 	}
-	return req, nil
 
+	return req, nil
 }
 
 //ReadEntireFile returns the content of the inputted file.
@@ -155,6 +165,7 @@ func ReadEntireFile(inputFile string) []byte {
 		fmt.Println("Cannot open input file.")
 		os.Exit(1)
 	}
+
 	defer func() {
 		if err = file.Close(); err != nil {
 			fmt.Println("Cannot close input file.")
@@ -163,5 +174,6 @@ func ReadEntireFile(inputFile string) []byte {
 	}()
 
 	b, err := ioutil.ReadAll(file)
+
 	return b
 }

@@ -41,6 +41,7 @@ func GetHost(input string) string {
 	if err != nil {
 		return ""
 	}
+
 	return u.Host
 }
 
@@ -53,6 +54,7 @@ func GetProtocol(input string) string {
 	if err != nil {
 		return ""
 	}
+
 	return u.Scheme
 }
 
@@ -65,12 +67,14 @@ func GetRootHost(input string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	//divide host and port, then split by dot
 	parts := strings.Split(strings.Split(u.Host, ":")[0], ".")
 	//return the last two parts
 	if len(parts) > 1 {
 		return parts[len(parts)-2] + "." + parts[len(parts)-1], nil
 	}
+
 	return "", errors.New("domain formatted in a bad way")
 }
 
@@ -90,6 +94,7 @@ func RemoveProtocol(input string) string {
 	if res >= 0 {
 		return input[res+3:]
 	}
+
 	return input
 }
 
@@ -100,6 +105,7 @@ func RemovePort(input string) string {
 	if res >= 0 {
 		return input[:res]
 	}
+
 	return input
 }
 
@@ -108,14 +114,17 @@ func RemovePort(input string) string {
 //of strings that are the parameters of the URL
 func RetrieveParameters(input string) []string {
 	var result []string
+
 	u, err := url.Parse(input)
 	if err != nil {
 		return result
 	}
+
 	m, _ := url.ParseQuery(u.RawQuery)
 	for k := range m {
 		result = append(result, k)
 	}
+
 	return result
 }
 
@@ -127,9 +136,11 @@ func AbsoluteURL(protocol string, target string, path string) string {
 	if HasProtocol(path) {
 		return path
 	}
+
 	if len(path) != 0 && path[0] == '/' {
 		return protocol + "://" + target + path
 	}
+
 	return protocol + "://" + target + "/" + path
 }
 
@@ -139,13 +150,16 @@ func SameDomain(url1 string, url2 string) bool {
 	if err != nil {
 		return false
 	}
+
 	u2, err := url.Parse(url2)
 	if err != nil {
 		return false
 	}
+
 	if u1.Host == "" || u2.Host == "" {
 		return false
 	}
+
 	return u1.Host == u2.Host
 }
 
@@ -156,6 +170,7 @@ func GetPath(input string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return u.Path, nil
 }
 
@@ -164,5 +179,6 @@ func IsEmailURL(input string) (bool, string) {
 	if input[:7] == "mailto:" {
 		return true, input[7:]
 	}
+
 	return false, ""
 }

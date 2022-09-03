@@ -46,6 +46,7 @@ func Beautify() {
 
 	bannerPart1 := banner1 + banner2 + banner3 + banner4 + banner5
 	bannerPart2 := banner6 + banner7 + banner8 + banner9
+
 	color.Cyan("%s\n", bannerPart1)
 	fmt.Println(bannerPart2)
 }
