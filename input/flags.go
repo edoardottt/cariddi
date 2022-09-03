@@ -30,6 +30,11 @@ import (
 	"flag"
 )
 
+const (
+	DefaultConcurrency = 20
+	TimeoutRequest     = 10
+)
+
 // Input struct.
 // It contains all the possible options.
 type Input struct {
@@ -68,7 +73,7 @@ type Input struct {
 func ScanFlag() Input {
 	versionPtr := flag.Bool("version", false, "Print the version.")
 	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")
-	concurrencyPtr := flag.Int("c", 20, "Concurrency level.")
+	concurrencyPtr := flag.Int("c", DefaultConcurrency, "Concurrency level.")
 	helpPtr := flag.Bool("h", false, "Print the help.")
 	examplesPtr := flag.Bool("examples", false, "Print the examples.")
 	plainPtr := flag.Bool("plain", false, "Print only the results.")
@@ -77,7 +82,7 @@ func ScanFlag() Input {
 	ignorePtr := flag.String("i", "", "Ignore the URL containing at least one of the elements of this array.")
 	ignoreTXTPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
 	cachePtr := flag.Bool("cache", false, "Use the .cariddi_cache folder as cache.")
-	timeoutPtr := flag.Int("t", 10, "Set timeout for the requests.")
+	timeoutPtr := flag.Int("t", TimeoutRequest, "Set timeout for the requests.")
 	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching 2nd level domain.")
 	ruaPtr := flag.Bool("rua", false, "Use a random browser user agent on every request.")
 	proxyPtr := flag.String("proxy", "", "Set a Proxy to be used (http and socks5 supported).")

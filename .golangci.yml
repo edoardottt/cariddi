@@ -46,3 +46,11 @@ linters-settings:
   wsl:
     strict-append: false
     enforce-err-cuddling: true
+
+  gomnd:
+    # Values always ignored: "1", "1.0", "0" and "0.0"
+    # Default: []
+    ignored-numbers:
+      - '2'
+    ignored-files:
+      - 'crawler/useragents.go'

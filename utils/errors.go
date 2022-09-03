@@ -24,26 +24,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 */
 
-package output
+package utils
 
-import (
-	"log"
-	"os"
+import "errors"
 
-	"github.com/edoardottt/cariddi/utils"
+var (
+	ErrDomainFormat = errors.New("domain formatted in a bad way")
 )
-
-// AppendOutputToTxt opens the output file and append
-// the string taken as input.
-func AppendOutputToTxt(output string, filename string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, utils.Permission0644)
-	if err != nil {
-		log.Println(err)
-	}
-
-	if _, err := file.WriteString(output + "\n"); err != nil {
-		log.Fatal(err)
-	}
-
-	file.Close()
-}

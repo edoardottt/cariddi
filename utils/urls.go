@@ -27,7 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package utils
 
 import (
-	"errors"
+	"fmt"
 	"net/url"
 	"strings"
 )
@@ -75,7 +75,7 @@ func GetRootHost(input string) (string, error) {
 		return parts[len(parts)-2] + "." + parts[len(parts)-1], nil
 	}
 
-	return "", errors.New("domain formatted in a bad way")
+	return "", fmt.Errorf("%w", ErrDomainFormat)
 }
 
 // HasProtocol takes as input a string and

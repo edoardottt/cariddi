@@ -36,11 +36,16 @@ import (
 	"strings"
 )
 
+const (
+	Permission0755 = 0755
+	Permission0644 = 0644
+)
+
 // CreateOutputFolder creates the output folder
 // If it fails exits with an error message.
 func CreateOutputFolder() {
 	// Create a folder/directory at a full qualified path
-	err := os.Mkdir("output-cariddi", 0755)
+	err := os.Mkdir("output-cariddi", Permission0755)
 	if err != nil {
 		fmt.Println("Can't create output folder.")
 		os.Exit(1)
@@ -70,7 +75,7 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 			CreateOutputFolder()
 		}
 		// If the file doesn't exist, create it.
-		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
 		if err != nil {
 			fmt.Println("Can't create output file.")
 			os.Exit(1)
@@ -80,7 +85,7 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 	} else {
 		// The file already exists, overwrite.
 
-		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
 		if err != nil {
 			fmt.Println("Can't create output file.")
 			os.Exit(1)

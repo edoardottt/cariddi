@@ -200,7 +200,7 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 		for _, elem := range finalInfos {
 			// Escape HTML comment to be shown on the result page
 			AppendOutputToHTML(elem.Info.Name+" - "+
-				strings.Replace(strings.Replace(elem.Match, "<", "&lt;", 10), ">", "&gt;", 10)+
+				strings.ReplaceAll(strings.ReplaceAll(elem.Match, "<", "&lt;"), ">", "&gt;")+
 				" in "+elem.URL, "", resultFilename, false)
 		}
 
