@@ -45,10 +45,10 @@ import (
 	"github.com/gocolly/colly/extensions"
 )
 
-// Crawler it's the actual crawler engine.
+// New it's the actual crawler engine.
 // It controls all the behaviours of a scan
 // (event handlers, secrets, errors, extensions and endpoints scanning).
-func Crawler(target string, txt string, html string, delayTime int, concurrency int,
+func New(target string, txt string, html string, delayTime int, concurrency int,
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, insecure bool, secretsFlag bool, secretsFile []string, plain bool, endpointsFlag bool,
 	endpointsFile []string, fileType int, headers map[string]string, errorsFlag bool, infoFlag bool,
@@ -121,17 +121,21 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteURL)
 						err := c.Visit(absoluteURL)
-						if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-							log.Println(err)
+						if !errors.Is(err, colly.ErrAlreadyVisited) {
+							FinalResults = append(FinalResults, absoluteURL)
+							if err != nil && debug {
+								log.Println(err)
+							}
 						}
 					}
 				} else {
-					FinalResults = append(FinalResults, absoluteURL)
 					err := c.Visit(absoluteURL)
-					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-						log.Println(err)
+					if !errors.Is(err, colly.ErrAlreadyVisited) {
+						FinalResults = append(FinalResults, absoluteURL)
+						if err != nil && debug {
+							log.Println(err)
+						}
 					}
 				}
 			}
@@ -233,7 +237,9 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR SECRETS
 			if secretsFlag && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				FinalSecrets = append(FinalSecrets, secretsSlice...)
+				for _, elem := range secretsSlice {
+					FinalSecrets = append(FinalSecrets, elem)
+				}
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpointsFlag {
@@ -254,13 +260,17 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR ERRORS
 			if errorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				FinalErrors = append(FinalErrors, errorsSlice...)
+				for _, elem := range errorsSlice {
+					FinalErrors = append(FinalErrors, elem)
+				}
 			}
 
 			// HERE SCAN FOR INFOS
 			if infoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
-				FinalInfos = append(FinalInfos, infosSlice...)
+				for _, elem := range infosSlice {
+					FinalInfos = append(FinalInfos, elem)
+				}
 			}
 		}
 	})
@@ -377,18 +387,23 @@ func visitLink(link, protocolTemp, targetTemp, target string, intensive, ignoreB
 			(intensive && intensiveOk(targetTemp, absoluteURL)) {
 			if ignoreBool {
 				if !IgnoreMatch(link, ignoreSlice) {
-					*finalResults = append(*finalResults, absoluteURL)
 					err := c.Visit(absoluteURL)
+					if !errors.Is(err, colly.ErrAlreadyVisited) {
+						*finalResults = append(*finalResults, absoluteURL)
 
-					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-						log.Println(err)
+						if err != nil && debug {
+							log.Println(err)
+						}
 					}
 				}
 			} else {
-				*finalResults = append(*finalResults, absoluteURL)
 				err := c.Visit(absoluteURL)
-				if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-					log.Println(err)
+				if !errors.Is(err, colly.ErrAlreadyVisited) {
+					*finalResults = append(*finalResults, absoluteURL)
+
+					if err != nil && debug {
+						log.Println(err)
+					}
 				}
 			}
 		}
