@@ -94,12 +94,12 @@ func main() {
 
 	//Create output files if needed (txt / html).
 	var ResultTxt = ""
-	if flags.Txt != "" {
-		ResultTxt = utils.CreateOutputFile(flags.Txt, "results", "txt")
+	if flags.TXT != "" {
+		ResultTxt = utils.CreateOutputFile(flags.TXT, "results", "txt")
 	}
 	var ResultHtml = ""
-	if flags.Html != "" {
-		ResultHtml = utils.CreateOutputFile(flags.Html, "", "html")
+	if flags.HTML != "" {
+		ResultHtml = utils.CreateOutputFile(flags.HTML, "", "html")
 		output.BannerHTML(ResultHtml)
 		output.HeaderHTML("Results", ResultHtml)
 	}
@@ -120,7 +120,7 @@ func main() {
 	for _, inp := range targets {
 
 		results, secrets, endpoints, extensions, errors, infos := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
-			flags.Concurrency, flags.Ignore, flags.IgnoreTxt, flags.Cache, flags.Timeout, flags.Intensive,
+			flags.Concurrency, flags.Ignore, flags.IgnoreTXT, flags.Cache, flags.Timeout, flags.Intensive,
 			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
 			flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
 
@@ -141,13 +141,13 @@ func main() {
 	finalInfos = scanner.RemoveDuplicateInfos(finalInfos)
 
 	// IF TXT OUTPUT >
-	if flags.Txt != "" {
+	if flags.TXT != "" {
 		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints,
 			finalExtensions, finalErrors, finalInfos)
 	}
 
 	// IF HTML OUTPUT >
-	if flags.Html != "" {
+	if flags.HTML != "" {
 		output.HtmlOutput(flags, ResultHtml, finalResults, finalSecret,
 			finalEndpoints, finalExtensions, finalErrors, finalInfos)
 	}
@@ -155,7 +155,7 @@ func main() {
 	//If needed print secrets.
 	if !flags.Plain && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
-			output.EncapsulateCustomGreen(elem.Secret.Name, elem.Match+" in "+elem.Url)
+			output.EncapsulateCustomGreen(elem.Secret.Name, elem.Match+" in "+elem.URL)
 		}
 	}
 
@@ -171,7 +171,7 @@ func main() {
 						finalString += " " + attack
 					}
 				}
-				output.EncapsulateCustomGreen(finalString, " in "+elem.Url)
+				output.EncapsulateCustomGreen(finalString, " in "+elem.URL)
 			}
 		}
 	}
@@ -179,21 +179,21 @@ func main() {
 	//If needed print extensions.
 	if !flags.Plain && len(finalExtensions) != 0 {
 		for _, elem := range finalExtensions {
-			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.Url+" matched!")
+			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.URL+" matched!")
 		}
 	}
 
 	//If needed print errors.
 	if !flags.Plain && len(finalErrors) != 0 {
 		for _, elem := range finalErrors {
-			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.Url)
+			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.URL)
 		}
 	}
 
 	//If needed print infos.
 	if !flags.Plain && len(finalInfos) != 0 {
 		for _, elem := range finalInfos {
-			output.EncapsulateCustomGreen(elem.Info.Name, elem.Match+" in "+elem.Url)
+			output.EncapsulateCustomGreen(elem.Info.Name, elem.Match+" in "+elem.URL)
 		}
 	}
 }
