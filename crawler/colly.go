@@ -376,6 +376,7 @@ func visitLink(link, protocolTemp, targetTemp, target string, intensive, ignoreB
 				err := c.Visit(absoluteURL)
 				if !errors.Is(err, colly.ErrAlreadyVisited) {
 					*finalResults = append(*finalResults, absoluteURL)
+
 					if err != nil && debug {
 						log.Println(err)
 					}
