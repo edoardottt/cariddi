@@ -85,18 +85,19 @@ func main() {
 		secretsFileSlice = utils.ReadFile(flags.SecretsFile)
 	}
 
-	var finalResults []string
-	var finalSecret []scanner.SecretMatched
-	var finalEndpoints []scanner.EndpointMatched
-	var finalExtensions []scanner.FileTypeMatched
-	var finalErrors []scanner.ErrorMatched
-	var finalInfos []scanner.InfoMatched
+	finalResults := []string{}
+	finalSecret := []scanner.SecretMatched{}
+	finalEndpoints := []scanner.EndpointMatched{}
+	finalExtensions := []scanner.FileTypeMatched{}
+	finalErrors := []scanner.ErrorMatched{}
+	finalInfos := []scanner.InfoMatched{}
 
 	//Create output files if needed (txt / html).
 	var ResultTxt = ""
 	if flags.TXT != "" {
 		ResultTxt = utils.CreateOutputFile(flags.TXT, "results", "txt")
 	}
+
 	var ResultHtml = ""
 	if flags.HTML != "" {
 		ResultHtml = utils.CreateOutputFile(flags.HTML, "", "html")
@@ -106,6 +107,7 @@ func main() {
 
 	//Read headers if needed
 	var headers map[string]string
+
 	if flags.HeadersFile != "" || flags.Headers != "" {
 		var headersInput string
 		if flags.HeadersFile != "" {
@@ -113,6 +115,7 @@ func main() {
 		} else {
 			headersInput = flags.Headers
 		}
+
 		headers = input.GetHeaders(headersInput)
 	}
 
@@ -163,14 +166,14 @@ func main() {
 	if !flags.Plain && len(finalEndpoints) != 0 {
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
-				finalString := ""
-				finalString += parameter.Parameter
+				finalString := "" + parameter.Parameter
 				if len(parameter.Attacks) != 0 {
 					finalString += " -"
 					for _, attack := range parameter.Attacks {
 						finalString += " " + attack
 					}
 				}
+
 				output.EncapsulateCustomGreen(finalString, " in "+elem.URL)
 			}
 		}
