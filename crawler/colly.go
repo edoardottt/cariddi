@@ -45,7 +45,7 @@ import (
 
 //Crawler it's the actual crawler engine.
 //It controls all the behaviours of a scan
-//(event handlers, secrets, errors, extensions and endpoints scanning)
+//(event handlers, secrets, errors, extensions and endpoints scanning).
 func Crawler(target string, txt string, html string, delayTime int, concurrency int,
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, insecure bool, secrets bool, secretsFile []string, plain bool, endpoints bool,

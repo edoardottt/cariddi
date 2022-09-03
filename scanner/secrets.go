@@ -26,12 +26,12 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//Secret struct
-// Name = the name that identifies the secret
-// Description
-// Regex = The regular expression matching the secret
-// FalsePositives = A list of known false positives
-// PoC = cli command to check if the secret is valid or not
+//Secret struct.
+// Name = the name that identifies the secret.
+// Description.
+// Regex = The regular expression matching the secret.
+// FalsePositives = A list of known false positives.
+// PoC = cli command to check if the secret is valid or not.
 type Secret struct {
 	Name           string
 	Description    string
@@ -40,10 +40,10 @@ type Secret struct {
 	Poc            string
 }
 
-//SecretMatched struct
-// Secret = The secret matched (struct)
-// Url = url in which is present the secret
-// Match = the string matching the regex
+//SecretMatched struct.
+// Secret = The secret matched (struct).
+// Url = url in which is present the secret.
+// Match = the string matching the regex.
 type SecretMatched struct {
 	Secret Secret
 	URL    string
@@ -51,7 +51,7 @@ type SecretMatched struct {
 }
 
 //GetSecretRegexes returns a slice of all
-//the secret structs
+//the secret structs.
 func GetSecretRegexes() []Secret {
 	var regexes = []Secret{
 		{
@@ -342,7 +342,7 @@ func GetSecretRegexes() []Secret {
 	return regexes
 }
 
-//RemoveDuplicateSecrets removes duplicates from secrets found
+//RemoveDuplicateSecrets removes duplicates from secrets found.
 func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
 	keys := make(map[string]bool)
 	list := []SecretMatched{}

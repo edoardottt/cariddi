@@ -26,23 +26,23 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//Parameter struct
-// Parameter = the name of the parameter
-// Attacks = Possible attacks
+//Parameter struct.
+// Parameter = the name of the parameter.
+// Attacks = Possible attacks.
 type Parameter struct {
 	Parameter string
 	Attacks   []string
 }
 
-//EndpointMatched struct
-// Parameters = a list of parameters in a particular endpoint
-// Url = url (aka endpoint)
+//EndpointMatched struct.
+// Parameters = a list of parameters in a particular endpoint.
+// Url = url (aka endpoint).
 type EndpointMatched struct {
 	Parameters []Parameter
 	URL        string
 }
 
-//GetJuicyParameters returns juicy parameters and their possible attacks
+//GetJuicyParameters returns juicy parameters and their possible attacks.
 func GetJuicyParameters() []Parameter {
 	var juicyParameters = []Parameter{
 		{"apikey", []string{"Info"}},
@@ -186,7 +186,7 @@ func GetJuicyParameters() []Parameter {
 	return juicyParameters
 }
 
-//RemovDuplicateEndpoints removes duplicate endpoints found
+//RemovDuplicateEndpoints removes duplicate endpoints found.
 func RemovDuplicateEndpoints(input []EndpointMatched) []EndpointMatched {
 	keys := make(map[string]bool)
 	list := []EndpointMatched{}

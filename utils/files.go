@@ -37,7 +37,7 @@ import (
 )
 
 //CreateOutputFolder creates the output folder
-//If it fails exits with an error message
+//If it fails exits with an error message.
 func CreateOutputFolder() {
 	//Create a folder/directory at a full qualified path
 	err := os.Mkdir("output-cariddi", 0755)
@@ -97,7 +97,7 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 }
 
 //ReplaceBadCharacterOutput replaces forward-slashes
-//with dashes (to avoid problems with output folder)
+//with dashes (to avoid problems with output folder).
 func ReplaceBadCharacterOutput(input string) string {
 	result := strings.ReplaceAll(input, "/", "-")
 	return result
@@ -123,7 +123,7 @@ func ReadFile(inputFile string) []string {
 	return text
 }
 
-//ElementExists returns whether the given file or directory exists
+//ElementExists returns whether the given file or directory exists.
 func ElementExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -138,7 +138,7 @@ func ElementExists(path string) (bool, error) {
 }
 
 //ReadHTTPRequestFromFile reads from a file an HTTP
-//request and returns a *http.Request object
+//request and returns a *http.Request object.
 func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 	f, err := os.Open(inputFile)
 	if err != nil {

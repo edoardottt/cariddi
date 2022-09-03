@@ -33,7 +33,7 @@ import (
 )
 
 //EncapsulateGreen takes as input a string and
-//print a green prefix
+//print a green prefix.
 func EncapsulateGreen(inp string) {
 	// Create a custom print function for convenience
 	green := color.New(color.FgGreen).PrintfFunc()
@@ -42,7 +42,7 @@ func EncapsulateGreen(inp string) {
 }
 
 //EncapsulateRed takes as input a string and
-//print a red prefix
+//print a red prefix.
 func EncapsulateRed(inp string) {
 	// Create a custom print function for convenience
 	red := color.New(color.FgRed).PrintfFunc()
@@ -51,7 +51,7 @@ func EncapsulateRed(inp string) {
 }
 
 //EncapsulateYellow takes as input a string and
-//print a yellow prefix
+//print a yellow prefix.
 func EncapsulateYellow(inp string) {
 	// Create a custom print function for convenience
 	yellow := color.New(color.FgYellow).PrintfFunc()
@@ -60,7 +60,7 @@ func EncapsulateYellow(inp string) {
 }
 
 //EncapsulateCustomGreen takes as input a string and
-//print it with the green color
+//print it with the green color.
 func EncapsulateCustomGreen(alert string, inp string) {
 	// Create a custom print function for convenience
 	green := color.New(color.FgGreen).PrintfFunc()
@@ -69,7 +69,7 @@ func EncapsulateCustomGreen(alert string, inp string) {
 }
 
 //EncapsulateCustomRed takes as input a string and
-//print it with the red color
+//print it with the red color.
 func EncapsulateCustomRed(alert string, inp string) {
 	// Create a custom print function for convenience
 	red := color.New(color.FgRed).PrintfFunc()
@@ -78,7 +78,7 @@ func EncapsulateCustomRed(alert string, inp string) {
 }
 
 //EncapsulateCustomYellow takes as input a string and
-//print it with the yellow color
+//print it with the yellow color.
 func EncapsulateCustomYellow(alert string, inp string) {
 	// Create a custom print function for convenience
 	yellow := color.New(color.FgYellow).PrintfFunc()

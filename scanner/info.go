@@ -23,25 +23,25 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//Info struct
-// Name = the name that identifies the information
-// Regex = The regular expression to be matched
+//Info struct.
+// Name = the name that identifies the information.
+// Regex = The regular expression to be matched.
 type Info struct {
 	Name  string
 	Regex []string
 }
 
-//InfoMatched struct
-// Info = Info struct
-// Url = url in which the information is found
-// Match = the string matching the regex
+//InfoMatched struct.
+// Info = Info struct.
+// Url = url in which the information is found.
+// Match = the string matching the regex.
 type InfoMatched struct {
 	Info  Info
 	URL   string
 	Match string
 }
 
-//GetInfoRegexes returns all the info structs
+//GetInfoRegexes returns all the info structs.
 func GetInfoRegexes() []Info {
 	var regexes = []Info{
 		{
@@ -83,7 +83,7 @@ func GetInfoRegexes() []Info {
 	return regexes
 }
 
-//RemoveDuplicateInfos removes duplicates from Infos found
+//RemoveDuplicateInfos removes duplicates from Infos found.
 func RemoveDuplicateInfos(input []InfoMatched) []InfoMatched {
 	keys := make(map[string]bool)
 	list := []InfoMatched{}

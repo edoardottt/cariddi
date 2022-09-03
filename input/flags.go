@@ -30,8 +30,8 @@ import (
 	"flag"
 )
 
-//Input struct
-//It contains all the possible options
+//Input struct.
+//It contains all the possible options.
 type Input struct {
 	Version       bool
 	Delay         int

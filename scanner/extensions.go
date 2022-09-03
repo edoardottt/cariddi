@@ -26,23 +26,23 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//FileType struct
-// Extension = the file extension (doc, txt ..etc..)
-// Severity = the 'importance' of the file found. Higher is better
+//FileType struct.
+// Extension = the file extension (doc, txt ..etc..).
+// Severity = the 'importance' of the file found. Higher is better.
 type FileType struct {
 	Extension string
 	Severity  int
 }
 
-//FileTypeMatched struct
-// Filetype = Filetype struct
-// Url = url of the file found
+//FileTypeMatched struct.
+// Filetype = Filetype struct.
+// Url = url of the file found.
 type FileTypeMatched struct {
 	Filetype FileType
 	URL      string
 }
 
-//GetExtensions returns all the extension structs
+//GetExtensions returns all the extension structs.
 func GetExtensions() []FileType {
 	//extensions contains a list of known extensions
 	//and the TYPICAL (also say `in general`) associated severity.
@@ -111,7 +111,7 @@ func GetExtensions() []FileType {
 	return extensions
 }
 
-//RemoveDuplicateExtensions removes duplicates from Extensions found
+//RemoveDuplicateExtensions removes duplicates from Extensions found.
 func RemoveDuplicateExtensions(input []FileTypeMatched) []FileTypeMatched {
 	keys := make(map[string]bool)
 	list := []FileTypeMatched{}

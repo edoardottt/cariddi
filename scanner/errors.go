@@ -23,25 +23,25 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//Error struct
-// ErrorName = the name that identifies the error
-// Regex = The regular expression to be matched
+//Error struct.
+// ErrorName = the name that identifies the error.
+// Regex = The regular expression to be matched.
 type Error struct {
 	ErrorName string
 	Regex     []string
 }
 
-//ErrorMatched struct
-// Error = Error struct
-// Url = url in which the error is found
-// Match = the string matching the regex
+//ErrorMatched struct.
+// Error = Error struct.
+// Url = url in which the error is found.
+// Match = the string matching the regex.
 type ErrorMatched struct {
 	Error Error
 	URL   string
 	Match string
 }
 
-//GetErrorRegexes returns all the error structs
+//GetErrorRegexes returns all the error structs.
 func GetErrorRegexes() []Error {
 	var regexes = []Error{
 		{
@@ -150,7 +150,7 @@ func GetErrorRegexes() []Error {
 	return regexes
 }
 
-//RemoveDuplicateErrors removes duplicates from Errors found
+//RemoveDuplicateErrors removes duplicates from Errors found.
 func RemoveDuplicateErrors(input []ErrorMatched) []ErrorMatched {
 	keys := make(map[string]bool)
 	list := []ErrorMatched{}
