@@ -34,14 +34,6 @@ import (
 	"github.com/edoardottt/cariddi/utils"
 )
 
-// CheckDataPost should take as input a string and checks
-// if it's correctly formatted to be represented as post data
-// TODO - for now cariddi sends only GET requests.
-func CheckDataPost(input string) (map[string]string, error) {
-	// ===== TODO =======
-	return map[string]string{}, nil
-}
-
 // CheckOutputFile checks if the string provided as input
 // is formatted in a correct way.
 func CheckOutputFile(input string) bool {

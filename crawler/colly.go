@@ -51,8 +51,8 @@ import (
 func Crawler(target string, txt string, html string, delayTime int, concurrency int,
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, insecure bool, secretsFlag bool, secretsFile []string, plain bool, endpointsFlag bool,
-	endpointsFile []string, fileType int, headers map[string]string,
-	errorsFlag bool, infoFlag bool, debug bool, userAgent string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
+	endpointsFile []string, fileType int, headers map[string]string, errorsFlag bool, infoFlag bool,
+	debug bool, userAgent string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
 	[]scanner.FileTypeMatched, []scanner.ErrorMatched, []scanner.InfoMatched) {
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
@@ -141,85 +141,19 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	// On every script element which has src attribute call callback
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		if len(link) != 0 {
-			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
-			// Visit link found on page
-			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteURL)
-						err := c.Visit(absoluteURL)
-						if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-							log.Println(err)
-						}
-					}
-				} else {
-					FinalResults = append(FinalResults, absoluteURL)
-					err := c.Visit(absoluteURL)
-					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-						log.Println(err)
-					}
-				}
-			}
-		}
+		visitLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// On every link element which has href attribute call callback
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		if len(link) != 0 {
-			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
-			// Visit link found on page
-			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteURL)
-						err := c.Visit(absoluteURL)
-						if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-							log.Println(err)
-						}
-					}
-				} else {
-					FinalResults = append(FinalResults, absoluteURL)
-					err := c.Visit(absoluteURL)
-					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-						log.Println(err)
-					}
-				}
-			}
-		}
+		visitLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// On every iframe element which has src attribute call callback
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		if len(link) != 0 {
-			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
-			// Visit link found on page
-			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteURL)
-						err := c.Visit(absoluteURL)
-						if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-							log.Println(err)
-						}
-					}
-				} else {
-					FinalResults = append(FinalResults, absoluteURL)
-					err := c.Visit(absoluteURL)
-					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-						log.Println(err)
-					}
-				}
-			}
-		}
+		visitLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// On every from element which has action attribute call callback
@@ -430,6 +364,35 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	}
 
 	return c
+}
+
+// visitLink checks if the collector should visit a link or not.
+func visitLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
+	ignoreSlice []string, finalResults *[]string, e *colly.HTMLElement, c *colly.Collector) {
+	if len(link) != 0 {
+		absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+			(intensive && intensiveOk(targetTemp, absoluteURL)) {
+			if ignoreBool {
+				if !IgnoreMatch(link, ignoreSlice) {
+					*finalResults = append(*finalResults, absoluteURL)
+					err := c.Visit(absoluteURL)
+
+					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+						log.Println(err)
+					}
+				}
+			} else {
+				*finalResults = append(*finalResults, absoluteURL)
+				err := c.Visit(absoluteURL)
+				if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+					log.Println(err)
+				}
+			}
+		}
+	}
 }
 
 // huntSecrets hunts for secrets.

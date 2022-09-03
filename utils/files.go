@@ -157,7 +157,7 @@ func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 
 	if err != nil {
 		fmt.Println("Cannot read request from input file.")
-		os.Exit(1)
+		return req, err
 	}
 
 	return req, nil
