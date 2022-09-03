@@ -85,15 +85,19 @@ func ScanFlag() Input {
 	insecurePtr := flag.Bool("insecure", false, "Ignore invalid HTTPS certificates")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
-	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line) to use custom regexes for secrets hunting.")
+	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line)"+
+		" to use custom regexes for secrets hunting.")
 
 	endpointsPtr := flag.Bool("e", false, "Hunt for juicy endpoints.")
-	endpointsFilePtr := flag.String("ef", "", "Use an external file (txt, one per line) to use custom parameters for endpoints hunting.")
+	endpointsFilePtr := flag.String("ef", "", "Use an external file (txt, one per line)"+
+		" to use custom parameters for endpoints hunting.")
 
 	extensionsPtr := flag.Int("ext", 0, "Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).")
 
-	headersPtr := flag.String("headers", "", "Use custom headers for each request E.g. -headers \"Cookie: auth=yes;;Client: type=2\".")
-	headersFilePtr := flag.String("headersfile", "", "Read from an external file custom headers (same format of headers flag).")
+	headersPtr := flag.String("headers", "", "Use custom headers for each request "+
+		"E.g. -headers \"Cookie: auth=yes;;Client: type=2\".")
+	headersFilePtr := flag.String("headersfile", "", "Read from an external file "+
+		"custom headers (same format of headers flag).")
 
 	errorsPtr := flag.Bool("err", false, "Hunt for errors in websites.")
 

@@ -67,7 +67,8 @@ func AppendOutputToHTML(output string, status string, filename string, isLink bo
 			statusColor = status
 		}
 
-		if _, err := file.WriteString("<li><a target='_blank' href='" + output + "'>" + output + "</a> " + statusColor + "</li>"); err != nil {
+		if _, err := file.WriteString("<li><a target='_blank' href='" + output + "'>" + output +
+			"</a> " + statusColor + "</li>"); err != nil {
 			log.Fatal(err)
 		}
 	} else {

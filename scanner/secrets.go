@@ -323,7 +323,8 @@ func GetSecretRegexes() []Secret {
 		{
 			"AWS cognito pool",
 			"AWS Cognito pool",
-			`(us-east-1|us-east-2|us-west-1|us-west-2|sa-east-1):[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12}`,
+			`(us-east-1|us-east-2|us-west-1|us-west-2|sa-east-1):[0-9A-Za-z]{8}-[0-9A-Za-z]{4}` +
+				`-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{12}`,
 			[]string{},
 			"?",
 		},

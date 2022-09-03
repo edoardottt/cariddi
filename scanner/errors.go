@@ -142,7 +142,8 @@ func GetErrorRegexes() []Error {
 		{
 			"SQLite error",
 			[]string{
-				`(?i)(SQLite\/JDBCDriver|SQLite.Exception|System.Data.SQLite.SQLiteException|Warning.*sqlite_.*|Warning.*SQLite3::|\[SQLITE_ERROR\])`},
+				`(?i)(SQLite\/JDBCDriver|SQLite.Exception|System.Data.SQLite.SQLiteException` +
+					`|Warning.*sqlite_.*|Warning.*SQLite3::|\[SQLITE_ERROR\])`},
 		},
 	}
 	return regexes
