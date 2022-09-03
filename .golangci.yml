@@ -54,3 +54,8 @@ linters-settings:
       - '2'
     ignored-files:
       - 'crawler/useragents.go'
+
+issues:
+  exclude-rules:
+    - path: crawler/colly.go
+      text: "should replace loop with `(FinalInfos|FinalErrors|FinalSecrets)"

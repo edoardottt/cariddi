@@ -120,7 +120,7 @@ func main() {
 
 	// For each target generate a crawler and collect all the results.
 	for _, inp := range targets {
-		results, secrets, endpoints, extensions, errors, infos := crawler.Crawler(inp, ResultTxt, ResultHTML, flags.Delay,
+		results, secrets, endpoints, extensions, errors, infos := crawler.New(inp, ResultTxt, ResultHTML, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTXT, flags.Cache, flags.Timeout, flags.Intensive,
 			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints,
 			endpointsFileSlice, flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
