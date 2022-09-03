@@ -66,7 +66,6 @@ type Input struct {
 //as input and scan them, then it returns
 //an Input struct.
 func ScanFlag() Input {
-
 	versionPtr := flag.Bool("version", false, "Print the version.")
 	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")
 	concurrencyPtr := flag.Int("c", 20, "Concurrency level.")

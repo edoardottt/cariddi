@@ -52,7 +52,6 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	endpointsFile []string, fileType int, headers map[string]string,
 	errors bool, info bool, debug bool, userAgent string) ([]string, []scanner.SecretMatched, []scanner.EndpointMatched,
 	[]scanner.FileTypeMatched, []scanner.ErrorMatched, []scanner.InfoMatched) {
-
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
 	var targetTemp, protocolTemp string
@@ -287,7 +286,6 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	}
 
 	c.OnResponse(func(r *colly.Response) {
-
 		fmt.Println(r.Request.URL.String())
 
 		lengthOk := len(string(r.Body)) > 10
@@ -373,7 +371,6 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 //a new Colly Collector object and it returns this object.
 func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	intensive bool, rua bool, proxy string, insecure bool, userAgent string, target string) *colly.Collector {
-
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
@@ -500,7 +497,6 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 			}
 		}
 	} else {
-
 		for _, parameter := range endpointsFile {
 			for _, param := range parameters {
 				if param == parameter {

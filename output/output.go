@@ -48,7 +48,6 @@ func PrintSimpleOutput(out []string) {
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-
 	exists, err := utils.ElementExists("output-cariddi")
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
@@ -78,7 +77,6 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
-
 				finalString := "" + parameter.Parameter
 				if len(parameter.Attacks) != 0 {
 					finalString += " -"
@@ -158,7 +156,6 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
-
 				finalString := "" + parameter.Parameter
 				if len(parameter.Attacks) != 0 {
 					finalString += " -"
