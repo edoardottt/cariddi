@@ -37,7 +37,7 @@ type Info struct {
 // Match = the string matching the regex
 type InfoMatched struct {
 	Info  Info
-	Url   string
+	URL   string
 	Match string
 }
 

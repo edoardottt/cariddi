@@ -58,22 +58,22 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 		utils.CreateOutputFolder()
 	}
 
-	ResultFilename := utils.CreateOutputFile(flags.Txt, "results", "txt")
+	ResultFilename := utils.CreateOutputFile(flags.TXT, "results", "txt")
 	for _, elem := range finalResults {
 		AppendOutputToTxt(elem, ResultFilename)
 	}
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {
-		SecretFilename := utils.CreateOutputFile(flags.Txt, "secrets", "txt")
+		SecretFilename := utils.CreateOutputFile(flags.TXT, "secrets", "txt")
 		for _, elem := range finalSecret {
-			AppendOutputToTxt(elem.Secret.Name+" - "+elem.Match+" in "+elem.Url, SecretFilename)
+			AppendOutputToTxt(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, SecretFilename)
 		}
 	}
 
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints {
-		EndpointFilename := utils.CreateOutputFile(flags.Txt, "endpoints", "txt")
+		EndpointFilename := utils.CreateOutputFile(flags.TXT, "endpoints", "txt")
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
 				finalString := ""
@@ -84,32 +84,32 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 						finalString += " " + attack
 					}
 				}
-				AppendOutputToTxt(finalString+" in "+elem.Url, EndpointFilename)
+				AppendOutputToTxt(finalString+" in "+elem.URL, EndpointFilename)
 			}
 		}
 	}
 
 	// if extensions flag enabled save also secrets
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
-		ExtensionsFilename := utils.CreateOutputFile(flags.Txt, "extensions", "txt")
+		ExtensionsFilename := utils.CreateOutputFile(flags.TXT, "extensions", "txt")
 		for _, elem := range finalExtensions {
-			AppendOutputToTxt(elem.Filetype.Extension+" in "+elem.Url, ExtensionsFilename)
+			AppendOutputToTxt(elem.Filetype.Extension+" in "+elem.URL, ExtensionsFilename)
 		}
 	}
 
 	// if errors flag enabled save also errors
 	if flags.Errors {
-		ErrorsFilename := utils.CreateOutputFile(flags.Txt, "errors", "txt")
+		ErrorsFilename := utils.CreateOutputFile(flags.TXT, "errors", "txt")
 		for _, elem := range finalErrors {
-			AppendOutputToTxt(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.Url, ErrorsFilename)
+			AppendOutputToTxt(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, ErrorsFilename)
 		}
 	}
 
 	// if info flag enabled save also infos
 	if flags.Info {
-		InfosFilename := utils.CreateOutputFile(flags.Txt, "info", "txt")
+		InfosFilename := utils.CreateOutputFile(flags.TXT, "info", "txt")
 		for _, elem := range finalInfos {
-			AppendOutputToTxt(elem.Info.Name+" - "+elem.Match+" in "+elem.Url, InfosFilename)
+			AppendOutputToTxt(elem.Info.Name+" - "+elem.Match+" in "+elem.URL, InfosFilename)
 		}
 	}
 
@@ -141,7 +141,7 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 	if flags.Secrets {
 		HeaderHTML("Secrets found", ResultFilename)
 		for _, elem := range finalSecret {
-			AppendOutputToHTML(elem.Secret.Name+" - "+elem.Match+" in "+elem.Url, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
@@ -159,7 +159,7 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 						finalString += " " + attack
 					}
 				}
-				AppendOutputToHTML(finalString+" in "+elem.Url, "", ResultFilename, false)
+				AppendOutputToHTML(finalString+" in "+elem.URL, "", ResultFilename, false)
 			}
 		}
 		FooterHTML(ResultFilename)
@@ -169,7 +169,7 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
 		HeaderHTML("Extensions found", ResultFilename)
 		for _, elem := range finalExtensions {
-			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.Url, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.URL, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
@@ -178,7 +178,7 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 	if flags.Errors {
 		HeaderHTML("Errors found", ResultFilename)
 		for _, elem := range finalErrors {
-			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.Url, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}
@@ -190,7 +190,7 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 			// Escape HTML comment to be shown on the result page
 			AppendOutputToHTML(elem.Info.Name+" - "+
 				strings.Replace(strings.Replace(elem.Match, "<", "&lt;", 10), ">", "&gt;", 10)+
-				" in "+elem.Url, "", ResultFilename, false)
+				" in "+elem.URL, "", ResultFilename, false)
 		}
 		FooterHTML(ResultFilename)
 	}

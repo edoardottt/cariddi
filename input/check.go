@@ -57,15 +57,15 @@ func CheckOutputFile(input string) bool {
 
 //CheckFlags checks the flags taken as input
 func CheckFlags(flags Input) {
-	if flags.Txt != "" {
-		if !CheckOutputFile(flags.Txt) {
+	if flags.TXT != "" {
+		if !CheckOutputFile(flags.TXT) {
 			fmt.Println("The output file must avoid weird symbols. Try to use - , _ , . instead.")
 			os.Exit(1)
 		}
 	}
 
-	if flags.Html != "" {
-		if !CheckOutputFile(flags.Html) {
+	if flags.HTML != "" {
+		if !CheckOutputFile(flags.HTML) {
 			fmt.Println("The output file must avoid weird symbols. Try to use - , _ , . instead.")
 			os.Exit(1)
 		}
@@ -94,7 +94,7 @@ func CheckFlags(flags Input) {
 		}
 	}
 
-	if flags.Plain && flags.Txt == "" && flags.Html == "" {
+	if flags.Plain && flags.TXT == "" && flags.HTML == "" {
 		if flags.Secrets || flags.Endpoints || flags.Extensions != 0 {
 			fmt.Println("In the plain mode cariddi prints only links found on targets.")
 			fmt.Println("If you want to see the results of secrets, endpoints and extensions found")
@@ -111,8 +111,8 @@ func CheckFlags(flags Input) {
 		os.Exit(1)
 	}
 
-	if flags.IgnoreTxt != "" {
-		_ = utils.ReadFile(flags.IgnoreTxt)
+	if flags.IgnoreTXT != "" {
+		_ = utils.ReadFile(flags.IgnoreTXT)
 	}
 
 	if flags.Timeout < 0 {
@@ -120,7 +120,7 @@ func CheckFlags(flags Input) {
 		os.Exit(1)
 	}
 
-	if flags.Ignore != "" && flags.IgnoreTxt != "" {
+	if flags.Ignore != "" && flags.IgnoreTXT != "" {
 		fmt.Println("You should use only one among -i and -it.")
 		fmt.Println("Examples:")
 		fmt.Println("	- cat urls | cariddi -i forum,blog")

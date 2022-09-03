@@ -27,10 +27,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
-  "crypto/tls"
+	"crypto/tls"
 	"fmt"
 	"log"
-  "net/http"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -112,22 +112,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
-			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
-				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						err := c.Visit(absoluteUrl)
+						FinalResults = append(FinalResults, absoluteURL)
+						err := c.Visit(absoluteURL)
 						if err != nil && debug && err != colly.ErrAlreadyVisited {
 							log.Println(err)
 						}
 					}
 				} else {
-					FinalResults = append(FinalResults, absoluteUrl)
-					err := c.Visit(absoluteUrl)
+					FinalResults = append(FinalResults, absoluteURL)
+					err := c.Visit(absoluteURL)
 					if err != nil && debug && err != colly.ErrAlreadyVisited {
 						log.Println(err)
 					}
@@ -140,22 +140,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		if len(link) != 0 {
-			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
-				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						err := c.Visit(absoluteUrl)
+						FinalResults = append(FinalResults, absoluteURL)
+						err := c.Visit(absoluteURL)
 						if err != nil && debug && err != colly.ErrAlreadyVisited {
 							log.Println(err)
 						}
 					}
 				} else {
-					FinalResults = append(FinalResults, absoluteUrl)
-					err := c.Visit(absoluteUrl)
+					FinalResults = append(FinalResults, absoluteURL)
+					err := c.Visit(absoluteURL)
 					if err != nil && debug && err != colly.ErrAlreadyVisited {
 						log.Println(err)
 					}
@@ -168,22 +168,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 {
-			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
-				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						err := c.Visit(absoluteUrl)
+						FinalResults = append(FinalResults, absoluteURL)
+						err := c.Visit(absoluteURL)
 						if err != nil && debug && err != colly.ErrAlreadyVisited {
 							log.Println(err)
 						}
 					}
 				} else {
-					FinalResults = append(FinalResults, absoluteUrl)
-					err := c.Visit(absoluteUrl)
+					FinalResults = append(FinalResults, absoluteURL)
+					err := c.Visit(absoluteURL)
 					if err != nil && debug && err != colly.ErrAlreadyVisited {
 						log.Println(err)
 					}
@@ -196,22 +196,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		if len(link) != 0 {
-			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
-				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						err := c.Visit(absoluteUrl)
+						FinalResults = append(FinalResults, absoluteURL)
+						err := c.Visit(absoluteURL)
 						if err != nil && debug && err != colly.ErrAlreadyVisited {
 							log.Println(err)
 						}
 					}
 				} else {
-					FinalResults = append(FinalResults, absoluteUrl)
-					err := c.Visit(absoluteUrl)
+					FinalResults = append(FinalResults, absoluteURL)
+					err := c.Visit(absoluteURL)
 					if err != nil && debug && err != colly.ErrAlreadyVisited {
 						log.Println(err)
 					}
@@ -224,22 +224,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		link := e.Attr("action")
 		if len(link) != 0 {
-			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
-				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						err := c.Visit(absoluteUrl)
+						FinalResults = append(FinalResults, absoluteURL)
+						err := c.Visit(absoluteURL)
 						if err != nil && debug && err != colly.ErrAlreadyVisited {
 							log.Println(err)
 						}
 					}
 				} else {
-					FinalResults = append(FinalResults, absoluteUrl)
-					err := c.Visit(absoluteUrl)
+					FinalResults = append(FinalResults, absoluteURL)
+					err := c.Visit(absoluteURL)
 					if err != nil && debug && err != colly.ErrAlreadyVisited {
 						log.Println(err)
 					}
@@ -252,22 +252,22 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	c.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
 		link := e.Text
 		if len(link) != 0 {
-			absoluteUrl := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteUrl)) ||
-				(intensive && intensiveOk(targetTemp, absoluteUrl)) {
+			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteUrl)
-						err := c.Visit(absoluteUrl)
+						FinalResults = append(FinalResults, absoluteURL)
+						err := c.Visit(absoluteURL)
 						if err != nil && debug && err != colly.ErrAlreadyVisited {
 							log.Println(err)
 						}
 					}
 				} else {
-					FinalResults = append(FinalResults, absoluteUrl)
-					err := c.Visit(absoluteUrl)
+					FinalResults = append(FinalResults, absoluteURL)
+					err := c.Visit(absoluteURL)
 					if err != nil && debug && err != colly.ErrAlreadyVisited {
 						log.Println(err)
 					}
@@ -310,7 +310,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 			// HERE SCAN FOR EXTENSIONS
 			if 1 <= fileType && fileType <= 7 {
 				extension := huntExtensions(r.Request.URL.String(), fileType)
-				if extension.Url != "" {
+				if extension.URL != "" {
 					FinalExtensions = append(FinalExtensions, extension)
 				}
 			}
@@ -414,11 +414,11 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 		}
 	}
 
-  if insecure {
-    c.WithTransport(&http.Transport{
-      TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-    })
-  }
+	if insecure {
+		c.WithTransport(&http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		})
+	}
 
 	return c
 }
@@ -446,7 +446,7 @@ func SecretsMatch(url string, body string, secretsFile []string) []scanner.Secre
 					}
 				}
 				if !isFalsePositive {
-					secretFound := scanner.SecretMatched{Secret: secret, Url: url, Match: match[0]}
+					secretFound := scanner.SecretMatched{Secret: secret, URL: url, Match: match[0]}
 					secrets = append(secrets, secretFound)
 				}
 			}
@@ -457,7 +457,7 @@ func SecretsMatch(url string, body string, secretsFile []string) []scanner.Secre
 				re := regexp.MustCompile(secret)
 				match := re.FindStringSubmatch(body)
 				secretScanned := scanner.Secret{Name: "CustomFromFile", Description: "", Regex: secret, Poc: ""}
-				secretFound := scanner.SecretMatched{Secret: secretScanned, Url: url, Match: match[0]}
+				secretFound := scanner.SecretMatched{Secret: secretScanned, URL: url, Match: match[0]}
 				secrets = append(secrets, secretFound)
 			}
 		}
@@ -482,7 +482,7 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 				if strings.ToLower(param) == parameter.Parameter {
 					matched = append(matched, parameter)
 				}
-				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
+				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 			}
 		}
 	} else {
@@ -492,7 +492,7 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 				if param == parameter {
 					matched = append(matched, scanner.Parameter{Parameter: parameter, Attacks: []string{}})
 				}
-				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, Url: target})
+				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 			}
 		}
 	}
@@ -511,7 +511,7 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 			}
 			i := strings.LastIndex(target, ".")
 			if i >= 0 && strings.ToLower(target[i:]) == "."+ext.Extension {
-				extension = scanner.FileTypeMatched{Filetype: ext, Url: copyTarget}
+				extension = scanner.FileTypeMatched{Filetype: ext, URL: copyTarget}
 			}
 		}
 	}
@@ -532,7 +532,7 @@ func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 			if matched, err := regexp.Match(errorRegex, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(errorRegex)
 				match := re.FindStringSubmatch(body)
-				errorFound := scanner.ErrorMatched{Error: errorItem, Url: url, Match: match[0]}
+				errorFound := scanner.ErrorMatched{Error: errorItem, URL: url, Match: match[0]}
 				errors = append(errors, errorFound)
 			}
 		}
@@ -554,7 +554,7 @@ func InfoMatch(url string, body string) []scanner.InfoMatched {
 			if matched, err := regexp.Match(infoRegex, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(infoRegex)
 				match := re.FindStringSubmatch(body)
-				infoFound := scanner.InfoMatched{Info: infoItem, Url: url, Match: match[0]}
+				infoFound := scanner.InfoMatched{Info: infoItem, URL: url, Match: match[0]}
 				infos = append(infos, infoFound)
 			}
 		}

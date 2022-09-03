@@ -46,7 +46,7 @@ type Secret struct {
 // Match = the string matching the regex
 type SecretMatched struct {
 	Secret Secret
-	Url    string
+	URL    string
 	Match  string
 }
 

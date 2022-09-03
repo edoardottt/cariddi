@@ -39,7 +39,7 @@ type Parameter struct {
 // Url = url (aka endpoint)
 type EndpointMatched struct {
 	Parameters []Parameter
-	Url        string
+	URL        string
 }
 
 //GetJuicyParameters returns juicy parameters and their possible attacks
@@ -190,8 +190,8 @@ func RemovDuplicateEndpoints(input []EndpointMatched) []EndpointMatched {
 	keys := make(map[string]bool)
 	list := []EndpointMatched{}
 	for _, entry := range input {
-		if _, value := keys[entry.Url]; !value {
-			keys[entry.Url] = true
+		if _, value := keys[entry.URL]; !value {
+			keys[entry.URL] = true
 			list = append(list, entry)
 		}
 	}

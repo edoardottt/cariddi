@@ -39,7 +39,7 @@ type FileType struct {
 // Url = url of the file found
 type FileTypeMatched struct {
 	Filetype FileType
-	Url      string
+	URL      string
 }
 
 //GetExtensions returns all the extension structs
@@ -116,8 +116,8 @@ func RemoveDuplicateExtensions(input []FileTypeMatched) []FileTypeMatched {
 	keys := make(map[string]bool)
 	list := []FileTypeMatched{}
 	for _, entry := range input {
-		if _, value := keys[entry.Url]; !value {
-			keys[entry.Url] = true
+		if _, value := keys[entry.URL]; !value {
+			keys[entry.URL] = true
 			list = append(list, entry)
 		}
 	}

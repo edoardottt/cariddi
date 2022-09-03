@@ -37,7 +37,7 @@ type Error struct {
 // Match = the string matching the regex
 type ErrorMatched struct {
 	Error Error
-	Url   string
+	URL   string
 	Match string
 }
 
@@ -153,8 +153,8 @@ func RemoveDuplicateErrors(input []ErrorMatched) []ErrorMatched {
 	keys := make(map[string]bool)
 	list := []ErrorMatched{}
 	for _, entry := range input {
-		if _, value := keys[entry.Match+entry.Url]; !value {
-			keys[entry.Match+entry.Url] = true
+		if _, value := keys[entry.Match+entry.URL]; !value {
+			keys[entry.Match+entry.URL] = true
 			list = append(list, entry)
 		}
 	}

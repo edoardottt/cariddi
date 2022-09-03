@@ -39,10 +39,10 @@ type Input struct {
 	Help          bool
 	Examples      bool
 	Plain         bool
-	Html          string
-	Txt           string
+	HTML          string
+	TXT           string
 	Ignore        string
-	IgnoreTxt     string
+	IgnoreTXT     string
 	Cache         bool
 	Timeout       int
 	Intensive     bool
@@ -73,10 +73,10 @@ func ScanFlag() Input {
 	helpPtr := flag.Bool("h", false, "Print the help.")
 	examplesPtr := flag.Bool("examples", false, "Print the examples.")
 	plainPtr := flag.Bool("plain", false, "Print only the results.")
-	outputHtmlPtr := flag.String("oh", "", "Write the output into an HTML file.")
-	outputTxtPtr := flag.String("ot", "", "Write the output into a TXT file.")
+	outputHTMLPtr := flag.String("oh", "", "Write the output into an HTML file.")
+	outputTXTPtr := flag.String("ot", "", "Write the output into a TXT file.")
 	ignorePtr := flag.String("i", "", "Ignore the URL containing at least one of the elements of this array.")
-	ignoreTxtPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
+	ignoreTXTPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
 	cachePtr := flag.Bool("cache", false, "Use the .cariddi_cache folder as cache.")
 	timeoutPtr := flag.Int("t", 10, "Set timeout for the requests.")
 	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching 2nd level domain.")
@@ -112,10 +112,10 @@ func ScanFlag() Input {
 		*helpPtr,
 		*examplesPtr,
 		*plainPtr,
-		*outputHtmlPtr,
-		*outputTxtPtr,
+		*outputHTMLPtr,
+		*outputTXTPtr,
 		*ignorePtr,
-		*ignoreTxtPtr,
+		*ignoreTXTPtr,
 		*cachePtr,
 		*timeoutPtr,
 		*intensivePtr,
