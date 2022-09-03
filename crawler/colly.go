@@ -119,22 +119,15 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
+				if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+					(intensive && intensiveOk(targetTemp, absoluteURL)) {
+					if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
 						err := c.Visit(absoluteURL)
 						if !errors.Is(err, colly.ErrAlreadyVisited) {
 							FinalResults = append(FinalResults, absoluteURL)
 							if err != nil && debug {
 								log.Println(err)
 							}
-						}
-					}
-				} else {
-					err := c.Visit(absoluteURL)
-					if !errors.Is(err, colly.ErrAlreadyVisited) {
-						FinalResults = append(FinalResults, absoluteURL)
-						if err != nil && debug {
-							log.Println(err)
 						}
 					}
 				}
@@ -169,19 +162,13 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
+				if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+					err := c.Visit(absoluteURL)
+					if !errors.Is(err, colly.ErrAlreadyVisited) {
 						FinalResults = append(FinalResults, absoluteURL)
-						err := c.Visit(absoluteURL)
-						if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+						if err != nil && debug {
 							log.Println(err)
 						}
-					}
-				} else {
-					FinalResults = append(FinalResults, absoluteURL)
-					err := c.Visit(absoluteURL)
-					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-						log.Println(err)
 					}
 				}
 			}
@@ -385,22 +372,10 @@ func visitLink(link, protocolTemp, targetTemp, target string, intensive, ignoreB
 		// Only those links are visited which are in AllowedDomains
 		if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 			(intensive && intensiveOk(targetTemp, absoluteURL)) {
-			if ignoreBool {
-				if !IgnoreMatch(link, ignoreSlice) {
-					err := c.Visit(absoluteURL)
-					if !errors.Is(err, colly.ErrAlreadyVisited) {
-						*finalResults = append(*finalResults, absoluteURL)
-
-						if err != nil && debug {
-							log.Println(err)
-						}
-					}
-				}
-			} else {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
 				err := c.Visit(absoluteURL)
 				if !errors.Is(err, colly.ErrAlreadyVisited) {
 					*finalResults = append(*finalResults, absoluteURL)
-
 					if err != nil && debug {
 						log.Println(err)
 					}
