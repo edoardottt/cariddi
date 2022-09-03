@@ -36,50 +36,49 @@ import (
 	"github.com/edoardottt/cariddi/utils"
 )
 
-//main function >
+// main function.
 func main() {
-
 	// Scan flags.
 	flags := input.ScanFlag()
 
-	//Print version and exit.
+	// Print version and exit.
 	if flags.Version {
 		output.Beautify()
 		os.Exit(0)
 	}
 
-	//Print help and exit.
+	// Print help and exit.
 	if flags.Help {
 		output.PrintHelp()
 		os.Exit(0)
 	}
 
-	//Print examples and exit.
+	// Print examples and exit.
 	if flags.Examples {
 		output.PrintExamples()
 		os.Exit(0)
 	}
 
-	//If it's possible print the cariddi banner.
+	// If it's possible print the cariddi banner.
 	if !flags.Plain {
 		output.Beautify()
 	}
 
-	//Read the targets from standard input.
+	// Read the targets from standard input.
 	targets := input.ScanTargets()
 
-	//Check if there are errors in the flags definition.
+	// Check if there are errors in the flags definition.
 	input.CheckFlags(flags)
 
-	//If it is needed, read custom endpoints definition
-	//from the specified file.
+	// If it is needed, read custom endpoints definition
+	// from the specified file.
 	var endpointsFileSlice []string
 	if flags.EndpointsFile != "" {
 		endpointsFileSlice = utils.ReadFile(flags.EndpointsFile)
 	}
 
-	//If it is needed, read custom secrets definition
-	//from the specified file.
+	// If it is needed, read custom secrets definition
+	// from the specified file.
 	var secretsFileSlice []string
 	if flags.SecretsFile != "" {
 		secretsFileSlice = utils.ReadFile(flags.SecretsFile)
@@ -92,20 +91,20 @@ func main() {
 	finalErrors := []scanner.ErrorMatched{}
 	finalInfos := []scanner.InfoMatched{}
 
-	//Create output files if needed (txt / html).
+	// Create output files if needed (txt / html).
 	var ResultTxt = ""
 	if flags.TXT != "" {
 		ResultTxt = utils.CreateOutputFile(flags.TXT, "results", "txt")
 	}
 
-	var ResultHtml = ""
+	var ResultHTML = ""
 	if flags.HTML != "" {
-		ResultHtml = utils.CreateOutputFile(flags.HTML, "", "html")
-		output.BannerHTML(ResultHtml)
-		output.HeaderHTML("Results", ResultHtml)
+		ResultHTML = utils.CreateOutputFile(flags.HTML, "", "html")
+		output.BannerHTML(ResultHTML)
+		output.HeaderHTML("Results", ResultHTML)
 	}
 
-	//Read headers if needed
+	// Read headers if needed
 	var headers map[string]string
 
 	if flags.HeadersFile != "" || flags.Headers != "" {
@@ -119,13 +118,12 @@ func main() {
 		headers = input.GetHeaders(headersInput)
 	}
 
-	//For each target generate a crawler and collect all the results.
+	// For each target generate a crawler and collect all the results.
 	for _, inp := range targets {
-
-		results, secrets, endpoints, extensions, errors, infos := crawler.Crawler(inp, ResultTxt, ResultHtml, flags.Delay,
+		results, secrets, endpoints, extensions, errors, infos := crawler.Crawler(inp, ResultTxt, ResultHTML, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTXT, flags.Cache, flags.Timeout, flags.Intensive,
-			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints, endpointsFileSlice,
-			flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
+			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints,
+			endpointsFileSlice, flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
 
 		finalResults = append(finalResults, results...)
 		finalSecret = append(finalSecret, secrets...)
@@ -135,7 +133,7 @@ func main() {
 		finalInfos = append(finalInfos, infos...)
 	}
 
-	//Remove duplicates from all the results.
+	// Remove duplicates from all the results.
 	finalResults = utils.RemoveDuplicateValues(finalResults)
 	finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
 	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
@@ -151,18 +149,18 @@ func main() {
 
 	// IF HTML OUTPUT >
 	if flags.HTML != "" {
-		output.HtmlOutput(flags, ResultHtml, finalResults, finalSecret,
+		output.HTMLOutput(flags, ResultHTML, finalResults, finalSecret,
 			finalEndpoints, finalExtensions, finalErrors, finalInfos)
 	}
 
-	//If needed print secrets.
+	// If needed print secrets.
 	if !flags.Plain && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, elem.Match+" in "+elem.URL)
 		}
 	}
 
-	//If needed print endpoints.
+	// If needed print endpoints.
 	if !flags.Plain && len(finalEndpoints) != 0 {
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
@@ -179,21 +177,21 @@ func main() {
 		}
 	}
 
-	//If needed print extensions.
+	// If needed print extensions.
 	if !flags.Plain && len(finalExtensions) != 0 {
 		for _, elem := range finalExtensions {
 			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.URL+" matched!")
 		}
 	}
 
-	//If needed print errors.
+	// If needed print errors.
 	if !flags.Plain && len(finalErrors) != 0 {
 		for _, elem := range finalErrors {
 			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.URL)
 		}
 	}
 
-	//If needed print infos.
+	// If needed print infos.
 	if !flags.Plain && len(finalInfos) != 0 {
 		for _, elem := range finalInfos {
 			output.EncapsulateCustomGreen(elem.Info.Name, elem.Match+" in "+elem.URL)

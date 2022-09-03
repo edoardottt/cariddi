@@ -36,15 +36,15 @@ import (
 	"github.com/edoardottt/cariddi/utils"
 )
 
-//PrintSimpleOutput prints line by line
+// PrintSimpleOutput prints line by line.
 func PrintSimpleOutput(out []string) {
 	for _, elem := range out {
 		fmt.Println(elem)
 	}
 }
 
-//TxtOutput it's the wrapper around all the txt things.
-//Actually it manages everything related to TXT output.
+// TxtOutput it's the wrapper around all the txt things.
+// Actually it manages everything related to TXT output.
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
@@ -115,9 +115,9 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	}
 }
 
-//HtmlOutput it's the wrapper around all the html things.
-//Actually it manages everything related to HTML output.
-func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
+// HtmlOutput it's the wrapper around all the html things.
+// Actually it manages everything related to HTML output.
+func HTMLOutput(flags input.Input, resultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
 	exists, err := utils.ElementExists("output-cariddi")
@@ -131,28 +131,28 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 		utils.CreateOutputFolder()
 	}
 
-	HeaderHTML("Results found", ResultFilename)
+	HeaderHTML("Results found", resultFilename)
 
 	for _, elem := range finalResults {
-		AppendOutputToHTML(elem, "", ResultFilename, true)
+		AppendOutputToHTML(elem, "", resultFilename, true)
 	}
 
-	FooterHTML(ResultFilename)
+	FooterHTML(resultFilename)
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {
-		HeaderHTML("Secrets found", ResultFilename)
+		HeaderHTML("Secrets found", resultFilename)
 
 		for _, elem := range finalSecret {
-			AppendOutputToHTML(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, "", resultFilename, false)
 		}
 
-		FooterHTML(ResultFilename)
+		FooterHTML(resultFilename)
 	}
 
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints {
-		HeaderHTML("Endpoints found", ResultFilename)
+		HeaderHTML("Endpoints found", resultFilename)
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
@@ -164,48 +164,48 @@ func HtmlOutput(flags input.Input, ResultFilename string, finalResults []string,
 					}
 				}
 
-				AppendOutputToHTML(finalString+" in "+elem.URL, "", ResultFilename, false)
+				AppendOutputToHTML(finalString+" in "+elem.URL, "", resultFilename, false)
 			}
 		}
 
-		FooterHTML(ResultFilename)
+		FooterHTML(resultFilename)
 	}
 
 	// if extensions flag enabled save also extensions
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
-		HeaderHTML("Extensions found", ResultFilename)
+		HeaderHTML("Extensions found", resultFilename)
 
 		for _, elem := range finalExtensions {
-			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.URL, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.URL, "", resultFilename, false)
 		}
 
-		FooterHTML(ResultFilename)
+		FooterHTML(resultFilename)
 	}
 
 	// if errors flag enabled save also errors
 	if flags.Errors {
-		HeaderHTML("Errors found", ResultFilename)
+		HeaderHTML("Errors found", resultFilename)
 
 		for _, elem := range finalErrors {
-			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, "", ResultFilename, false)
+			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, "", resultFilename, false)
 		}
 
-		FooterHTML(ResultFilename)
+		FooterHTML(resultFilename)
 	}
 
 	// if info flag enabled save also infos
 	if flags.Info {
-		HeaderHTML("Useful informations found", ResultFilename)
+		HeaderHTML("Useful informations found", resultFilename)
 
 		for _, elem := range finalInfos {
 			// Escape HTML comment to be shown on the result page
 			AppendOutputToHTML(elem.Info.Name+" - "+
 				strings.Replace(strings.Replace(elem.Match, "<", "&lt;", 10), ">", "&gt;", 10)+
-				" in "+elem.URL, "", ResultFilename, false)
+				" in "+elem.URL, "", resultFilename, false)
 		}
 
-		FooterHTML(ResultFilename)
+		FooterHTML(resultFilename)
 	}
 
-	BannerFooterHTML(ResultFilename)
+	BannerFooterHTML(resultFilename)
 }

@@ -31,7 +31,7 @@ import (
 	"os"
 )
 
-//BannerHTML appends the initial banner to html file
+// BannerHTML appends the initial banner to html file.
 func BannerHTML(filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
@@ -50,7 +50,7 @@ func BannerHTML(filename string) {
 	file.Close()
 }
 
-//AppendOutputToHTML appends the output to html file
+// AppendOutputToHTML appends the output to html file.
 func AppendOutputToHTML(output string, status string, filename string, isLink bool) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
@@ -84,7 +84,7 @@ func AppendOutputToHTML(output string, status string, filename string, isLink bo
 	file.Close()
 }
 
-//HeaderHTML appends the html header
+// HeaderHTML appends the html header.
 func HeaderHTML(header string, filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
@@ -99,7 +99,7 @@ func HeaderHTML(header string, filename string) {
 	file.Close()
 }
 
-//FooterHTML appends the footer
+// FooterHTML appends the footer.
 func FooterHTML(filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
@@ -114,7 +114,7 @@ func FooterHTML(filename string) {
 	file.Close()
 }
 
-//BannerFooterHTML appends the final footer
+// BannerFooterHTML appends the final footer.
 func BannerFooterHTML(filename string) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {

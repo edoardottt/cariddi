@@ -36,10 +36,10 @@ import (
 	"strings"
 )
 
-//CreateOutputFolder creates the output folder
-//If it fails exits with an error message.
+// CreateOutputFolder creates the output folder
+// If it fails exits with an error message.
 func CreateOutputFolder() {
-	//Create a folder/directory at a full qualified path
+	// Create a folder/directory at a full qualified path
 	err := os.Mkdir("output-cariddi", 0755)
 	if err != nil {
 		fmt.Println("Can't create output folder.")
@@ -47,12 +47,12 @@ func CreateOutputFolder() {
 	}
 }
 
-//CreateOutputFile takes a target (of the attack), a subcommand
-//(PORT-DNS-DIR-SUBDOMAIN-REPORT) and a format (json-html-txt).
-//It creates the output folder if needed, then checks if the output file
-//already exists, if yes asks the user if scilla has to overwrite it;
-//if no scilla creates it.
-//Whenever an instruction fails, it exits with an error message.
+// CreateOutputFile takes a target (of the attack), a subcommand
+// (PORT-DNS-DIR-SUBDOMAIN-REPORT) and a format (json-html-txt).
+// It creates the output folder if needed, then checks if the output file
+// already exists, if yes asks the user if scilla has to overwrite it;
+// if no scilla creates it.
+// Whenever an instruction fails, it exits with an error message.
 func CreateOutputFile(target string, subcommand string, format string) string {
 	target = ReplaceBadCharacterOutput(target)
 
@@ -96,15 +96,15 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 	return filename
 }
 
-//ReplaceBadCharacterOutput replaces forward-slashes
-//with dashes (to avoid problems with output folder).
+// ReplaceBadCharacterOutput replaces forward-slashes
+// with dashes (to avoid problems with output folder).
 func ReplaceBadCharacterOutput(input string) string {
 	result := strings.ReplaceAll(input, "/", "-")
 	return result
 }
 
-//ReadFile reads a file line per line
-//and returns a slice of strings.
+// ReadFile reads a file line per line
+// and returns a slice of strings.
 func ReadFile(inputFile string) []string {
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -123,7 +123,7 @@ func ReadFile(inputFile string) []string {
 	return text
 }
 
-//ElementExists returns whether the given file or directory exists.
+// ElementExists returns whether the given file or directory exists.
 func ElementExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -137,8 +137,8 @@ func ElementExists(path string) (bool, error) {
 	return false, err
 }
 
-//ReadHTTPRequestFromFile reads from a file an HTTP
-//request and returns a *http.Request object.
+// ReadHTTPRequestFromFile reads from a file an HTTP
+// request and returns a *http.Request object.
 func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 	f, err := os.Open(inputFile)
 	if err != nil {
@@ -158,7 +158,7 @@ func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 	return req, nil
 }
 
-//ReadEntireFile returns the content of the inputted file.
+// ReadEntireFile returns the content of the inputted file.
 func ReadEntireFile(inputFile string) []byte {
 	file, err := os.Open(inputFile)
 	if err != nil {

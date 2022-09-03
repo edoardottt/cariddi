@@ -32,10 +32,10 @@ import (
 	"strings"
 )
 
-//GetHost takes as input a string and
-//tries to parse it as url, if it's a
-//well formatted url this function returns
-//the host (the domain if you prefer).
+// GetHost takes as input a string and
+// tries to parse it as url, if it's a
+// well formatted url this function returns
+// the host (the domain if you prefer).
 func GetHost(input string) string {
 	u, err := url.Parse(input)
 	if err != nil {
@@ -45,10 +45,10 @@ func GetHost(input string) string {
 	return u.Host
 }
 
-//GetProtocol takes as input a string and
-//tries to parse it as url, if it's a
-//well formatted url this function returns
-//the protocol (the scheme if you prefer).
+// GetProtocol takes as input a string and
+// tries to parse it as url, if it's a
+// well formatted url this function returns
+// the protocol (the scheme if you prefer).
 func GetProtocol(input string) string {
 	u, err := url.Parse(input)
 	if err != nil {
@@ -58,19 +58,19 @@ func GetProtocol(input string) string {
 	return u.Scheme
 }
 
-//GetRootHost takes as input a string and
-//tries to parse it as url, if it's a
-//well formatted url this function returns
-//the second level domain.
+// GetRootHost takes as input a string and
+// tries to parse it as url, if it's a
+// well formatted url this function returns
+// the second level domain.
 func GetRootHost(input string) (string, error) {
 	u, err := url.Parse(input)
 	if err != nil {
 		return "", err
 	}
 
-	//divide host and port, then split by dot
+	// divide host and port, then split by dot
 	parts := strings.Split(strings.Split(u.Host, ":")[0], ".")
-	//return the last two parts
+	// return the last two parts
 	if len(parts) > 1 {
 		return parts[len(parts)-2] + "." + parts[len(parts)-1], nil
 	}
@@ -78,17 +78,17 @@ func GetRootHost(input string) (string, error) {
 	return "", errors.New("domain formatted in a bad way")
 }
 
-//HasProtocol takes as input a string and
-//checks if it has a protocol ( like in a
-//URI/URL).
+// HasProtocol takes as input a string and
+// checks if it has a protocol ( like in a
+// URI/URL).
 func HasProtocol(input string) bool {
 	res := strings.Index(input, "://")
 	return res >= 0
 }
 
-//RemoveProtocol removes the protocol from
-//the input string (something://...).
-//If it's not present it returns the input.
+// RemoveProtocol removes the protocol from
+// the input string (something://...).
+// If it's not present it returns the input.
 func RemoveProtocol(input string) string {
 	res := strings.Index(input, "://")
 	if res >= 0 {
@@ -98,8 +98,8 @@ func RemoveProtocol(input string) string {
 	return input
 }
 
-//RemovePort removes port from the input string.
-//If it's not present it returns the input.
+// RemovePort removes port from the input string.
+// If it's not present it returns the input.
 func RemovePort(input string) string {
 	res := strings.Index(input, ":")
 	if res >= 0 {
@@ -109,11 +109,11 @@ func RemovePort(input string) string {
 	return input
 }
 
-//RetrieveParameters takes as input a string and
-//if it's correctly url-formatted returns a slice
-//of strings that are the parameters of the URL.
+// RetrieveParameters takes as input a string and
+// if it's correctly url-formatted returns a slice
+// of strings that are the parameters of the URL.
 func RetrieveParameters(input string) []string {
-	var result []string
+	result := []string{}
 
 	u, err := url.Parse(input)
 	if err != nil {
@@ -128,8 +128,8 @@ func RetrieveParameters(input string) []string {
 	return result
 }
 
-//AbsoluteURL takes as input a protocol, a domain and a path
-//and returns the absolute URL with protocol + domain + path.
+// AbsoluteURL takes as input a protocol, a domain and a path
+// and returns the absolute URL with protocol + domain + path.
 func AbsoluteURL(protocol string, target string, path string) string {
 	// if the path variable starts with a scheme, it means that the
 	// path is itself an absolute path.
@@ -144,7 +144,7 @@ func AbsoluteURL(protocol string, target string, path string) string {
 	return protocol + "://" + target + "/" + path
 }
 
-//SameDomain checks if two urls have the same domain.
+// SameDomain checks if two urls have the same domain.
 func SameDomain(url1 string, url2 string) bool {
 	u1, err := url.Parse(url1)
 	if err != nil {
@@ -163,8 +163,8 @@ func SameDomain(url1 string, url2 string) bool {
 	return u1.Host == u2.Host
 }
 
-//GetPath returns the path of the input string
-//(if correctly URL-formatted).
+// GetPath returns the path of the input string
+// (if correctly URL-formatted).
 func GetPath(input string) (string, error) {
 	u, err := url.Parse(input)
 	if err != nil {
@@ -174,7 +174,7 @@ func GetPath(input string) (string, error) {
 	return u.Path, nil
 }
 
-//IsEmailURL checks if the input string is a mail URL.
+// IsEmailURL checks if the input string is a mail URL.
 func IsEmailURL(input string) (bool, string) {
 	if input[:7] == "mailto:" {
 		return true, input[7:]

@@ -28,7 +28,7 @@ package output
 
 import "fmt"
 
-//PrintExamples prints some examples
+// PrintExamples prints some examples.
 func PrintExamples() {
 	Beautify()
 	fmt.Println(`

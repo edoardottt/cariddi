@@ -31,8 +31,8 @@ import (
 	"strings"
 )
 
-//RemoveDuplicateValues removes duplicates from a slice
-//of strings.
+// RemoveDuplicateValues removes duplicates from a slice
+// of strings.
 func RemoveDuplicateValues(strSlice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
@@ -47,8 +47,8 @@ func RemoveDuplicateValues(strSlice []string) []string {
 	return list
 }
 
-//CheckInputArray checks the basic rules to
-//be valid and then returns the array as input.
+// CheckInputArray checks the basic rules to
+// be valid and then returns the array as input.
 // - Delete duplicates.
 // - Avoid empty strings.
 func CheckInputArray(input string) []string {
@@ -66,16 +66,16 @@ func CheckInputArray(input string) []string {
 	return result
 }
 
-//CheckCookies checks if the string provided to the
-//-cookie option is valid.
-//format: "name1:value1;name2:value2"
-//It returns a slice of Cookies.
+// CheckCookies checks if the string provided to the
+// -cookie option is valid.
+// format: "name1:value1;name2:value2"
+// It returns a slice of Cookies.
 func CheckCookies(input string) []*http.Cookie {
 	var result []*http.Cookie
 	if input == "" {
 		return result
 	}
-	//Split and get different pairs of (name,value)
+	// Split and get different pairs of (name,value)
 	pairs := strings.Split(input, ";")
 	if len(pairs) == 0 {
 		return result

@@ -35,8 +35,8 @@ import (
 	"github.com/edoardottt/cariddi/utils"
 )
 
-//ScanTargets return the array of elements
-//taken as input on stdin.
+// ScanTargets return the array of elements
+// taken as input on stdin.
 func ScanTargets() []string {
 	var result []string
 
@@ -52,9 +52,9 @@ func ScanTargets() []string {
 	return utils.RemoveDuplicateValues(result)
 }
 
-//GetHeaders returns the headers provided as input
-//using the headers flag.
-//E.g. -headers \"Cookie: auth=yes;;Client: type=2\".
+// GetHeaders returns the headers provided as input
+// using the headers flag.
+// E.g. -headers \"Cookie: auth=yes;;Client: type=2\".
 func GetHeaders(input string) map[string]string {
 	result := make(map[string]string)
 

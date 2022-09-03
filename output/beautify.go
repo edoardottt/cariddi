@@ -32,7 +32,7 @@ import (
 	"github.com/fatih/color"
 )
 
-//Beautify prints the banner + version
+// Beautify prints the banner + version.
 func Beautify() {
 	banner1 := "                 _     _     _ _ \n"
 	banner2 := "   ___ __ _ _ __(_) __| | __| (_)\n"

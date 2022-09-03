@@ -30,8 +30,8 @@ import (
 	"flag"
 )
 
-//Input struct.
-//It contains all the possible options.
+// Input struct.
+// It contains all the possible options.
 type Input struct {
 	Version       bool
 	Delay         int
@@ -62,9 +62,9 @@ type Input struct {
 	UserAgent     string
 }
 
-//ScanFlag defines all the options taken
-//as input and scan them, then it returns
-//an Input struct.
+// ScanFlag defines all the options taken
+// as input and scan them, then it returns
+// an Input struct.
 func ScanFlag() Input {
 	versionPtr := flag.Bool("version", false, "Print the version.")
 	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")

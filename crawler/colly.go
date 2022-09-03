@@ -43,9 +43,9 @@ import (
 	"github.com/gocolly/colly/extensions"
 )
 
-//Crawler it's the actual crawler engine.
-//It controls all the behaviours of a scan
-//(event handlers, secrets, errors, extensions and endpoints scanning).
+// Crawler it's the actual crawler engine.
+// It controls all the behaviours of a scan
+// (event handlers, secrets, errors, extensions and endpoints scanning).
 func Crawler(target string, txt string, html string, delayTime int, concurrency int,
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, insecure bool, secrets bool, secretsFile []string, plain bool, endpoints bool,
@@ -80,19 +80,19 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		os.Exit(1)
 	}
 
-	//clean target input
+	// clean target input
 	target = utils.RemoveProtocol(target)
 
 	ignoreSlice := []string{}
 	ignoreBool := false
 
-	//if ignore -> produce the slice
+	// if ignore -> produce the slice
 	if ignore != "" {
 		ignoreBool = true
 		ignoreSlice = utils.CheckInputArray(ignore)
 	}
 
-	//if ignoreTxt -> produce the slice
+	// if ignoreTxt -> produce the slice
 	if ignoreTxt != "" {
 		ignoreBool = true
 		ignoreSlice = utils.ReadFile(ignoreTxt)
@@ -105,7 +105,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	FinalErrors := []scanner.ErrorMatched{}
 	FinalInfos := []scanner.InfoMatched{}
 
-	//crawler creation
+	// crawler creation
 	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, insecure, userAgent, target)
 
 	// On every a element which has href attribute call callback
@@ -276,7 +276,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 		}
 	})
 
-	//Add headers (if needed) on each request
+	// Add headers (if needed) on each request
 	if (len(headers)) > 0 {
 		c.OnRequest(func(r *colly.Request) {
 			for header, value := range headers {
@@ -290,7 +290,7 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 
 		lengthOk := len(string(r.Body)) > 10
 
-		//if endpoints or secrets or filetype: scan
+		// if endpoints or secrets or filetype: scan
 		if endpoints || secrets || (1 <= fileType && fileType <= 7) || errors || info {
 			// HERE SCAN FOR SECRETS
 			if secrets && lengthOk {
@@ -367,8 +367,8 @@ func Crawler(target string, txt string, html string, delayTime int, concurrency 
 	return FinalResults, FinalSecrets, FinalEndpoints, FinalExtensions, FinalErrors, FinalInfos
 }
 
-//CreateColly takes as input all the settings needed to instantiate
-//a new Colly Collector object and it returns this object.
+// CreateColly takes as input all the settings needed to instantiate
+// a new Colly Collector object and it returns this object.
 func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	intensive bool, rua bool, proxy string, insecure bool, userAgent string, target string) *colly.Collector {
 	c := colly.NewCollector(
@@ -428,13 +428,13 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	return c
 }
 
-//huntSecrets hunts for secrets
+// huntSecrets hunts for secrets.
 func huntSecrets(secretsFile []string, target string, body string) []scanner.SecretMatched {
 	secrets := SecretsMatch(target, body, secretsFile)
 	return secrets
 }
 
-//SecretsMatch checks if a body matches some secrets
+// SecretsMatch checks if a body matches some secrets.
 func SecretsMatch(url string, body string, secretsFile []string) []scanner.SecretMatched {
 	var secrets []scanner.SecretMatched
 
@@ -475,13 +475,13 @@ func SecretsMatch(url string, body string, secretsFile []string) []scanner.Secre
 	return secrets
 }
 
-//huntEndpoints hunts for juicy endpoints
+// huntEndpoints hunts for juicy endpoints.
 func huntEndpoints(endpointsFile []string, target string) []scanner.EndpointMatched {
 	endpoints := EndpointsMatch(target, endpointsFile)
 	return endpoints
 }
 
-//EndpointsMatch check if an endpoint matches a juicy parameter
+// EndpointsMatch check if an endpoint matches a juicy parameter.
 func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMatched {
 	endpoints := []scanner.EndpointMatched{}
 	matched := []scanner.Parameter{}
@@ -510,7 +510,7 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 	return endpoints
 }
 
-//huntExtensions hunts for extensions
+// huntExtensions hunts for extensions.
 func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 	extension := scanner.FileTypeMatched{}
 	copyTarget := target
@@ -532,13 +532,13 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 	return extension
 }
 
-//huntErrors hunts for errors
+// huntErrors hunts for errors.
 func huntErrors(target string, body string) []scanner.ErrorMatched {
 	errorsSlice := ErrorsMatch(target, body)
 	return errorsSlice
 }
 
-//ErrorsMatch checks the patterns for errors
+// ErrorsMatch checks the patterns for errors.
 func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 	errors := []scanner.ErrorMatched{}
 
@@ -556,13 +556,13 @@ func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 	return errors
 }
 
-//huntInfos hunts for infos
+// huntInfos hunts for infos.
 func huntInfos(target string, body string) []scanner.InfoMatched {
 	infosSlice := InfoMatch(target, body)
 	return infosSlice
 }
 
-//InfoMatch checks the patterns for infos
+// InfoMatch checks the patterns for infos.
 func InfoMatch(url string, body string) []scanner.InfoMatched {
 	infos := []scanner.InfoMatched{}
 
@@ -580,7 +580,7 @@ func InfoMatch(url string, body string) []scanner.InfoMatched {
 	return infos
 }
 
-//RetrieveBody retrieves the body (in the response) of a url
+// RetrieveBody retrieves the body (in the response) of a url.
 func RetrieveBody(target string) string {
 	sb, err := GetRequest(target)
 	if err == nil && sb != "" {
@@ -590,7 +590,7 @@ func RetrieveBody(target string) string {
 	return ""
 }
 
-//IgnoreMatch checks if the URL should be ignored or not.
+// IgnoreMatch checks if the URL should be ignored or not.
 func IgnoreMatch(url string, ignoreSlice []string) bool {
 	for _, ignore := range ignoreSlice {
 		if strings.Contains(url, ignore) {
@@ -601,9 +601,9 @@ func IgnoreMatch(url string, ignoreSlice []string) bool {
 	return false
 }
 
-//intensiveOk checks if a given url can be crawled
-//in intensive mode (if the 2nd level domain matches with
-//the inputted target).
+// intensiveOk checks if a given url can be crawled
+// in intensive mode (if the 2nd level domain matches with
+// the inputted target).
 func intensiveOk(target string, urlInput string) bool {
 	root, err := utils.GetRootHost(urlInput)
 	if err != nil {

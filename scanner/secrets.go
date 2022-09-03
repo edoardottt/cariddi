@@ -26,7 +26,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-//Secret struct.
+// Secret struct.
 // Name = the name that identifies the secret.
 // Description.
 // Regex = The regular expression matching the secret.
@@ -40,7 +40,7 @@ type Secret struct {
 	Poc            string
 }
 
-//SecretMatched struct.
+// SecretMatched struct.
 // Secret = The secret matched (struct).
 // Url = url in which is present the secret.
 // Match = the string matching the regex.
@@ -50,8 +50,8 @@ type SecretMatched struct {
 	Match  string
 }
 
-//GetSecretRegexes returns a slice of all
-//the secret structs.
+// GetSecretRegexes returns a slice of all
+// the secret structs.
 func GetSecretRegexes() []Secret {
 	var regexes = []Secret{
 		{
@@ -342,7 +342,7 @@ func GetSecretRegexes() []Secret {
 	return regexes
 }
 
-//RemoveDuplicateSecrets removes duplicates from secrets found.
+// RemoveDuplicateSecrets removes duplicates from secrets found.
 func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
 	keys := make(map[string]bool)
 	list := []SecretMatched{}
