@@ -207,6 +207,12 @@ Contributing 🛠
 Just open an [issue](https://github.com/edoardottt/cariddi/issues)/[pull request](https://github.com/edoardottt/cariddi/pulls).  
 See also [CONTRIBUTING](https://github.com/edoardottt/cariddi/blob/master/CONTRIBUTING.md) and [CODE OF CONDUCT](https://github.com/edoardottt/cariddi/blob/master/CODE_OF_CONDUCT.md) files.
 
+Before opening a pull request, download [golangci-lint](https://golangci-lint.run/usage/install/) and run
+```bash
+golangci-lint run
+```
+If there aren't errors, go ahead :)
+
 **Help me building this!**
 
 Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples) and [RegexPassive](https://github.com/hahwul/RegexPassive).
