@@ -480,8 +480,7 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 				target = target[:firstIndex]
 			}
 
-			i := strings.LastIndex(target, ".")
-			if i >= 0 && strings.ToLower(target[i:]) == "."+ext.Extension {
+			if strings.ToLower(target[len(target)-len("."+ext.Extension):]) == "."+ext.Extension {
 				extension = scanner.FileTypeMatched{Filetype: ext, URL: copyTarget}
 			}
 		}
