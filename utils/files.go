@@ -29,7 +29,7 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -178,7 +178,7 @@ func ReadEntireFile(inputFile string) []byte {
 		}
 	}()
 
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 
 	return b
 }

@@ -81,6 +81,7 @@ func CheckCookies(input string) []*http.Cookie {
 	}
 
 	result := make([]*http.Cookie, 0, len(pairs))
+
 	for _, pair := range pairs {
 		couple := strings.Split(pair, ":")
 		if len(couple) != 2 {
