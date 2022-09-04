@@ -29,7 +29,7 @@ package crawler
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -43,7 +43,7 @@ func GetRequest(target string) (string, error) {
 	defer resp.Body.Close()
 
 	// We Read the response body on the line below.
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -69,7 +69,7 @@ func PostRequest(target string, data map[string]string) (string, error) {
 	}
 	defer resp.Body.Close()
 	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -88,7 +88,7 @@ func HeadRequest(target string) (string, error) {
 	}
 	defer resp.Body.Close()
 	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
