@@ -130,3 +130,44 @@ func TestGetRootHost(t *testing.T) {
 		})
 	}
 }
+
+func TestHasProtocol(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{
+			name:  "empty string",
+			input: "",
+			want:  false,
+		},
+		{
+			name:  "no protocol",
+			input: "ciao.com",
+			want:  false,
+		},
+		{
+			name:  "no protocol2",
+			input: "ciao.ciao.com",
+			want:  false,
+		},
+		{
+			name:  "ok1",
+			input: "http://sub.edoardottt.com/ciao?id=1",
+			want:  true,
+		},
+		{
+			name:  "ok2",
+			input: "ftp://sub.edoardottt.com/://ciao",
+			want:  true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := utils.HasProtocol(tt.input); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("HasProtocol() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
