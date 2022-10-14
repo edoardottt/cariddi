@@ -24,13 +24,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 */
 
-package utils_test
+package url_test
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/edoardottt/cariddi/utils"
+	urlUtils "github.com/edoardottt/cariddi/internal/url"
 )
 
 func TestGetHost(t *testing.T) {
@@ -57,7 +57,7 @@ func TestGetHost(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := utils.GetHost(tt.input); !reflect.DeepEqual(got, tt.want) {
+			if got := urlUtils.GetHost(tt.input); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetHost() = %v, want %v", got, tt.want)
 			}
 		})
@@ -88,7 +88,7 @@ func TestGetProtocol(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := utils.GetProtocol(tt.input); !reflect.DeepEqual(got, tt.want) {
+			if got := urlUtils.GetProtocol(tt.input); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetProtocol() = %v, want %v", got, tt.want)
 			}
 		})
@@ -124,7 +124,7 @@ func TestGetRootHost(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := utils.GetRootHost(tt.input); !reflect.DeepEqual(got, tt.want) {
+			if got, _ := urlUtils.GetRootHost(tt.input); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetRootHost() = %v, want %v", got, tt.want)
 			}
 		})
@@ -165,7 +165,7 @@ func TestHasProtocol(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := utils.HasProtocol(tt.input); !reflect.DeepEqual(got, tt.want) {
+			if got := urlUtils.HasProtocol(tt.input); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("HasProtocol() = %v, want %v", got, tt.want)
 			}
 		})

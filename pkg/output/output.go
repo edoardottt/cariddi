@@ -31,9 +31,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/edoardottt/cariddi/input"
-	"github.com/edoardottt/cariddi/scanner"
-	"github.com/edoardottt/cariddi/utils"
+	fileUtils "github.com/edoardottt/cariddi/internal/file"
+	"github.com/edoardottt/cariddi/pkg/input"
+	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
 // PrintSimpleOutput prints line by line.
@@ -48,24 +48,24 @@ func PrintSimpleOutput(out []string) {
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-	exists, err := utils.ElementExists("output-cariddi")
+	exists, err := fileUtils.ElementExists("output-cariddi")
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
 		os.Exit(1)
 	}
 
 	if !exists {
-		utils.CreateOutputFolder()
+		fileUtils.CreateOutputFolder()
 	}
 
-	ResultFilename := utils.CreateOutputFile(flags.TXT, "results", "txt")
+	ResultFilename := fileUtils.CreateOutputFile(flags.TXT, "results", "txt")
 	for _, elem := range finalResults {
 		AppendOutputToTxt(elem, ResultFilename)
 	}
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {
-		SecretFilename := utils.CreateOutputFile(flags.TXT, "secrets", "txt")
+		SecretFilename := fileUtils.CreateOutputFile(flags.TXT, "secrets", "txt")
 		for _, elem := range finalSecret {
 			AppendOutputToTxt(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, SecretFilename)
 		}
@@ -73,7 +73,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints {
-		EndpointFilename := utils.CreateOutputFile(flags.TXT, "endpoints", "txt")
+		EndpointFilename := fileUtils.CreateOutputFile(flags.TXT, "endpoints", "txt")
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
@@ -92,7 +92,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if extensions flag enabled save also secrets
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
-		ExtensionsFilename := utils.CreateOutputFile(flags.TXT, "extensions", "txt")
+		ExtensionsFilename := fileUtils.CreateOutputFile(flags.TXT, "extensions", "txt")
 		for _, elem := range finalExtensions {
 			AppendOutputToTxt(elem.Filetype.Extension+" in "+elem.URL, ExtensionsFilename)
 		}
@@ -100,7 +100,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if errors flag enabled save also errors
 	if flags.Errors {
-		ErrorsFilename := utils.CreateOutputFile(flags.TXT, "errors", "txt")
+		ErrorsFilename := fileUtils.CreateOutputFile(flags.TXT, "errors", "txt")
 		for _, elem := range finalErrors {
 			AppendOutputToTxt(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, ErrorsFilename)
 		}
@@ -108,7 +108,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if info flag enabled save also infos
 	if flags.Info {
-		InfosFilename := utils.CreateOutputFile(flags.TXT, "info", "txt")
+		InfosFilename := fileUtils.CreateOutputFile(flags.TXT, "info", "txt")
 		for _, elem := range finalInfos {
 			AppendOutputToTxt(elem.Info.Name+" - "+elem.Match+" in "+elem.URL, InfosFilename)
 		}
@@ -120,7 +120,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 func HTMLOutput(flags input.Input, resultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-	exists, err := utils.ElementExists("output-cariddi")
+	exists, err := fileUtils.ElementExists("output-cariddi")
 
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
@@ -128,7 +128,7 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 	}
 
 	if !exists {
-		utils.CreateOutputFolder()
+		fileUtils.CreateOutputFolder()
 	}
 
 	HeaderHTML("Results found", resultFilename)

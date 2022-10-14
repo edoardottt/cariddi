@@ -29,11 +29,12 @@ package main
 import (
 	"os"
 
-	"github.com/edoardottt/cariddi/crawler"
-	"github.com/edoardottt/cariddi/input"
-	"github.com/edoardottt/cariddi/output"
-	"github.com/edoardottt/cariddi/scanner"
-	"github.com/edoardottt/cariddi/utils"
+	fileUtils "github.com/edoardottt/cariddi/internal/file"
+	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
+	"github.com/edoardottt/cariddi/pkg/crawler"
+	"github.com/edoardottt/cariddi/pkg/input"
+	"github.com/edoardottt/cariddi/pkg/output"
+	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
 // main function.
@@ -74,14 +75,14 @@ func main() {
 	// from the specified file.
 	var endpointsFileSlice []string
 	if flags.EndpointsFile != "" {
-		endpointsFileSlice = utils.ReadFile(flags.EndpointsFile)
+		endpointsFileSlice = fileUtils.ReadFile(flags.EndpointsFile)
 	}
 
 	// If it is needed, read custom secrets definition
 	// from the specified file.
 	var secretsFileSlice []string
 	if flags.SecretsFile != "" {
-		secretsFileSlice = utils.ReadFile(flags.SecretsFile)
+		secretsFileSlice = fileUtils.ReadFile(flags.SecretsFile)
 	}
 
 	finalResults := []string{}
@@ -94,12 +95,12 @@ func main() {
 	// Create output files if needed (txt / html).
 	var ResultTxt = ""
 	if flags.TXT != "" {
-		ResultTxt = utils.CreateOutputFile(flags.TXT, "results", "txt")
+		ResultTxt = fileUtils.CreateOutputFile(flags.TXT, "results", "txt")
 	}
 
 	var ResultHTML = ""
 	if flags.HTML != "" {
-		ResultHTML = utils.CreateOutputFile(flags.HTML, "", "html")
+		ResultHTML = fileUtils.CreateOutputFile(flags.HTML, "", "html")
 		output.BannerHTML(ResultHTML)
 		output.HeaderHTML("Results", ResultHTML)
 	}
@@ -110,7 +111,7 @@ func main() {
 	if flags.HeadersFile != "" || flags.Headers != "" {
 		var headersInput string
 		if flags.HeadersFile != "" {
-			headersInput = string(utils.ReadEntireFile(flags.HeadersFile))
+			headersInput = string(fileUtils.ReadEntireFile(flags.HeadersFile))
 		} else {
 			headersInput = flags.Headers
 		}
@@ -134,7 +135,7 @@ func main() {
 	}
 
 	// Remove duplicates from all the results.
-	finalResults = utils.RemoveDuplicateValues(finalResults)
+	finalResults = sliceUtils.RemoveDuplicateValues(finalResults)
 	finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
 	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
 	finalExtensions = scanner.RemoveDuplicateExtensions(finalExtensions)
