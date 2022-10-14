@@ -73,13 +73,6 @@ Installation 📡
 go install github.com/edoardottt/cariddi/cmd/cariddi@latest
 ```
 
-### Using Docker
-
-```bash
-docker build -t cariddi .
-docker run cariddi -h
-```
-
 ### Building from source
 
 You need [Go](https://golang.org/).
