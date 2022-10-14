@@ -70,7 +70,7 @@ Installation 📡
 
 ### Using Go
 ```bash
-go install github.com/edoardottt/cariddi@latest
+go install github.com/edoardottt/cariddi/cmd/cariddi@latest
 ```
 
 ### Using Docker
