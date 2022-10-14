@@ -37,10 +37,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/edoardottt/cariddi/input"
-	"github.com/edoardottt/cariddi/output"
-	"github.com/edoardottt/cariddi/scanner"
-	"github.com/edoardottt/cariddi/utils"
+	fileUtils "github.com/edoardottt/cariddi/internal/file"
+	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
+	urlUtils "github.com/edoardottt/cariddi/internal/url"
+	"github.com/edoardottt/cariddi/pkg/input"
+	"github.com/edoardottt/cariddi/pkg/output"
+	"github.com/edoardottt/cariddi/pkg/scanner"
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/extensions"
 )
@@ -59,17 +61,17 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	var targetTemp, protocolTemp string
 
 	// if there isn't a scheme use http.
-	if !utils.HasProtocol(target) {
+	if !urlUtils.HasProtocol(target) {
 		protocolTemp = "http"
-		targetTemp = utils.GetHost(protocolTemp + "://" + target)
+		targetTemp = urlUtils.GetHost(protocolTemp + "://" + target)
 	} else {
-		protocolTemp = utils.GetProtocol(target)
-		targetTemp = utils.GetHost(target)
+		protocolTemp = urlUtils.GetProtocol(target)
+		targetTemp = urlUtils.GetHost(target)
 	}
 
 	if intensive {
 		var err error
-		targetTemp, err = utils.GetRootHost(protocolTemp + "://" + targetTemp)
+		targetTemp, err = urlUtils.GetRootHost(protocolTemp + "://" + targetTemp)
 
 		if err != nil {
 			fmt.Println(err.Error())
@@ -83,7 +85,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	}
 
 	// clean target input
-	target = utils.RemoveProtocol(target)
+	target = urlUtils.RemoveProtocol(target)
 
 	ignoreSlice := []string{}
 	ignoreBool := false
@@ -91,13 +93,13 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	// if ignore -> produce the slice
 	if ignore != "" {
 		ignoreBool = true
-		ignoreSlice = utils.CheckInputArray(ignore)
+		ignoreSlice = sliceUtils.CheckInputArray(ignore)
 	}
 
 	// if ignoreTxt -> produce the slice
 	if ignoreTxt != "" {
 		ignoreBool = true
-		ignoreSlice = utils.ReadFile(ignoreTxt)
+		ignoreSlice = fileUtils.ReadFile(ignoreTxt)
 	}
 
 	FinalResults := []string{}
@@ -114,20 +116,17 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
-			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-					(intensive && intensiveOk(targetTemp, absoluteURL)) {
-					if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
-						err := c.Visit(absoluteURL)
-						if !errors.Is(err, colly.ErrAlreadyVisited) {
-							FinalResults = append(FinalResults, absoluteURL)
-							if err != nil && debug {
-								log.Println(err)
-							}
+				if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+					err := c.Visit(absoluteURL)
+					if !errors.Is(err, colly.ErrAlreadyVisited) {
+						FinalResults = append(FinalResults, absoluteURL)
+						if err != nil && debug {
+							log.Println(err)
 						}
 					}
 				}
@@ -157,10 +156,10 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		link := e.Attr("action")
 		if len(link) != 0 {
-			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
 					err := c.Visit(absoluteURL)
@@ -179,10 +178,10 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	c.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
 		link := e.Text
 		if len(link) != 0 {
-			absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+			absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
-			if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 				(intensive && intensiveOk(targetTemp, absoluteURL)) {
 				if ignoreBool {
 					if !IgnoreMatch(link, ignoreSlice) {
@@ -263,7 +262,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	})
 
 	// Start scraping on target
-	path, err := utils.GetPath(protocolTemp + "://" + target)
+	path, err := urlUtils.GetPath(protocolTemp + "://" + target)
 	if err == nil {
 		if path == "" {
 			err = c.Visit(protocolTemp + "://" + target + "/" + "robots.txt")
@@ -367,10 +366,10 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 func visitLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
 	ignoreSlice []string, finalResults *[]string, e *colly.HTMLElement, c *colly.Collector) {
 	if len(link) != 0 {
-		absoluteURL := utils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+		absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
-		if (!intensive && utils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 			(intensive && intensiveOk(targetTemp, absoluteURL)) {
 			if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
 				err := c.Visit(absoluteURL)
@@ -443,7 +442,7 @@ func huntEndpoints(endpointsFile []string, target string) []scanner.EndpointMatc
 func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMatched {
 	endpoints := []scanner.EndpointMatched{}
 	matched := []scanner.Parameter{}
-	parameters := utils.RetrieveParameters(target)
+	parameters := urlUtils.RetrieveParameters(target)
 
 	if len(endpointsFile) == 0 {
 		for _, parameter := range scanner.GetJuicyParameters() {
@@ -562,7 +561,7 @@ func IgnoreMatch(url string, ignoreSlice []string) bool {
 // in intensive mode (if the 2nd level domain matches with
 // the inputted target).
 func intensiveOk(target string, urlInput string) bool {
-	root, err := utils.GetRootHost(urlInput)
+	root, err := urlUtils.GetRootHost(urlInput)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)

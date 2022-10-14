@@ -31,7 +31,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/edoardottt/cariddi/utils"
+	fileUtils "github.com/edoardottt/cariddi/internal/file"
 )
 
 // CheckOutputFile checks if the string provided as input
@@ -104,7 +104,7 @@ func CheckFlags(flags Input) {
 	}
 
 	if flags.IgnoreTXT != "" {
-		_ = utils.ReadFile(flags.IgnoreTXT)
+		_ = fileUtils.ReadFile(flags.IgnoreTXT)
 	}
 
 	if flags.Timeout < 0 {

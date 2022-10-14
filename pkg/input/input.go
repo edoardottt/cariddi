@@ -32,7 +32,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/edoardottt/cariddi/utils"
+	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
 )
 
 // ScanTargets return the array of elements
@@ -49,7 +49,7 @@ func ScanTargets() []string {
 		}
 	}
 
-	return utils.RemoveDuplicateValues(result)
+	return sliceUtils.RemoveDuplicateValues(result)
 }
 
 // GetHeaders returns the headers provided as input
