@@ -30,13 +30,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/edoardottt/cariddi/utils"
+	fileUtils "github.com/edoardottt/cariddi/internal/file"
 )
 
 // AppendOutputToTxt opens the output file and append
 // the string taken as input.
 func AppendOutputToTxt(output string, filename string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, utils.Permission0644)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
 	if err != nil {
 		log.Println(err)
 	}

@@ -24,14 +24,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 */
 
-package utils_test
+package slice_test
 
 import (
 	"net/http"
 	"reflect"
 	"testing"
 
-	"github.com/edoardottt/cariddi/utils"
+	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
 )
 
 func TestRemoveDuplicateValues(t *testing.T) {
@@ -63,7 +63,7 @@ func TestRemoveDuplicateValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := utils.RemoveDuplicateValues(tt.slice); !reflect.DeepEqual(got, tt.want) {
+			if got := sliceUtils.RemoveDuplicateValues(tt.slice); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("RemoveDuplicateValues() = %v, want %v", got, tt.want)
 			}
 		})
@@ -99,7 +99,7 @@ func TestCheckInputArray(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := utils.CheckInputArray(tt.input); !reflect.DeepEqual(got, tt.want) {
+			if got := sliceUtils.CheckInputArray(tt.input); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CheckInputArray() = %v, want %v", got, tt.want)
 			}
 		})
@@ -163,7 +163,7 @@ func TestCheckCookies(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := utils.CheckCookies(tt.input); !reflect.DeepEqual(got, tt.want) {
+			if got := sliceUtils.CheckCookies(tt.input); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CheckCookies() = %v, want %v", got, tt.want)
 			}
 		})

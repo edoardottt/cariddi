@@ -30,12 +30,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/edoardottt/cariddi/utils"
+	fileUtils "github.com/edoardottt/cariddi/internal/file"
 )
 
 // BannerHTML appends the initial banner to html file.
 func BannerHTML(filename string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, utils.Permission0644)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -54,7 +54,7 @@ func BannerHTML(filename string) {
 
 // AppendOutputToHTML appends the output to html file.
 func AppendOutputToHTML(output string, status string, filename string, isLink bool) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, utils.Permission0644)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -88,7 +88,7 @@ func AppendOutputToHTML(output string, status string, filename string, isLink bo
 
 // HeaderHTML appends the html header.
 func HeaderHTML(header string, filename string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, utils.Permission0644)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -103,7 +103,7 @@ func HeaderHTML(header string, filename string) {
 
 // FooterHTML appends the footer.
 func FooterHTML(filename string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, utils.Permission0644)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -118,7 +118,7 @@ func FooterHTML(filename string) {
 
 // BannerFooterHTML appends the final footer.
 func BannerFooterHTML(filename string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, utils.Permission0644)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
 	if err != nil {
 		log.Println(err)
 	}

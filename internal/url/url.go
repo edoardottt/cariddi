@@ -24,12 +24,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 */
 
-package utils
+package url
 
 import (
 	"fmt"
 	"net/url"
 	"strings"
+
+	errUtils "github.com/edoardottt/cariddi/internal/error"
 )
 
 // GetHost takes as input a string and
@@ -83,7 +85,7 @@ func GetRootHost(input string) (string, error) {
 		return parts[len(parts)-2] + "." + parts[len(parts)-1], nil
 	}
 
-	return "", fmt.Errorf("%w", ErrDomainFormat)
+	return "", fmt.Errorf("%w", errUtils.ErrDomainFormat)
 }
 
 // HasProtocol takes as input a string and
