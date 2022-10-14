@@ -35,7 +35,7 @@ import (
 // of strings.
 func RemoveDuplicateValues(strSlice []string) []string {
 	keys := make(map[string]bool)
-	list := []string{}
+	list := make([]string, 0, len(strSlice))
 
 	for _, entry := range strSlice {
 		if _, value := keys[entry]; !value {
@@ -55,7 +55,7 @@ func CheckInputArray(input string) []string {
 	delimiter := byte(',')
 	sliceOut := strings.Split(input, string(delimiter))
 	sliceOut = RemoveDuplicateValues(sliceOut)
-	result := []string{}
+	result := make([]string, 0, len(sliceOut))
 
 	for _, elem := range sliceOut {
 		if elem != "" {
@@ -71,27 +71,24 @@ func CheckInputArray(input string) []string {
 // format: "name1:value1;name2:value2"
 // It returns a slice of Cookies.
 func CheckCookies(input string) []*http.Cookie {
-	var result []*http.Cookie
 	if input == "" {
-		return result
+		return []*http.Cookie{}
 	}
 	// Split and get different pairs of (name,value)
 	pairs := strings.Split(input, ";")
 	if len(pairs) == 0 {
-		return result
+		return []*http.Cookie{}
 	}
+
+	result := make([]*http.Cookie, 0, len(pairs))
 
 	for _, pair := range pairs {
 		couple := strings.Split(pair, ":")
-		if len(couple) == 0 {
+		if len(couple) != 2 {
 			continue
 		}
 
-		if len(couple) == 2 {
-			result = append(result, &http.Cookie{Name: couple[0], Value: couple[1]})
-		} else {
-			continue
-		}
+		result = append(result, &http.Cookie{Name: couple[0], Value: couple[1]})
 	}
 
 	return result

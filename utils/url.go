@@ -37,6 +37,10 @@ import (
 // well formatted url this function returns
 // the host (the domain if you prefer).
 func GetHost(input string) string {
+	if !HasProtocol(input) {
+		input = "http://" + input
+	}
+
 	u, err := url.Parse(input)
 	if err != nil {
 		return ""
@@ -63,6 +67,10 @@ func GetProtocol(input string) string {
 // well formatted url this function returns
 // the second level domain.
 func GetRootHost(input string) (string, error) {
+	if !HasProtocol(input) {
+		input = "http://" + input
+	}
+
 	u, err := url.Parse(input)
 	if err != nil {
 		return "", err

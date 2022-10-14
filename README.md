@@ -68,9 +68,14 @@ Preview :bar_chart:
 Installation 📡
 ----------
 
+### Using Go
+```bash
+go install github.com/edoardottt/cariddi@latest
+```
+
 ### Using Docker
 
-```shell
+```bash
 docker build -t cariddi .
 docker run cariddi -h
 ```
