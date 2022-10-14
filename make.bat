@@ -77,7 +77,7 @@ set GOOS=windows
 set GOARCH=amd64
 set GO111MODULE=on
 set CGO_ENABLED=0
-go build -o cariddi.exe
+go build ./cmd/cariddi
 echo Done.
 EXIT /B 0
 

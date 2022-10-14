@@ -22,7 +22,7 @@ lint:
 	@golangci-lint run
 
 linux:
-	@go build -o ./cariddi
+	@go build ./cmd/cariddi
 	@sudo mv ./cariddi /usr/bin/
 	@echo "Done."
 
