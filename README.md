@@ -209,8 +209,7 @@ Detailed changes for each release are documented in the [release notes](https://
 Contributing 🛠
 -------
 
-Just open an [issue](https://github.com/edoardottt/cariddi/issues)/[pull request](https://github.com/edoardottt/cariddi/pulls).  
-See also [CONTRIBUTING](https://github.com/edoardottt/cariddi/blob/master/CONTRIBUTING.md) and [CODE OF CONDUCT](https://github.com/edoardottt/cariddi/blob/master/CODE_OF_CONDUCT.md) files.
+Just open an [issue](https://github.com/edoardottt/cariddi/issues)/[pull request](https://github.com/edoardottt/cariddi/pulls).
 
 Before opening a pull request, download [golangci-lint](https://golangci-lint.run/usage/install/) and run
 ```bash
