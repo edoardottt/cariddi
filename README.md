@@ -216,29 +216,9 @@ Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://githu
 
 **To do:**
 
-  - [ ] Tests (😂)
+  - [ ] Add more Tests
   
   - [ ] Tor support
-
-  - [x] Custom headers support
-
-  - [x] Proxy support
-
-  - [x] Ignore specific types of urls
-
-  - [x] Plain output (print only results)
-  
-  - [x] HTML output
-
-  - [x] Output color
-
-  - [x] Endpoints (parameters) scan
-
-  - [x] Secrets scan
-
-  - [x] Extensions scan
-  
-  - [x] TXT output
   
 License 📝
 -------
