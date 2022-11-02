@@ -137,69 +137,67 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	// On every script element which has src attribute call callback
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// On every link element which has href attribute call callback
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		visitLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// On every iframe element which has src attribute call callback
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+	})
+
+	// On every svg element which has src attribute call callback
+	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
+		link := e.Attr("src")
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+	})
+
+	// On every img element which has src attribute call callback
+	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
+		link := e.Attr("src")
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// On every from element which has action attribute call callback
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		link := e.Attr("action")
-		if len(link) != 0 {
-			absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
-			// Visit link found on page
-			// Only those links are visited which are in AllowedDomains
-			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
-					err := c.Visit(absoluteURL)
-					if !errors.Is(err, colly.ErrAlreadyVisited) {
-						FinalResults = append(FinalResults, absoluteURL)
-						if err != nil && debug {
-							log.Println(err)
-						}
-					}
-				}
-			}
-		}
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
-	c.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
+	c.OnXML("//url", func(e *colly.XMLElement) {
 		link := e.Text
-		if len(link) != 0 {
-			absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
-			// Visit link found on page
-			// Only those links are visited which are in AllowedDomains
-			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if ignoreBool {
-					if !IgnoreMatch(link, ignoreSlice) {
-						FinalResults = append(FinalResults, absoluteURL)
-						err := c.Visit(absoluteURL)
-						if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-							log.Println(err)
-						}
-					}
-				} else {
-					FinalResults = append(FinalResults, absoluteURL)
-					err := c.Visit(absoluteURL)
-					if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-						log.Println(err)
-					}
-				}
-			}
-		}
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//link", func(e *colly.XMLElement) {
+		link := e.Text
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//href", func(e *colly.XMLElement) {
+		link := e.Text
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//loc", func(e *colly.XMLElement) {
+		link := e.Text
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//fileurl", func(e *colly.XMLElement) {
+		link := e.Text
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 	})
 
 	// Add headers (if needed) on each request
@@ -362,9 +360,32 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	return c
 }
 
-// visitLink checks if the collector should visit a link or not.
-func visitLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
+// visitHTMLLink checks if the collector should visit a link or not.
+func visitHTMLLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
 	ignoreSlice []string, finalResults *[]string, e *colly.HTMLElement, c *colly.Collector) {
+	if len(link) != 0 {
+		absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+			(intensive && intensiveOk(targetTemp, absoluteURL)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+				err := c.Visit(absoluteURL)
+				if !errors.Is(err, colly.ErrAlreadyVisited) {
+					*finalResults = append(*finalResults, absoluteURL)
+
+					if err != nil && debug {
+						log.Println(err)
+					}
+				}
+			}
+		}
+	}
+}
+
+// visitXMLLink checks if the collector should visit a link or not.
+func visitXMLLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
+	ignoreSlice []string, finalResults *[]string, e *colly.XMLElement, c *colly.Collector) {
 	if len(link) != 0 {
 		absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
