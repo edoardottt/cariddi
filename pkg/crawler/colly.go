@@ -121,7 +121,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 				(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
-				if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+				if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 					err := c.Visit(absoluteURL)
 					if !errors.Is(err, colly.ErrAlreadyVisited) {
 						FinalResults = append(FinalResults, absoluteURL)
@@ -369,7 +369,7 @@ func visitHTMLLink(link, protocolTemp, targetTemp, target string, intensive, ign
 		// Only those links are visited which are in AllowedDomains
 		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 				err := c.Visit(absoluteURL)
 				if !errors.Is(err, colly.ErrAlreadyVisited) {
 					*finalResults = append(*finalResults, absoluteURL)
@@ -392,7 +392,7 @@ func visitXMLLink(link, protocolTemp, targetTemp, target string, intensive, igno
 		// Only those links are visited which are in AllowedDomains
 		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
 			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 				err := c.Visit(absoluteURL)
 				if !errors.Is(err, colly.ErrAlreadyVisited) {
 					*finalResults = append(*finalResults, absoluteURL)
