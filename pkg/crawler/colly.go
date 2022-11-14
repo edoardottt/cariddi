@@ -112,6 +112,11 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	// crawler creation
 	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, insecure, userAgent, target)
 
+	// On every request that Colly is making, print the URL it's currently visiting
+	c.OnRequest(func(e *colly.Request) {
+		fmt.Println(e.URL.String())
+	})
+
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
@@ -210,8 +215,6 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	}
 
 	c.OnResponse(func(r *colly.Response) {
-		fmt.Println(r.Request.URL.String())
-
 		minBodyLentgh := 10
 
 		lengthOk := len(string(r.Body)) > minBodyLentgh
