@@ -120,8 +120,8 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// Visit link found on page
 			// Only those links are visited which are in AllowedDomains
 			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-				(intensive && intensiveOk(targetTemp, absoluteURL)) {
-				if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+				(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
+				if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 					err := c.Visit(absoluteURL)
 					if !errors.Is(err, colly.ErrAlreadyVisited) {
 						FinalResults = append(FinalResults, absoluteURL)
@@ -368,8 +368,8 @@ func visitHTMLLink(link, protocolTemp, targetTemp, target string, intensive, ign
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-			(intensive && intensiveOk(targetTemp, absoluteURL)) {
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 				err := c.Visit(absoluteURL)
 				if !errors.Is(err, colly.ErrAlreadyVisited) {
 					*finalResults = append(*finalResults, absoluteURL)
@@ -391,8 +391,8 @@ func visitXMLLink(link, protocolTemp, targetTemp, target string, intensive, igno
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
 		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-			(intensive && intensiveOk(targetTemp, absoluteURL)) {
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(link, ignoreSlice)) {
+			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 				err := c.Visit(absoluteURL)
 				if !errors.Is(err, colly.ErrAlreadyVisited) {
 					*finalResults = append(*finalResults, absoluteURL)
@@ -581,11 +581,14 @@ func IgnoreMatch(url string, ignoreSlice []string) bool {
 // intensiveOk checks if a given url can be crawled
 // in intensive mode (if the 2nd level domain matches with
 // the inputted target).
-func intensiveOk(target string, urlInput string) bool {
+func intensiveOk(target string, urlInput string, debug bool) bool {
 	root, err := urlUtils.GetRootHost(urlInput)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		if debug {
+			fmt.Println(err.Error() + ": " + urlInput)
+		}
+
+		return false
 	}
 
 	return root == target
