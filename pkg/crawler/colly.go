@@ -221,9 +221,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR SECRETS
 			if secretsFlag && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				for _, elem := range secretsSlice {
-					FinalSecrets = append(FinalSecrets, elem)
-				}
+				FinalSecrets = append(FinalSecrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpointsFlag {
