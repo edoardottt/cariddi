@@ -242,17 +242,13 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR ERRORS
 			if errorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				for _, elem := range errorsSlice {
-					FinalErrors = append(FinalErrors, elem)
-				}
+				FinalErrors = append(FinalErrors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
 			if infoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
-				for _, elem := range infosSlice {
-					FinalInfos = append(FinalInfos, elem)
-				}
+				FinalInfos = append(FinalInfos, infosSlice...)
 			}
 		}
 	})
