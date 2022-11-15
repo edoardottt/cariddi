@@ -123,21 +123,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
-			absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
-			// Visit link found on page
-			// Only those links are visited which are in AllowedDomains
-			if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-				(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
-				if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
-					err := c.Visit(absoluteURL)
-					if !errors.Is(err, colly.ErrAlreadyVisited) {
-						FinalResults = append(FinalResults, absoluteURL)
-						if err != nil && debug {
-							log.Println(err)
-						}
-					}
-				}
-			}
+			visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &FinalResults, e, c)
 		}
 	})
 
@@ -292,7 +278,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 		log.Println(err)
 	}
 
-	// Setup graceful exits
+	// Setup graceful exit
 	chanC := make(chan os.Signal, 1)
 	lettersNum := 23
 
