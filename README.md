@@ -70,7 +70,7 @@ Installation 📡
 
 ### Using Go
 ```bash
-go install -v github.com/edoardottt/cariddi/cmd/cariddi@v1.1.9
+go install -v github.com/edoardottt/cariddi/cmd/cariddi@v1.2
 ```
 
 ### Building from source
