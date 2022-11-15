@@ -121,17 +121,17 @@ func main() {
 
 	// For each target generate a crawler and collect all the results.
 	for _, inp := range targets {
-		results, secrets, endpoints, extensions, errors, infos := crawler.New(inp, ResultTxt, ResultHTML, flags.Delay,
+		results := crawler.New(inp, ResultTxt, ResultHTML, flags.Delay,
 			flags.Concurrency, flags.Ignore, flags.IgnoreTXT, flags.Cache, flags.Timeout, flags.Intensive,
 			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints,
 			endpointsFileSlice, flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
 
-		finalResults = append(finalResults, results...)
-		finalSecret = append(finalSecret, secrets...)
-		finalEndpoints = append(finalEndpoints, endpoints...)
-		finalExtensions = append(finalExtensions, extensions...)
-		finalErrors = append(finalErrors, errors...)
-		finalInfos = append(finalInfos, infos...)
+		finalResults = append(finalResults, results.Results...)
+		finalSecret = append(finalSecret, results.Secrets...)
+		finalEndpoints = append(finalEndpoints, results.Endpoints...)
+		finalExtensions = append(finalExtensions, results.Extensions...)
+		finalErrors = append(finalErrors, results.Errors...)
+		finalInfos = append(finalInfos, results.Infos...)
 	}
 
 	// Remove duplicates from all the results.
