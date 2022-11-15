@@ -31,8 +31,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"os/signal"
 	"regexp"
 	"strings"
 	"time"
@@ -289,6 +291,24 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 		log.Println(err)
 	}
+
+	// Setup graceful exits
+	chanC := make(chan os.Signal, 1)
+	lettersNum := 23
+
+	signal.Notify(chanC, os.Interrupt)
+	rand.Seed(time.Now().UnixNano())
+
+	go func() {
+		for range chanC {
+			if !plain {
+				fmt.Fprint(os.Stdout, "\r")
+				fmt.Println("CTRL+C pressed: Exiting")
+			}
+
+			c.AllowedDomains = []string{sliceUtils.RandSeq(lettersNum)}
+		}
+	}()
 
 	c.Wait()
 
