@@ -312,10 +312,6 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	c.IgnoreRobotsTxt = true
 	c.AllowURLRevisit = false
 
-	if userAgent != "" {
-		c.UserAgent = userAgent
-	}
-
 	err := c.Limit(
 		&colly.LimitRule{
 			Parallelism: concurrency,
@@ -343,6 +339,10 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	} else {
 		// Avoid using the default colly user agent
 		c.UserAgent = GenerateRandomUserAgent()
+	}
+
+	if userAgent != "" {
+		c.UserAgent = userAgent
 	}
 
 	// Use a Proxy if needed
