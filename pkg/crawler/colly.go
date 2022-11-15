@@ -212,7 +212,9 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR SECRETS
 			if secretsFlag && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				FinalSecrets = append(FinalSecrets, secretsSlice...)
+				for _, elem := range secretsSlice {
+					FinalSecrets = append(FinalSecrets, elem)
+				}
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpointsFlag {
@@ -233,13 +235,17 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR ERRORS
 			if errorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				FinalErrors = append(FinalErrors, errorsSlice...)
+				for _, elem := range errorsSlice {
+					FinalErrors = append(FinalErrors, elem)
+				}
 			}
 
 			// HERE SCAN FOR INFOS
 			if infoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
-				FinalInfos = append(FinalInfos, infosSlice...)
+				for _, elem := range infosSlice {
+					FinalInfos = append(FinalInfos, elem)
+				}
 			}
 		}
 	})
