@@ -113,7 +113,8 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	}
 
 	// crawler creation
-	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, insecure, userAgent, target)
+	c := CreateColly(delayTime, concurrency, cache, timeout,
+		intensive, rua, proxy, insecure, userAgent, target)
 
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
@@ -124,74 +125,86 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
-			visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
+				ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 		}
 	})
 
 	// On every script element which has src attribute call callback
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// On every link element which has href attribute call callback
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// On every iframe element which has src attribute call callback
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// On every svg element which has src attribute call callback
 	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// On every img element which has src attribute call callback
 	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// On every from element which has action attribute call callback
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		link := e.Attr("action")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//url", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//link", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//href", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//loc", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//fileurl", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive, ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
+			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
 	})
 
 	// Add headers (if needed) on each request
@@ -213,9 +226,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR SECRETS
 			if secretsFlag && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				for _, elem := range secretsSlice {
-					results.Secrets = append(results.Secrets, elem)
-				}
+				results.Secrets = append(results.Secrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpointsFlag {
@@ -236,17 +247,13 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR ERRORS
 			if errorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				for _, elem := range errorsSlice {
-					results.Errors = append(results.Errors, elem)
-				}
+				results.Errors = append(results.Errors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
 			if infoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
-				for _, elem := range infosSlice {
-					results.Infos = append(results.Infos, elem)
-				}
+				results.Infos = append(results.Infos, infosSlice...)
 			}
 		}
 	})
