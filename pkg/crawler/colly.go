@@ -281,15 +281,21 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	// Setup graceful exit
 	chanC := make(chan os.Signal, 1)
 	lettersNum := 23
+	cCount := 0
 
 	signal.Notify(chanC, os.Interrupt)
 	rand.Seed(time.Now().UnixNano())
 
 	go func() {
 		for range chanC {
+			if cCount > 0 {
+				os.Exit(1)
+			}
+
 			if !plain {
 				fmt.Fprint(os.Stdout, "\r")
 				fmt.Println("CTRL+C pressed: Exiting")
+				cCount++
 			}
 
 			c.AllowedDomains = []string{sliceUtils.RandSeq(lettersNum)}
