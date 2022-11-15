@@ -112,6 +112,11 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	// crawler creation
 	c := CreateColly(delayTime, concurrency, cache, timeout, intensive, rua, proxy, insecure, userAgent, target)
 
+	// On every request that Colly is making, print the URL it's currently visiting
+	c.OnRequest(func(e *colly.Request) {
+		fmt.Println(e.URL.String())
+	})
+
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
@@ -210,8 +215,6 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	}
 
 	c.OnResponse(func(r *colly.Response) {
-		fmt.Println(r.Request.URL.String())
-
 		minBodyLentgh := 10
 
 		lengthOk := len(string(r.Body)) > minBodyLentgh
@@ -221,9 +224,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR SECRETS
 			if secretsFlag && lengthOk {
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
-				for _, elem := range secretsSlice {
-					FinalSecrets = append(FinalSecrets, elem)
-				}
+				FinalSecrets = append(FinalSecrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if endpointsFlag {
@@ -244,17 +245,13 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			// HERE SCAN FOR ERRORS
 			if errorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				for _, elem := range errorsSlice {
-					FinalErrors = append(FinalErrors, elem)
-				}
+				FinalErrors = append(FinalErrors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
 			if infoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
-				for _, elem := range infosSlice {
-					FinalInfos = append(FinalInfos, elem)
-				}
+				FinalInfos = append(FinalInfos, infosSlice...)
 			}
 		}
 	})
