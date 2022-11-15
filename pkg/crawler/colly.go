@@ -31,8 +31,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"os/signal"
 	"regexp"
 	"strings"
 	"time"
@@ -259,23 +261,26 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	// Start scraping on target
 	path, err := urlUtils.GetPath(protocolTemp + "://" + target)
 	if err == nil {
+		var (
+			addPath     string
+			absoluteURL string
+		)
+
 		if path == "" {
-			err = c.Visit(protocolTemp + "://" + target + "/" + "robots.txt")
-			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-				log.Println(err)
-			}
+			addPath = "/"
+		}
 
-			err = c.Visit(protocolTemp + "://" + target + "/" + "sitemap.xml")
+		absoluteURL = protocolTemp + "://" + target + addPath + "robots.txt"
+		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+			err = c.Visit(absoluteURL)
 			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 				log.Println(err)
 			}
-		} else if path == "/" {
-			err = c.Visit(protocolTemp + "://" + target + "robots.txt")
-			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-				log.Println(err)
-			}
+		}
 
-			err = c.Visit(protocolTemp + "://" + target + "sitemap.xml")
+		absoluteURL = protocolTemp + "://" + target + addPath + "sitemap.xml"
+		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+			err = c.Visit(absoluteURL)
 			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 				log.Println(err)
 			}
@@ -286,6 +291,24 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 		log.Println(err)
 	}
+
+	// Setup graceful exits
+	chanC := make(chan os.Signal, 1)
+	lettersNum := 23
+
+	signal.Notify(chanC, os.Interrupt)
+	rand.Seed(time.Now().UnixNano())
+
+	go func() {
+		for range chanC {
+			if !plain {
+				fmt.Fprint(os.Stdout, "\r")
+				fmt.Println("CTRL+C pressed: Exiting")
+			}
+
+			c.AllowedDomains = []string{sliceUtils.RandSeq(lettersNum)}
+		}
+	}()
 
 	c.Wait()
 
@@ -305,10 +328,6 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	)
 	c.IgnoreRobotsTxt = true
 	c.AllowURLRevisit = false
-
-	if userAgent != "" {
-		c.UserAgent = userAgent
-	}
 
 	err := c.Limit(
 		&colly.LimitRule{
@@ -337,6 +356,10 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	} else {
 		// Avoid using the default colly user agent
 		c.UserAgent = GenerateRandomUserAgent()
+	}
+
+	if userAgent != "" {
+		c.UserAgent = userAgent
 	}
 
 	// Use a Proxy if needed

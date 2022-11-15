@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package slice
 
 import (
+	"math/rand"
 	"net/http"
 	"strings"
 )
@@ -92,4 +93,16 @@ func CheckCookies(input string) []*http.Cookie {
 	}
 
 	return result
+}
+
+// RandSeq produces a random sequence of letters.
+func RandSeq(n int) string {
+	b := make([]rune, n)
+	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+
+	return string(b)
 }
