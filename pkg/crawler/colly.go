@@ -262,23 +262,26 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	// Start scraping on target
 	path, err := urlUtils.GetPath(protocolTemp + "://" + target)
 	if err == nil {
+		var (
+			addPath     string
+			absoluteURL string
+		)
+
 		if path == "" {
-			err = c.Visit(protocolTemp + "://" + target + "/" + "robots.txt")
-			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-				log.Println(err)
-			}
+			addPath = "/"
+		}
 
-			err = c.Visit(protocolTemp + "://" + target + "/" + "sitemap.xml")
+		absoluteURL = protocolTemp + "://" + target + addPath + "robots.txt"
+		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+			err = c.Visit(absoluteURL)
 			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 				log.Println(err)
 			}
-		} else if path == "/" {
-			err = c.Visit(protocolTemp + "://" + target + "robots.txt")
-			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-				log.Println(err)
-			}
+		}
 
-			err = c.Visit(protocolTemp + "://" + target + "sitemap.xml")
+		absoluteURL = protocolTemp + "://" + target + addPath + "sitemap.xml"
+		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+			err = c.Visit(absoluteURL)
 			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 				log.Println(err)
 			}
