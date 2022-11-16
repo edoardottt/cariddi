@@ -48,7 +48,7 @@ import (
 )
 
 type Results struct {
-	Results    []string
+	URLs       []string
 	Secrets    []scanner.SecretMatched
 	Endpoints  []scanner.EndpointMatched
 	Extensions []scanner.FileTypeMatched
