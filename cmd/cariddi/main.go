@@ -126,7 +126,7 @@ func main() {
 			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints,
 			endpointsFileSlice, flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
 
-		finalResults = append(finalResults, results.Results...)
+		finalResults = append(finalResults, results.URLs...)
 		finalSecret = append(finalSecret, results.Secrets...)
 		finalEndpoints = append(finalEndpoints, results.Endpoints...)
 		finalExtensions = append(finalExtensions, results.Extensions...)

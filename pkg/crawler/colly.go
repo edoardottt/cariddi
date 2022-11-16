@@ -126,7 +126,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
 			visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-				ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+				ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 		}
 	})
 
@@ -134,77 +134,77 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every link element which has href attribute call callback
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every iframe element which has src attribute call callback
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every svg element which has src attribute call callback
 	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every img element which has src attribute call callback
 	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every from element which has action attribute call callback
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		link := e.Attr("action")
 		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//url", func(e *colly.XMLElement) {
 		link := e.Text
 		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//link", func(e *colly.XMLElement) {
 		link := e.Text
 		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//href", func(e *colly.XMLElement) {
 		link := e.Text
 		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//loc", func(e *colly.XMLElement) {
 		link := e.Text
 		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//fileurl", func(e *colly.XMLElement) {
 		link := e.Text
 		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.Results, e, c)
+			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Add headers (if needed) on each request
