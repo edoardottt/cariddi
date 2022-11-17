@@ -12,6 +12,29 @@ import (
 	"github.com/gocolly/colly"
 )
 
+// visitHTMLLink checks if the collector should visit a link or not.
+func visitHTMLLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
+	ignoreSlice []string, finalResults *[]string, e *colly.HTMLElement, c *colly.Collector) {
+	if len(link) != 0 {
+		absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
+			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+				err := c.Visit(absoluteURL)
+				if !errors.Is(err, colly.ErrAlreadyVisited) {
+					*finalResults = append(*finalResults, absoluteURL)
+
+					if err != nil && debug {
+						log.Println(err)
+					}
+				}
+			}
+		}
+	}
+}
+
 // visitXMLLink checks if the collector should visit a link or not.
 func visitXMLLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
 	ignoreSlice []string, finalResults *[]string, e *colly.XMLElement, c *colly.Collector) {

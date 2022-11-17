@@ -96,13 +96,13 @@ func main() {
 	// If it is needed, read custom endpoints definition
 	// from the specified file.
 	if flags.EndpointsFile != "" {
-		config.EndpointsFile = fileUtils.ReadFile(flags.EndpointsFile)
+		config.EndpointsSlice = fileUtils.ReadFile(flags.EndpointsFile)
 	}
 
 	// If it is needed, read custom secrets definition
 	// from the specified file.
 	if flags.SecretsFile != "" {
-		config.SecretsFile = fileUtils.ReadFile(flags.SecretsFile)
+		config.SecretsSlice = fileUtils.ReadFile(flags.SecretsFile)
 	}
 
 	finalResults := []string{}

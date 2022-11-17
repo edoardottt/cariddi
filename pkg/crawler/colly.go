@@ -68,26 +68,24 @@ type Scan struct {
 	Plain         bool
 	Rua           bool
 	SecretsFlag   bool
+	Ignore        string
+	IgnoreTxt     string
+	HTML          string
+	Proxy         string
+	Target        string
+	Txt           string
+	UserAgent     string
+	FileType      int
+	Headers       map[string]string
 
 	// Settings
 	Concurrency int
 	Delay       int
-	FileType    int
 	Timeout     int
 
-	Ignore    string
-	IgnoreTxt string
-	HTML      string
-	Proxy     string
-	Target    string
-	Txt       string
-	UserAgent string
-
 	// Storage
-	SecretsFile   []string
-	EndpointsFile []string
-
-	Headers map[string]string
+	SecretsSlice   []string
+	EndpointsSlice []string
 }
 
 // New it's the actual crawler engine.
@@ -256,12 +254,12 @@ func New(scan *Scan) *Results {
 			(1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
 			// HERE SCAN FOR SECRETS
 			if scan.SecretsFlag && lengthOk {
-				secretsSlice := huntSecrets(scan.SecretsFile, r.Request.URL.String(), string(r.Body))
+				secretsSlice := huntSecrets(scan.SecretsSlice, r.Request.URL.String(), string(r.Body))
 				results.Secrets = append(results.Secrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if scan.EndpointsFlag {
-				endpointsSlice := huntEndpoints(scan.EndpointsFile, r.Request.URL.String())
+				endpointsSlice := huntEndpoints(scan.EndpointsSlice, r.Request.URL.String())
 				for _, elem := range endpointsSlice {
 					if len(elem.Parameters) != 0 {
 						results.Endpoints = append(results.Endpoints, elem)
@@ -415,27 +413,4 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	}
 
 	return c
-}
-
-// visitHTMLLink checks if the collector should visit a link or not.
-func visitHTMLLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
-	ignoreSlice []string, finalResults *[]string, e *colly.HTMLElement, c *colly.Collector) {
-	if len(link) != 0 {
-		absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
-		// Visit link found on page
-		// Only those links are visited which are in AllowedDomains
-		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
-				err := c.Visit(absoluteURL)
-				if !errors.Is(err, colly.ErrAlreadyVisited) {
-					*finalResults = append(*finalResults, absoluteURL)
-
-					if err != nil && debug {
-						log.Println(err)
-					}
-				}
-			}
-		}
-	}
 }
