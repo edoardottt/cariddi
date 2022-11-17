@@ -56,14 +56,44 @@ type Results struct {
 	Infos      []scanner.InfoMatched
 }
 
+type Scan struct {
+	// Flags
+	Cache         bool
+	Debug         bool
+	EndpointsFlag bool
+	ErrorsFlag    bool
+	InfoFlag      bool
+	Insecure      bool
+	Intensive     bool
+	Plain         bool
+	Rua           bool
+	SecretsFlag   bool
+
+	// Settings
+	Concurrency int
+	Delay       int
+	FileType    int
+	Timeout     int
+
+	Ignore    string
+	IgnoreTxt string
+	Html      string
+	Proxy     string
+	Target    string
+	Txt       string
+	UserAgent string
+
+	// Storage
+	SecretsFile   []string
+	EndpointsFile []string
+
+	Headers map[string]string
+}
+
 // New it's the actual crawler engine.
 // It controls all the behaviours of a scan
 // (event handlers, secrets, errors, extensions and endpoints scanning).
-func New(target string, txt string, html string, delayTime int, concurrency int,
-	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
-	proxy string, insecure bool, secretsFlag bool, secretsFile []string, plain bool, endpointsFlag bool,
-	endpointsFile []string, fileType int, headers map[string]string, errorsFlag bool, infoFlag bool,
-	debug bool, userAgent string) *Results {
+func New(scan *Scan) *Results {
 	// This is to avoid to insert into the crawler target regular
 	// expression directories passed as input.
 	var targetTemp, protocolTemp string
@@ -71,15 +101,15 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	results := &Results{}
 
 	// if there isn't a scheme use http.
-	if !urlUtils.HasProtocol(target) {
+	if !urlUtils.HasProtocol(scan.Target) {
 		protocolTemp = "http"
-		targetTemp = urlUtils.GetHost(protocolTemp + "://" + target)
+		targetTemp = urlUtils.GetHost(protocolTemp + "://" + scan.Target)
 	} else {
-		protocolTemp = urlUtils.GetProtocol(target)
-		targetTemp = urlUtils.GetHost(target)
+		protocolTemp = urlUtils.GetProtocol(scan.Target)
+		targetTemp = urlUtils.GetHost(scan.Target)
 	}
 
-	if intensive {
+	if scan.Intensive {
 		var err error
 		targetTemp, err = urlUtils.GetRootHost(protocolTemp + "://" + targetTemp)
 
@@ -90,31 +120,31 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	}
 
 	if targetTemp == "" {
-		fmt.Println("The URL provided is not built in a proper way: " + target)
+		fmt.Println("The URL provided is not built in a proper way: " + scan.Target)
 		os.Exit(1)
 	}
 
 	// clean target input
-	target = urlUtils.RemoveProtocol(target)
+	scan.Target = urlUtils.RemoveProtocol(scan.Target)
 
 	ignoreSlice := []string{}
 	ignoreBool := false
 
 	// if ignore -> produce the slice
-	if ignore != "" {
+	if scan.Ignore != "" {
 		ignoreBool = true
-		ignoreSlice = sliceUtils.CheckInputArray(ignore)
+		ignoreSlice = sliceUtils.CheckInputArray(scan.Ignore)
 	}
 
 	// if ignoreTxt -> produce the slice
-	if ignoreTxt != "" {
+	if scan.IgnoreTxt != "" {
 		ignoreBool = true
-		ignoreSlice = fileUtils.ReadFile(ignoreTxt)
+		ignoreSlice = fileUtils.ReadFile(scan.IgnoreTxt)
 	}
 
 	// crawler creation
-	c := CreateColly(delayTime, concurrency, cache, timeout,
-		intensive, rua, proxy, insecure, userAgent, target)
+	c := CreateColly(scan.Delay, scan.Concurrency, scan.Cache, scan.Timeout,
+		scan.Intensive, scan.Rua, scan.Proxy, scan.Insecure, scan.UserAgent, scan.Target)
 
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
@@ -125,92 +155,92 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
-			visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-				ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+			visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+				ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 		}
 	})
 
 	// On every script element which has src attribute call callback
 	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every link element which has href attribute call callback
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every iframe element which has src attribute call callback
 	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every svg element which has src attribute call callback
 	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every img element which has src attribute call callback
 	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// On every from element which has action attribute call callback
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		link := e.Attr("action")
-		visitHTMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//url", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//link", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//href", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//loc", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//fileurl", func(e *colly.XMLElement) {
 		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, target, intensive,
-			ignoreBool, debug, ignoreSlice, &results.URLs, e, c)
+		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
+			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
 	})
 
 	// Add headers (if needed) on each request
-	if (len(headers)) > 0 {
+	if (len(scan.Headers)) > 0 {
 		c.OnRequest(func(r *colly.Request) {
-			for header, value := range headers {
+			for header, value := range scan.Headers {
 				r.Headers.Set(header, value)
 			}
 		})
@@ -222,15 +252,15 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 		lengthOk := len(string(r.Body)) > minBodyLentgh
 
 		// if endpoints or secrets or filetype: scan
-		if endpointsFlag || secretsFlag || (1 <= fileType && fileType <= 7) || errorsFlag || infoFlag {
+		if scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
 			// HERE SCAN FOR SECRETS
-			if secretsFlag && lengthOk {
-				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
+			if scan.SecretsFlag && lengthOk {
+				secretsSlice := huntSecrets(scan.SecretsFile, r.Request.URL.String(), string(r.Body))
 				results.Secrets = append(results.Secrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
-			if endpointsFlag {
-				endpointsSlice := huntEndpoints(endpointsFile, r.Request.URL.String())
+			if scan.EndpointsFlag {
+				endpointsSlice := huntEndpoints(scan.EndpointsFile, r.Request.URL.String())
 				for _, elem := range endpointsSlice {
 					if len(elem.Parameters) != 0 {
 						results.Endpoints = append(results.Endpoints, elem)
@@ -238,20 +268,20 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 				}
 			}
 			// HERE SCAN FOR EXTENSIONS
-			if 1 <= fileType && fileType <= 7 {
-				extension := huntExtensions(r.Request.URL.String(), fileType)
+			if 1 <= scan.FileType && scan.FileType <= 7 {
+				extension := huntExtensions(r.Request.URL.String(), scan.FileType)
 				if extension.URL != "" {
 					results.Extensions = append(results.Extensions, extension)
 				}
 			}
 			// HERE SCAN FOR ERRORS
-			if errorsFlag {
+			if scan.ErrorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
 				results.Errors = append(results.Errors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
-			if infoFlag {
+			if scan.InfoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
 				results.Infos = append(results.Infos, infosSlice...)
 			}
@@ -259,7 +289,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 	})
 
 	// Start scraping on target
-	path, err := urlUtils.GetPath(protocolTemp + "://" + target)
+	path, err := urlUtils.GetPath(protocolTemp + "://" + scan.Target)
 	if err == nil {
 		var (
 			addPath     string
@@ -270,25 +300,25 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 			addPath = "/"
 		}
 
-		absoluteURL = protocolTemp + "://" + target + addPath + "robots.txt"
+		absoluteURL = protocolTemp + "://" + scan.Target + addPath + "robots.txt"
 		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 			err = c.Visit(absoluteURL)
-			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+			if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 				log.Println(err)
 			}
 		}
 
-		absoluteURL = protocolTemp + "://" + target + addPath + "sitemap.xml"
+		absoluteURL = protocolTemp + "://" + scan.Target + addPath + "sitemap.xml"
 		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
 			err = c.Visit(absoluteURL)
-			if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+			if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 				log.Println(err)
 			}
 		}
 	}
 
-	err = c.Visit(protocolTemp + "://" + target)
-	if err != nil && debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+	err = c.Visit(protocolTemp + "://" + scan.Target)
+	if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 		log.Println(err)
 	}
 
@@ -306,7 +336,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 				os.Exit(1)
 			}
 
-			if !plain {
+			if !scan.Plain {
 				fmt.Fprint(os.Stdout, "\r")
 				fmt.Println("CTRL+C pressed: Exiting")
 				cCount++
@@ -318,8 +348,8 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 
 	c.Wait()
 
-	if html != "" {
-		output.FooterHTML(html)
+	if scan.Html != "" {
+		output.FooterHTML(scan.Html)
 	}
 
 	return results
