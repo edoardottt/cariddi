@@ -77,7 +77,7 @@ type Scan struct {
 
 	Ignore    string
 	IgnoreTxt string
-	Html      string
+	HTML      string
 	Proxy     string
 	Target    string
 	Txt       string
@@ -252,7 +252,8 @@ func New(scan *Scan) *Results {
 		lengthOk := len(string(r.Body)) > minBodyLentgh
 
 		// if endpoints or secrets or filetype: scan
-		if scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
+		if scan.EndpointsFlag || scan.SecretsFlag ||
+			(1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
 			// HERE SCAN FOR SECRETS
 			if scan.SecretsFlag && lengthOk {
 				secretsSlice := huntSecrets(scan.SecretsFile, r.Request.URL.String(), string(r.Body))
@@ -348,8 +349,8 @@ func New(scan *Scan) *Results {
 
 	c.Wait()
 
-	if scan.Html != "" {
-		output.FooterHTML(scan.Html)
+	if scan.HTML != "" {
+		output.FooterHTML(scan.HTML)
 	}
 
 	return results
