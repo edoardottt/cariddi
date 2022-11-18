@@ -63,7 +63,6 @@ type Scan struct {
 	EndpointsFlag bool
 	ErrorsFlag    bool
 	InfoFlag      bool
-	Insecure      bool
 	Intensive     bool
 	Plain         bool
 	Rua           bool
@@ -142,7 +141,7 @@ func New(scan *Scan) *Results {
 
 	// crawler creation
 	c := CreateColly(scan.Delay, scan.Concurrency, scan.Cache, scan.Timeout,
-		scan.Intensive, scan.Rua, scan.Proxy, scan.Insecure, scan.UserAgent, scan.Target)
+		scan.Intensive, scan.Rua, scan.Proxy, scan.UserAgent, scan.Target)
 
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
@@ -357,7 +356,7 @@ func New(scan *Scan) *Results {
 // CreateColly takes as input all the settings needed to instantiate
 // a new Colly Collector object and it returns this object.
 func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
-	intensive bool, rua bool, proxy string, insecure bool, userAgent string, target string) *colly.Collector {
+	intensive bool, rua bool, proxy string, userAgent string, target string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
@@ -406,11 +405,9 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 		}
 	}
 
-	if insecure {
-		c.WithTransport(&http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		})
-	}
+	c.WithTransport(&http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
 
 	return c
 }
