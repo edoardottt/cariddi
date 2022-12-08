@@ -298,19 +298,21 @@ func New(scan *Scan) *Results {
 			addPath = "/"
 		}
 
-		absoluteURL = protocolTemp + "://" + scan.Target + addPath + "robots.txt"
-		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
-			err = c.Visit(absoluteURL)
-			if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-				log.Println(err)
+		if path == "" || path == "/" {
+			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "robots.txt"
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+				err = c.Visit(absoluteURL)
+				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+					log.Println(err)
+				}
 			}
-		}
 
-		absoluteURL = protocolTemp + "://" + scan.Target + addPath + "sitemap.xml"
-		if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
-			err = c.Visit(absoluteURL)
-			if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-				log.Println(err)
+			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "sitemap.xml"
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+				err = c.Visit(absoluteURL)
+				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+					log.Println(err)
+				}
 			}
 		}
 	}
