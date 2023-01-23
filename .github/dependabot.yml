@@ -1,0 +1,14 @@
+version: 2
+updates:
+
+  # Maintain dependencies for go modules
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "devel"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "Type: Maintenance"
