@@ -296,7 +296,7 @@ func New(scan *Scan) *Results {
 				infos = append(infos, infosSlice...)
 			}
 		}
-		if scan.JSON == true {
+		if scan.JSON {
 			jsonOutput, err := output.GetJsonString(
 				r, secrets, parameters, filetype, errors, infos,
 			)
