@@ -42,18 +42,23 @@ type jsonData struct {
 	StatusCode    int            `json:"status_code"`
 	Words         int            `json:"words"`
 	Lines         int            `json:"lines"`
-	ContentType   string         `json:"content_type,omit_empty"`
-	ContentLength int            `json:"content_length,omit_empty"`
+	ContentType   string         `json:"content_type,omitempty"`
+	ContentLength int            `json:"content_length,omitempty"`
 	Matches       MatcherResults `json:"matches,omitempty"`
 	// Host          string `json:"host"` # TODO: Add when migrating to Colly 2.x
 }
 
 type MatcherResults struct {
-	Secrets    []scanner.SecretMatched `json:"secrets,omit_empty"`
-	Parameters []scanner.Parameter     `json:"parameters,omit_empty"`
-	FileType   scanner.FileType        `json:"filetype,omit_empty"`
-	Errors     []scanner.ErrorMatched  `json:"errors,omit_empty"`
-	Infos      []scanner.InfoMatched   `json:"infos,omit_empty"`
+	FileType   scanner.FileType    `json:"filetype,omitempty"`
+	Parameters []scanner.Parameter `json:"parameters,omitempty"`
+	Errors     []MatcherResult     `json:"errors,omitempty"`
+	Infos      []MatcherResult     `json:"infos,omitempty"`
+	Secrets    []MatcherResult     `json:"secrets,omitempty"`
+}
+
+type MatcherResult struct {
+	Name  string `json:"name"`
+	Match string `json:"match"`
 }
 
 func GetJsonString(
@@ -89,13 +94,31 @@ func GetJsonString(
 	// Parse lines from body
 	lines := len(strings.Split(string(r.Body), "\n"))
 
+	// Process secrets
+	secretList := []MatcherResult{}
+	for _, secret := range secrets {
+		secretList = append(secretList, MatcherResult{secret.Secret.Name, secret.Match})
+	}
+
+	// Process infos
+	infoList := []MatcherResult{}
+	for _, info := range infos {
+		infoList = append(infoList, MatcherResult{info.Info.Name, info.Match})
+	}
+
+	// Process
+	errorList := []MatcherResult{}
+	for _, error := range errors {
+		errorList = append(errorList, MatcherResult{error.Error.ErrorName, error.Match})
+	}
+
 	// Construct JSON response
 	data := MatcherResults{
-		Secrets:    secrets,
-		Parameters: parameters,
 		FileType:   filetype,
-		Errors:     errors,
-		Infos:      infos,
+		Parameters: parameters,
+		Errors:     errorList,
+		Infos:      infoList,
+		Secrets:    secretList,
 	}
 	resp := &jsonData{
 		URL:           r.Request.URL.String(),

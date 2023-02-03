@@ -30,8 +30,8 @@ package scanner
 // Extension = the file extension (doc, txt ..etc..).
 // Severity = the 'importance' of the file found. Higher is better.
 type FileType struct {
-	Extension string `json:"extension,omitempty"`
-	Severity  int    `json:"severity,omitempty"`
+	Extension string
+	Severity  int
 }
 
 // FileTypeMatched struct.
