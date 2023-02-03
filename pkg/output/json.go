@@ -28,7 +28,6 @@ package output
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -137,9 +136,6 @@ func GetJsonString(
 	if err != nil {
 		return nil, err
 	}
-
-	// Output JSON string
-	fmt.Println(string(jsonOutput))
 
 	return jsonOutput, nil
 }
