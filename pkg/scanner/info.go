@@ -27,8 +27,8 @@ package scanner
 // Name = the name that identifies the information.
 // Regex = The regular expression to be matched.
 type Info struct {
-	Name  string
-	Regex []string
+	Name  string   `json:"name,omitempty"`
+	Regex []string `json:"regex,omitempty"`
 }
 
 // InfoMatched struct.
@@ -36,9 +36,9 @@ type Info struct {
 // Url = url in which the information is found.
 // Match = the string matching the regex.
 type InfoMatched struct {
-	Info  Info
-	URL   string
-	Match string
+	Info  Info   `json:"details,omitempty"`
+	URL   string `json:"-"`
+	Match string `json:"match,omitempty"`
 }
 
 // GetInfoRegexes returns all the info structs.

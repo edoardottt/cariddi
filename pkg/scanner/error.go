@@ -27,8 +27,8 @@ package scanner
 // ErrorName = the name that identifies the error.
 // Regex = The regular expression to be matched.
 type Error struct {
-	ErrorName string
-	Regex     []string
+	ErrorName string   `json:"name,omitempty"`
+	Regex     []string `json:"regex,omitempty"`
 }
 
 // ErrorMatched struct.
@@ -36,9 +36,9 @@ type Error struct {
 // Url = url in which the error is found.
 // Match = the string matching the regex.
 type ErrorMatched struct {
-	Error Error
-	URL   string
-	Match string
+	Error Error  `json:"details,omitempty"`
+	URL   string `json:"-"`
+	Match string `json:"match,omitempty"`
 }
 
 // GetErrorRegexes returns all the error structs.

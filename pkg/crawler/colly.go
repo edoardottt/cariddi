@@ -52,7 +52,7 @@ import (
 // New it's the actual crawler engine.
 // It controls all the behaviours of a scan
 // (event handlers, secrets, errors, extensions and endpoints scanning).
-func New(target string, txt string, html string, delayTime int, concurrency int,
+func New(target string, jsonl bool, txt string, html string, delayTime int, concurrency int,
 	ignore string, ignoreTxt string, cache bool, timeout int, intensive bool, rua bool,
 	proxy string, insecure bool, secretsFlag bool, secretsFile []string, plain bool, endpointsFlag bool,
 	endpointsFile []string, fileType int, headers map[string]string, errorsFlag bool, infoFlag bool,
@@ -116,7 +116,9 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
-		fmt.Println(e.URL.String())
+		if jsonl == false {
+			fmt.Println(e.URL.String())
+		}
 	})
 
 	// On every a element which has href attribute call callback
@@ -204,8 +206,12 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 
 	c.OnResponse(func(r *colly.Response) {
 		minBodyLentgh := 10
-
 		lengthOk := len(string(r.Body)) > minBodyLentgh
+		secrets := []scanner.SecretMatched{}
+		parameters := []scanner.Parameter{}
+		errors := []scanner.ErrorMatched{}
+		infos := []scanner.InfoMatched{}
+		filetype := scanner.FileType{}
 
 		// if endpoints or secrets or filetype: scan
 		if endpointsFlag || secretsFlag || (1 <= fileType && fileType <= 7) || errorsFlag || infoFlag {
@@ -214,6 +220,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 				secretsSlice := huntSecrets(secretsFile, r.Request.URL.String(), string(r.Body))
 				for _, elem := range secretsSlice {
 					FinalSecrets = append(FinalSecrets, elem)
+					secrets = append(secrets, elem)
 				}
 			}
 			// HERE SCAN FOR ENDPOINTS
@@ -222,6 +229,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 				for _, elem := range endpointsSlice {
 					if len(elem.Parameters) != 0 {
 						FinalEndpoints = append(FinalEndpoints, elem)
+						parameters = append(parameters, elem.Parameters...)
 					}
 				}
 			}
@@ -230,6 +238,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 				extension := huntExtensions(r.Request.URL.String(), fileType)
 				if extension.URL != "" {
 					FinalExtensions = append(FinalExtensions, extension)
+					filetype = extension.Filetype
 				}
 			}
 			// HERE SCAN FOR ERRORS
@@ -237,6 +246,7 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
 				for _, elem := range errorsSlice {
 					FinalErrors = append(FinalErrors, elem)
+					errors = append(errors, elem)
 				}
 			}
 
@@ -245,8 +255,12 @@ func New(target string, txt string, html string, delayTime int, concurrency int,
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
 				for _, elem := range infosSlice {
 					FinalInfos = append(FinalInfos, elem)
+					infos = append(infos, elem)
 				}
 			}
+		}
+		if jsonl == true {
+			output.GetJsonString(r, secrets, parameters, filetype, errors, infos)
 		}
 	})
 
@@ -489,18 +503,18 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 				if strings.ToLower(param) == parameter.Parameter {
 					matched = append(matched, parameter)
 				}
-				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 			}
 		}
+		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 	} else {
 		for _, parameter := range endpointsFile {
 			for _, param := range parameters {
 				if param == parameter {
 					matched = append(matched, scanner.Parameter{Parameter: parameter, Attacks: []string{}})
 				}
-				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 			}
 		}
+		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 	}
 
 	return endpoints

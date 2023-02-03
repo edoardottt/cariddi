@@ -33,11 +33,11 @@ package scanner
 // FalsePositives = A list of known false positives.
 // PoC = cli command to check if the secret is valid or not.
 type Secret struct {
-	Name           string
-	Description    string
-	Regex          string
-	FalsePositives []string
-	Poc            string
+	Name           string   `json:"name"`
+	Description    string   `json:"description"`
+	Regex          string   `json:"regex"`
+	FalsePositives []string `json:"-"`
+	Poc            string   `json:"-"`
 }
 
 // SecretMatched struct.
@@ -45,9 +45,9 @@ type Secret struct {
 // Url = url in which is present the secret.
 // Match = the string matching the regex.
 type SecretMatched struct {
-	Secret Secret
-	URL    string
-	Match  string
+	Secret Secret `json:"details,omitempty"`
+	URL    string `json:"-"`
+	Match  string `json:"match,omitempty"`
 }
 
 // GetSecretRegexes returns a slice of all
