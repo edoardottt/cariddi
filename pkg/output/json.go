@@ -44,7 +44,7 @@ type JsonData struct {
 	ContentType   string         `json:"content_type,omitempty"`
 	ContentLength int            `json:"content_length,omitempty"`
 	Matches       MatcherResults `json:"matches,omitempty"`
-	// Host          string `json:"host"` # TODO: Add when migrating to Colly 2.x
+	// Host          string `json:"host"` # TODO: Available in Colly 2.x
 }
 
 type MatcherResults struct {
@@ -96,19 +96,22 @@ func GetJsonString(
 	// Process secrets
 	secretList := []MatcherResult{}
 	for _, secret := range secrets {
-		secretList = append(secretList, MatcherResult{secret.Secret.Name, secret.Match})
+		secretMatch := MatcherResult{secret.Secret.Name, secret.Match}
+		secretList = append(secretList, secretMatch)
 	}
 
 	// Process infos
 	infoList := []MatcherResult{}
 	for _, info := range infos {
-		infoList = append(infoList, MatcherResult{info.Info.Name, info.Match})
+		secretMatch := MatcherResult{info.Info.Name, info.Match}
+		infoList = append(infoList, secretMatch)
 	}
 
 	// Process
 	errorList := []MatcherResult{}
 	for _, error := range errors {
-		errorList = append(errorList, MatcherResult{error.Error.ErrorName, error.Match})
+		errorMatch := MatcherResult{error.Error.ErrorName, error.Match}
+		errorList = append(errorList, errorMatch)
 	}
 
 	// Construct JSON response
@@ -128,7 +131,7 @@ func GetJsonString(
 		ContentType:   contentType,
 		ContentLength: contentLength,
 		Matches:       data,
-		// Host:          "", // TODO: this is available in Colly 2.x but not in 1.2
+		// Host:          "", // TODO: this is available in Colly 2.x
 	}
 
 	// Convert struct to JSON string
