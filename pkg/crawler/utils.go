@@ -123,18 +123,18 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 				if strings.ToLower(param) == parameter.Parameter {
 					matched = append(matched, parameter)
 				}
-				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 			}
 		}
+		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 	} else {
 		for _, parameter := range endpointsFile {
 			for _, param := range parameters {
 				if param == parameter {
 					matched = append(matched, scanner.Parameter{Parameter: parameter, Attacks: []string{}})
 				}
-				endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 			}
 		}
+		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 	}
 
 	return endpoints

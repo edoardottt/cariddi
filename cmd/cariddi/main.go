@@ -73,6 +73,7 @@ func main() {
 		Ignore:        flags.Ignore,
 		IgnoreTxt:     flags.IgnoreTXT,
 		Cache:         flags.Cache,
+		JSON:          flags.JSON,
 		Timeout:       flags.Timeout,
 		Intensive:     flags.Intensive,
 		Rua:           flags.Rua,

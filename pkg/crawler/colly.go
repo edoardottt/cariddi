@@ -69,7 +69,7 @@ type Scan struct {
 	SecretsFlag   bool
 	Ignore        string
 	IgnoreTxt     string
-  JSON          bool
+	JSON          bool
 	HTML          string
 	Proxy         string
 	Target        string
@@ -146,7 +146,7 @@ func New(scan *Scan) *Results {
 
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
-		if jsonl == false {
+		if scan.JSON == false {
 			fmt.Println(e.URL.String())
 		}
 	})
@@ -262,7 +262,7 @@ func New(scan *Scan) *Results {
 			if scan.SecretsFlag && lengthOk {
 				secretsSlice := huntSecrets(scan.SecretsSlice, r.Request.URL.String(), string(r.Body))
 				results.Secrets = append(results.Secrets, secretsSlice...)
-        secrets = append(secrets, secretsSlice...)
+				secrets = append(secrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if scan.EndpointsFlag {
@@ -270,7 +270,7 @@ func New(scan *Scan) *Results {
 				for _, elem := range endpointsSlice {
 					if len(elem.Parameters) != 0 {
 						results.Endpoints = append(results.Endpoints, elem)
-            parameters = append(parameters, elem.Parameters...)
+						parameters = append(parameters, elem.Parameters...)
 					}
 				}
 			}
@@ -279,24 +279,24 @@ func New(scan *Scan) *Results {
 				extension := huntExtensions(r.Request.URL.String(), scan.FileType)
 				if extension.URL != "" {
 					results.Extensions = append(results.Extensions, extension)
-          filetype = extension.Filetype
+					filetype = extension.Filetype
 				}
 			}
 			// HERE SCAN FOR ERRORS
 			if scan.ErrorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
 				results.Errors = append(results.Errors, errorsSlice...)
-        errors = append(errors, errorsSlice...)
+				errors = append(errors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
 			if scan.InfoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
 				results.Infos = append(results.Infos, infosSlice...)
-        infos = append(infos, infosSlice)
+				infos = append(infos, infosSlice...)
 			}
 		}
-		if jsonl == true {
+		if scan.JSON == true {
 			output.GetJsonString(r, secrets, parameters, filetype, errors, infos)
 		}
 	})
