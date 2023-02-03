@@ -54,7 +54,6 @@ type Input struct {
 	Intensive     bool
 	Rua           bool
 	Proxy         string
-	Insecure      bool
 	Secrets       bool
 	SecretsFile   string
 	Endpoints     bool
@@ -88,7 +87,6 @@ func ScanFlag() Input {
 	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching 2nd level domain.")
 	ruaPtr := flag.Bool("rua", false, "Use a random browser user agent on every request.")
 	proxyPtr := flag.String("proxy", "", "Set a Proxy to be used (http and socks5 supported).")
-	insecurePtr := flag.Bool("insecure", false, "Ignore invalid HTTPS certificates")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line)"+
@@ -132,7 +130,6 @@ func ScanFlag() Input {
 		*intensivePtr,
 		*ruaPtr,
 		*proxyPtr,
-		*insecurePtr,
 		*secretsPtr,
 		*secretsFilePtr,
 		*endpointsPtr,

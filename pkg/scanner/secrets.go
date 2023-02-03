@@ -239,7 +239,7 @@ func GetSecretRegexes() []Secret {
 		{
 			"Slack Webhook",
 			"Slack Webhook",
-			`https://hooks.slack.com/services/T[0-9A-Za-z\-_]{8}/B[0-9A-Za-z\-_]{8}/[0-9A-Za-z\-_]{24}`,
+			`https\:\/\/hooks\.slack\.com/services/T[0-9A-Za-z\-_]{8}/B[0-9A-Za-z\-_]{8}/[0-9A-Za-z\-_]{24}`,
 			[]string{},
 			"?",
 		},

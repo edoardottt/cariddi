@@ -65,6 +65,28 @@ func main() {
 		output.Beautify()
 	}
 
+	// Setup the config according to the flags that were
+	// passed via the CLI
+	config := &crawler.Scan{
+		Delay:         flags.Delay,
+		Concurrency:   flags.Concurrency,
+		Ignore:        flags.Ignore,
+		IgnoreTxt:     flags.IgnoreTXT,
+		Cache:         flags.Cache,
+		Timeout:       flags.Timeout,
+		Intensive:     flags.Intensive,
+		Rua:           flags.Rua,
+		Proxy:         flags.Proxy,
+		SecretsFlag:   flags.Secrets,
+		Plain:         flags.Plain,
+		EndpointsFlag: flags.Endpoints,
+		FileType:      flags.Extensions,
+		ErrorsFlag:    flags.Errors,
+		InfoFlag:      flags.Info,
+		Debug:         flags.Debug,
+		UserAgent:     flags.UserAgent,
+	}
+
 	// Read the targets from standard input.
 	targets := input.ScanTargets()
 
@@ -73,16 +95,14 @@ func main() {
 
 	// If it is needed, read custom endpoints definition
 	// from the specified file.
-	var endpointsFileSlice []string
 	if flags.EndpointsFile != "" {
-		endpointsFileSlice = fileUtils.ReadFile(flags.EndpointsFile)
+		config.EndpointsSlice = fileUtils.ReadFile(flags.EndpointsFile)
 	}
 
 	// If it is needed, read custom secrets definition
 	// from the specified file.
-	var secretsFileSlice []string
 	if flags.SecretsFile != "" {
-		secretsFileSlice = fileUtils.ReadFile(flags.SecretsFile)
+		config.SecretsSlice = fileUtils.ReadFile(flags.SecretsFile)
 	}
 
 	finalResults := []string{}
@@ -93,9 +113,9 @@ func main() {
 	finalInfos := []scanner.InfoMatched{}
 
 	// Create output files if needed (txt / html).
-	var ResultTxt = ""
+	config.Txt = ""
 	if flags.TXT != "" {
-		ResultTxt = fileUtils.CreateOutputFile(flags.TXT, "results", "txt")
+		config.Txt = fileUtils.CreateOutputFile(flags.TXT, "results", "txt")
 	}
 
 	var ResultHTML = ""
@@ -106,8 +126,6 @@ func main() {
 	}
 
 	// Read headers if needed
-	var headers map[string]string
-
 	if flags.HeadersFile != "" || flags.Headers != "" {
 		var headersInput string
 		if flags.HeadersFile != "" {
@@ -116,22 +134,19 @@ func main() {
 			headersInput = flags.Headers
 		}
 
-		headers = input.GetHeaders(headersInput)
+		config.Headers = input.GetHeaders(headersInput)
 	}
 
 	// For each target generate a crawler and collect all the results.
-	for _, inp := range targets {
-		results, secrets, endpoints, extensions, errors, infos := crawler.New(inp, flags.JSON, ResultTxt, ResultHTML, flags.Delay,
-			flags.Concurrency, flags.Ignore, flags.IgnoreTXT, flags.Cache, flags.Timeout, flags.Intensive,
-			flags.Rua, flags.Proxy, flags.Insecure, flags.Secrets, secretsFileSlice, flags.Plain, flags.Endpoints,
-			endpointsFileSlice, flags.Extensions, headers, flags.Errors, flags.Info, flags.Debug, flags.UserAgent)
-
-		finalResults = append(finalResults, results...)
-		finalSecret = append(finalSecret, secrets...)
-		finalEndpoints = append(finalEndpoints, endpoints...)
-		finalExtensions = append(finalExtensions, extensions...)
-		finalErrors = append(finalErrors, errors...)
-		finalInfos = append(finalInfos, infos...)
+	for _, target := range targets {
+		config.Target = target
+		results := crawler.New(config)
+		finalResults = append(finalResults, results.URLs...)
+		finalSecret = append(finalSecret, results.Secrets...)
+		finalEndpoints = append(finalEndpoints, results.Endpoints...)
+		finalExtensions = append(finalExtensions, results.Extensions...)
+		finalErrors = append(finalErrors, results.Errors...)
+		finalInfos = append(finalInfos, results.Infos...)
 	}
 
 	// Remove duplicates from all the results.

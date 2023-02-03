@@ -68,7 +68,7 @@ func GetInfoRegexes() []Info {
 		{
 			"BTC address",
 			[]string{
-				`[13][a-km-zA-HJ-NP-Z1-9]{25,34}`},
+				`([13]|bc1)[A-HJ-NP-Za-km-z1-9]{27,34}`},
 		},
 		/*
 			HOW TO AVOID VERY VERY LONG BASE64 IMAGES ???
