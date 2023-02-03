@@ -36,7 +36,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type jsonData struct {
+type JsonData struct {
 	URL           string         `json:"url"`
 	Method        string         `json:"method"`
 	StatusCode    int            `json:"status_code"`
@@ -120,7 +120,7 @@ func GetJsonString(
 		Infos:      infoList,
 		Secrets:    secretList,
 	}
-	resp := &jsonData{
+	resp := &JsonData{
 		URL:           r.Request.URL.String(),
 		Method:        r.Request.Method,
 		StatusCode:    r.StatusCode,
