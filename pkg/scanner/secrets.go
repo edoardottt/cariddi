@@ -333,7 +333,7 @@ func GetSecretRegexes() []Secret {
 			"S3 Bucket",
 			`(?:[a-zA-Z0-9_-]+s3\.amazonaws\.com|[a-zA-Z0-9_.-]+amazonaws\.com|` +
 				`[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com|s3\:\/\/[a-zA-Z0-9-\.\_]+|` +
-				`s3-[a-zA-Z0-9-\.\_\/]+|s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+)`,
+				`s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+)`,
 			[]string{},
 			"?",
 		},
