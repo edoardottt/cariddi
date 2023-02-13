@@ -63,7 +63,11 @@
 Preview :bar_chart:
 ----------
 
-[![asciicast](https://asciinema.org/a/415989.svg)](https://asciinema.org/a/415989)
+<!--[![asciicast](https://asciinema.org/a/415989.svg)](https://asciinema.org/a/415989)-->
+
+<p align="center">
+  <img src="https://github.com/edoardottt/images/blob/main/cariddi/cariddi.gif">
+</p>
 
 Installation 📡
 ----------
