@@ -86,14 +86,14 @@ func GetSecretRegexes() []Secret {
 			"Facebook Secret Key",
 			"Facebook Secret Key",
 			`(?i)(facebook|fb)(.{0,20})?(?-i)['\"][0-9a-f]{32}['\"]`,
-			[]string{"facebook.com/", "facebook.svg"},
+			[]string{"facebook.com", "facebook.svg"},
 			"?",
 		},
 		{
 			"Facebook Client ID",
 			"Facebook Client ID",
 			`(?i)(facebook|fb)(.{0,20})?['\"][0-9]{13,17}['\"]`,
-			[]string{"facebook.com/", "facebook.svg"},
+			[]string{"facebook.com", "facebook.svg"},
 			"?",
 		},
 		{
@@ -114,14 +114,14 @@ func GetSecretRegexes() []Secret {
 			"Twitter Secret Key",
 			"Twitter Secret Key",
 			`(?i)twitter(.{0,20})?[0-9a-z]{35,44}`,
-			[]string{},
+			[]string{"twitter.com"},
 			"?",
 		},
 		{
 			"Twitter Client ID",
 			"Twitter Client ID",
 			`(?i)twitter(.{0,20})?[0-9a-z]{18,25}`,
-			[]string{},
+			[]string{"twitter.com"},
 			"?",
 		},
 		{
@@ -156,14 +156,14 @@ func GetSecretRegexes() []Secret {
 			"LinkedIn Client ID",
 			"LinkedIn Client ID",
 			`(?i)linkedin(.{0,20})?(?-i)[0-9a-z]{12}`,
-			[]string{"linkedin.com/", "linkedin.svg"},
+			[]string{"linkedin.com", "linkedin.svg"},
 			"?",
 		},
 		{
 			"LinkedIn Secret Key",
 			"LinkedIn Secret Key",
 			`(?i)linkedin(.{0,20})?[0-9a-z]{16}`,
-			[]string{"linkedin.com/", "linkedin.svg"},
+			[]string{"linkedin.com", "linkedin.svg"},
 			"?",
 		},
 		{
@@ -239,7 +239,7 @@ func GetSecretRegexes() []Secret {
 		{
 			"Slack Webhook",
 			"Slack Webhook",
-			`https://hooks.slack.com/services/T[0-9A-Za-z\-_]{8}/B[0-9A-Za-z\-_]{8}/[0-9A-Za-z\-_]{24}`,
+			`https\:\/\/hooks\.slack\.com/services/T[0-9A-Za-z\-_]{8}/B[0-9A-Za-z\-_]{8}/[0-9A-Za-z\-_]{24}`,
 			[]string{},
 			"?",
 		},
@@ -333,7 +333,7 @@ func GetSecretRegexes() []Secret {
 			"S3 Bucket",
 			`(?:[a-zA-Z0-9_-]+s3\.amazonaws\.com|[a-zA-Z0-9_.-]+amazonaws\.com|` +
 				`[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com|s3\:\/\/[a-zA-Z0-9-\.\_]+|` +
-				`s3-[a-zA-Z0-9-\.\_\/]+|s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+)`,
+				`s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+)`,
 			[]string{},
 			"?",
 		},
