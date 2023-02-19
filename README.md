@@ -72,6 +72,11 @@ Preview :bar_chart:
 Installation 📡
 ----------
 
+### Using Snap
+```bash
+sudo snap install cariddi
+```
+
 ### Using Go
 ```bash
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
