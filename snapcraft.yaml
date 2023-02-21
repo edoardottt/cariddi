@@ -13,6 +13,8 @@ apps:
     command: bin/cariddi
     plugs:
       - home
+      - network
+
 parts:
   cariddi:
     plugin: go
