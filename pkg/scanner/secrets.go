@@ -337,6 +337,41 @@ func GetSecretRegexes() []Secret {
 			[]string{},
 			"?",
 		},
+		{
+			"Discord Webhook",
+			"Discord Webhook",
+			`https\:\/\/discordapp\.com\/api\/webhooks\/[0-9]+/[A-Za-z0-9\-]+`,
+			[]string{},
+			"?",
+		},
+		{
+			"Google Calendar URI",
+			"Google Calendar URI",
+			`https\:\/\/(.*)calendar\.google\.com\/calendar\/[0-9a-z\/]+\/embed\?src=[A-Za-z0-9%@&;=\-_\.\/]+`,
+			[]string{},
+			"?",
+		},
+		{
+			"Google OAuth Access Key",
+			"Google OAuth Access Key",
+			`ya29\.[0-9A-Za-z\-_]+`,
+			[]string{},
+			"?",
+		},
+		{
+			"Mapbox Token Disclosure",
+			"Mapbox Token Disclosure",
+			`(pk|sk)\.eyJ1Ijoi\w+\.[\w-]*`,
+			[]string{},
+			"?",
+		},
+		{
+			"Microsoft Teams Webhook",
+			"Microsoft Teams Webhook",
+			`https\:\/\/outlook\.office\.com\/webhook\/[A-Za-z0-9\-@]+\/IncomingWebhook\/[A-Za-z0-9\-]+\/[A-Za-z0-9\-]+`,
+			[]string{},
+			"?",
+		},
 	}
 
 	return regexes

@@ -7,7 +7,7 @@
     <img src="https://goreportcard.com/badge/github.com/edoardottt/cariddi" alt="go-report-card" />
   </a>
   <!-- workflows -->
-  <a href="https://edoardoottavianelli.it">
+  <a href="https://github.com/edoardottt/cariddi/actions">
     <img src="https://github.com/edoardottt/cariddi/workflows/Go/badge.svg?branch=main" alt="workflows" />
   </a>
   <!-- ubuntu-build -->

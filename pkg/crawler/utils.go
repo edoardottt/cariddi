@@ -25,7 +25,7 @@ type Event struct {
 
 // visitHTMLLink checks if the collector should visit a link or not.
 func visitHTMLLink(link string, event *Event, e *colly.HTMLElement, c *colly.Collector) {
-	if len(link) != 0 {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
 		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
@@ -35,7 +35,7 @@ func visitHTMLLink(link string, event *Event, e *colly.HTMLElement, c *colly.Col
 
 // visitXMLLink checks if the collector should visit a link or not.
 func visitXMLLink(link string, event *Event, e *colly.XMLElement, c *colly.Collector) {
-	if len(link) != 0 {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
 		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
