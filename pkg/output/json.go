@@ -78,9 +78,9 @@ func GetJSONString(
 	infoList := []MatcherResult{}
 	secretList := []MatcherResult{}
 
-	// Set content type 
+	// Set content type
 	if len(contentTypes) > 0 {
-		contentType = contentTypes[0]
+		contentType = strings.Split(contentTypes[0], "; ")[0]
 	}
 
 	// Set content length
@@ -106,7 +106,6 @@ func GetJSONString(
 	}
 
 	// Process infos
-
 	for _, info := range infos {
 		secretMatch := MatcherResult{info.Info.Name, info.Match}
 		infoList = append(infoList, secretMatch)
