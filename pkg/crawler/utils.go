@@ -19,6 +19,7 @@ type Event struct {
 	Intensive    bool
 	Ignore       bool
 	Debug        bool
+	JSON		 bool
 	IgnoreSlice  []string
 	URLs         *[]string
 }

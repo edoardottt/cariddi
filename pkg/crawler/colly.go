@@ -151,6 +151,7 @@ func New(scan *Scan) *Results {
 		Intensive:    scan.Intensive,
 		Ignore:       ignoreBool,
 		Debug:        scan.Debug,
+		JSON:		  scan.JSON,
 		IgnoreSlice:  ignoreSlice,
 		URLs:         &results.URLs,
 	}
@@ -362,7 +363,9 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 func registerHTMLEvents(c *colly.Collector, event *Event) {
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
-		fmt.Println(e.URL.String())
+		if (!event.JSON){
+			fmt.Println(e.URL.String())
+		}
 	})
 
 	// On every a element which has href attribute call callback
