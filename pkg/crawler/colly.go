@@ -144,98 +144,20 @@ func New(scan *Scan) *Results {
 	c := CreateColly(scan.Delay, scan.Concurrency, scan.Cache, scan.Timeout,
 		scan.Intensive, scan.Rua, scan.Proxy, scan.UserAgent, scan.Target)
 
-	// On every request that Colly is making, print the URL it's currently visiting
-	c.OnRequest(func(e *colly.Request) {
-		if scan.JSON == false {
-			fmt.Println(e.URL.String())
-		}
-	})
+	event := &Event{
+		ProtocolTemp: protocolTemp,
+		TargetTemp:   targetTemp,
+		Target:       scan.Target,
+		Intensive:    scan.Intensive,
+		Ignore:       ignoreBool,
+		Debug:        scan.Debug,
+		JSON:		  scan.JSON,
+		IgnoreSlice:  ignoreSlice,
+		URLs:         &results.URLs,
+	}
 
-	// On every a element which has href attribute call callback
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		if len(link) != 0 && link[0] != '#' {
-			visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-				ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-		}
-	})
-
-	// On every script element which has src attribute call callback
-	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
-		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// On every link element which has href attribute call callback
-	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// On every iframe element which has src attribute call callback
-	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
-		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// On every svg element which has src attribute call callback
-	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
-		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// On every img element which has src attribute call callback
-	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
-		link := e.Attr("src")
-		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// On every from element which has action attribute call callback
-	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
-		link := e.Attr("action")
-		visitHTMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// Create a callback on the XPath query searching for the URLs
-	c.OnXML("//url", func(e *colly.XMLElement) {
-		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// Create a callback on the XPath query searching for the URLs
-	c.OnXML("//link", func(e *colly.XMLElement) {
-		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// Create a callback on the XPath query searching for the URLs
-	c.OnXML("//href", func(e *colly.XMLElement) {
-		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// Create a callback on the XPath query searching for the URLs
-	c.OnXML("//loc", func(e *colly.XMLElement) {
-		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
-
-	// Create a callback on the XPath query searching for the URLs
-	c.OnXML("//fileurl", func(e *colly.XMLElement) {
-		link := e.Text
-		visitXMLLink(link, protocolTemp, targetTemp, scan.Target, scan.Intensive,
-			ignoreBool, scan.Debug, ignoreSlice, &results.URLs, e, c)
-	})
+	registerHTMLEvents(c, event)
+	registerXMLEvents(c, event)
 
 	// Add headers (if needed) on each request
 	if (len(scan.Headers)) > 0 {
@@ -260,13 +182,13 @@ func New(scan *Scan) *Results {
 			(1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
 			// HERE SCAN FOR SECRETS
 			if scan.SecretsFlag && lengthOk {
-				secretsSlice := huntSecrets(scan.SecretsSlice, r.Request.URL.String(), string(r.Body))
+				secretsSlice := huntSecrets(r.Request.URL.String(), string(r.Body), &scan.SecretsSlice)
 				results.Secrets = append(results.Secrets, secretsSlice...)
 				secrets = append(secrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if scan.EndpointsFlag {
-				endpointsSlice := huntEndpoints(scan.EndpointsSlice, r.Request.URL.String())
+				endpointsSlice := huntEndpoints(r.Request.URL.String(), &scan.EndpointsSlice)
 				for _, elem := range endpointsSlice {
 					if len(elem.Parameters) != 0 {
 						results.Endpoints = append(results.Endpoints, elem)
@@ -297,7 +219,7 @@ func New(scan *Scan) *Results {
 			}
 		}
 		if scan.JSON {
-			jsonOutput, err := output.GetJsonString(
+			jsonOutput, err := output.GetJSONString(
 				r, secrets, parameters, filetype, errors, infos,
 			)
 			if err == nil {
@@ -322,7 +244,7 @@ func New(scan *Scan) *Results {
 
 		if path == "" || path == "/" {
 			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "robots.txt"
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
 				err = c.Visit(absoluteURL)
 				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 					log.Println(err)
@@ -330,7 +252,7 @@ func New(scan *Scan) *Results {
 			}
 
 			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "sitemap.xml"
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
+			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
 				err = c.Visit(absoluteURL)
 				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 					log.Println(err)
@@ -434,4 +356,82 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 	})
 
 	return c
+}
+
+// registerHTMLEvents registers the associated functions for each
+// HTML event triggering an action.
+func registerHTMLEvents(c *colly.Collector, event *Event) {
+	// On every request that Colly is making, print the URL it's currently visiting
+	c.OnRequest(func(e *colly.Request) {
+		if (!event.JSON){
+			fmt.Println(e.URL.String())
+		}
+	})
+
+	// On every a element which has href attribute call callback
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+		if len(link) != 0 && link[0] != '#' {
+			visitHTMLLink(link, event, e, c)
+		}
+	})
+
+	// On every script element which has src attribute call callback
+	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("src"), event, e, c)
+	})
+
+	// On every link element which has href attribute call callback
+	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("href"), event, e, c)
+	})
+
+	// On every iframe element which has src attribute call callback
+	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("src"), event, e, c)
+	})
+
+	// On every svg element which has src attribute call callback
+	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("src"), event, e, c)
+	})
+
+	// On every img element which has src attribute call callback
+	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("src"), event, e, c)
+	})
+
+	// On every from element which has action attribute call callback
+	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("action"), event, e, c)
+	})
+}
+
+// registerXMLEvents registers the associated functions for each
+// XML event triggering an action.
+func registerXMLEvents(c *colly.Collector, event *Event) {
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//url", func(e *colly.XMLElement) {
+		visitXMLLink(e.Text, event, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//link", func(e *colly.XMLElement) {
+		visitXMLLink(e.Text, event, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//href", func(e *colly.XMLElement) {
+		visitXMLLink(e.Text, event, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//loc", func(e *colly.XMLElement) {
+		visitXMLLink(e.Text, event, e, c)
+	})
+
+	// Create a callback on the XPath query searching for the URLs
+	c.OnXML("//fileurl", func(e *colly.XMLElement) {
+		visitXMLLink(e.Text, event, e, c)
+	})
 }

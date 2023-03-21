@@ -35,7 +35,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type JsonData struct {
+type JSONData struct {
 	URL           string         `json:"url"`
 	Method        string         `json:"method"`
 	StatusCode    int            `json:"status_code"`
@@ -60,7 +60,7 @@ type MatcherResult struct {
 	Match string `json:"match"`
 }
 
-func GetJsonString(
+func GetJSONString(
 	r *colly.Response,
 	secrets []scanner.SecretMatched,
 	parameters []scanner.Parameter,
@@ -68,22 +68,28 @@ func GetJsonString(
 	errors []scanner.ErrorMatched,
 	infos []scanner.InfoMatched,
 ) ([]byte, error) {
-
 	// Parse response headers
 	headers := r.Headers
 	contentTypes := (*headers)["Content-Type"]
+	contentLengths := (*headers)["Content-Length"]
 	contentType := ""
+	contentLength := 0
+	errorList := []MatcherResult{}
+	infoList := []MatcherResult{}
+	secretList := []MatcherResult{}
+
+	// Set content type
 	if len(contentTypes) > 0 {
-		contentType = contentTypes[0]
+		contentType = strings.Split(contentTypes[0], "; ")[0]
 	}
 
-	contentLength := 0
-	contentLengths := (*headers)["Content-Length"]
+	// Set content length
 	if len(contentLengths) > 0 {
 		ret, err := strconv.Atoi(contentLengths[0])
 		if err != nil {
 			return nil, err
 		}
+
 		contentLength = ret
 	}
 
@@ -94,21 +100,18 @@ func GetJsonString(
 	lines := len(strings.Split(string(r.Body), "\n"))
 
 	// Process secrets
-	secretList := []MatcherResult{}
 	for _, secret := range secrets {
 		secretMatch := MatcherResult{secret.Secret.Name, secret.Match}
 		secretList = append(secretList, secretMatch)
 	}
 
 	// Process infos
-	infoList := []MatcherResult{}
 	for _, info := range infos {
 		secretMatch := MatcherResult{info.Info.Name, info.Match}
 		infoList = append(infoList, secretMatch)
 	}
 
-	// Process
-	errorList := []MatcherResult{}
+	// Process errors
 	for _, error := range errors {
 		errorMatch := MatcherResult{error.Error.ErrorName, error.Match}
 		errorList = append(errorList, errorMatch)
@@ -122,7 +125,7 @@ func GetJsonString(
 		Infos:      infoList,
 		Secrets:    secretList,
 	}
-	resp := &JsonData{
+	resp := &JSONData{
 		URL:           r.Request.URL.String(),
 		Method:        r.Request.Method,
 		StatusCode:    r.StatusCode,
