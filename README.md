@@ -7,7 +7,7 @@
     <img src="https://goreportcard.com/badge/github.com/edoardottt/cariddi" alt="go-report-card" />
   </a>
   <!-- workflows -->
-  <a href="https://edoardoottavianelli.it">
+  <a href="https://github.com/edoardottt/cariddi/actions">
     <img src="https://github.com/edoardottt/cariddi/workflows/Go/badge.svg?branch=main" alt="workflows" />
   </a>
   <!-- ubuntu-build -->
@@ -47,7 +47,7 @@
   </sub>
   <br>
   <!--Tweet button-->
-  <a href="https://twitter.com/intent/tweet?url=https://github.com/edoardottt/cariddi&text=Take%20a%20list%20of%20domains,%20crawl%20urls%20and%20scan%20for%20endpoints,%20secrets,%20api%20keys,%20file%20extensions,%20tokens%20and%20more...%20#network%20#security%20#infosec%20#oss%20#github%20#bugbounty%20#linux" target="_blank">Share on Twitter!
+  <a href="https://twitter.com/intent/tweet?url=https://github.com/edoardottt/cariddi&text=Take%20a%20list%20of%20domains,%20crawl%20urls%20and%20scan%20for%20endpoints,%20secrets,%20api%20keys,%20file%20extensions,%20tokens%20and%20more...%20%23network%20%23security%20%23infosec%20%23oss%20%23github%20%23bugbounty%20%23linux" target="_blank">Share on Twitter!
   </a>
 </p>
 <p align="center">
@@ -63,10 +63,19 @@
 Preview :bar_chart:
 ----------
 
-[![asciicast](https://asciinema.org/a/415989.svg)](https://asciinema.org/a/415989)
+<!--[![asciicast](https://asciinema.org/a/415989.svg)](https://asciinema.org/a/415989)-->
+
+<p align="center">
+  <img src="https://github.com/edoardottt/images/blob/main/cariddi/cariddi.gif">
+</p>
 
 Installation 📡
 ----------
+
+### Using Snap
+```bash
+sudo snap install cariddi
+```
 
 ### Using Go
 ```bash

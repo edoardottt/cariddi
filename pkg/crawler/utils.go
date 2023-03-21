@@ -12,46 +12,48 @@ import (
 	"github.com/gocolly/colly"
 )
 
+type Event struct {
+	ProtocolTemp string
+	TargetTemp   string
+	Target       string
+	Intensive    bool
+	Ignore       bool
+	Debug        bool
+	IgnoreSlice  []string
+	URLs         *[]string
+}
+
 // visitHTMLLink checks if the collector should visit a link or not.
-func visitHTMLLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
-	ignoreSlice []string, finalResults *[]string, e *colly.HTMLElement, c *colly.Collector) {
-	if len(link) != 0 {
-		absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+func visitHTMLLink(link string, event *Event, e *colly.HTMLElement, c *colly.Collector) {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
+		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
-		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
-				err := c.Visit(absoluteURL)
-				if !errors.Is(err, colly.ErrAlreadyVisited) {
-					*finalResults = append(*finalResults, absoluteURL)
-
-					if err != nil && debug {
-						log.Println(err)
-					}
-				}
-			}
-		}
+		visitLink(event, c, absoluteURL)
 	}
 }
 
 // visitXMLLink checks if the collector should visit a link or not.
-func visitXMLLink(link, protocolTemp, targetTemp, target string, intensive, ignoreBool, debug bool,
-	ignoreSlice []string, finalResults *[]string, e *colly.XMLElement, c *colly.Collector) {
-	if len(link) != 0 {
-		absoluteURL := urlUtils.AbsoluteURL(protocolTemp, targetTemp, e.Request.AbsoluteURL(link))
+func visitXMLLink(link string, event *Event, e *colly.XMLElement, c *colly.Collector) {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
+		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
-		if (!intensive && urlUtils.SameDomain(protocolTemp+"://"+target, absoluteURL)) ||
-			(intensive && intensiveOk(targetTemp, absoluteURL, debug)) {
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, ignoreSlice)) {
-				err := c.Visit(absoluteURL)
-				if !errors.Is(err, colly.ErrAlreadyVisited) {
-					*finalResults = append(*finalResults, absoluteURL)
+		visitLink(event, c, absoluteURL)
+	}
+}
 
-					if err != nil && debug {
-						log.Println(err)
-					}
+// visitLink is a protocol agnostic wrapper to visit a link.
+func visitLink(event *Event, c *colly.Collector, absoluteURL string) {
+	if (!event.Intensive && urlUtils.SameDomain(event.ProtocolTemp+"://"+event.Target, absoluteURL)) ||
+		(event.Intensive && intensiveOk(event.TargetTemp, absoluteURL, event.Debug)) {
+		if !event.Ignore || (event.Ignore && !IgnoreMatch(absoluteURL, &event.IgnoreSlice)) {
+			err := c.Visit(absoluteURL)
+			if !errors.Is(err, colly.ErrAlreadyVisited) {
+				*event.URLs = append(*event.URLs, absoluteURL)
+
+				if err != nil && event.Debug {
+					log.Println(err)
 				}
 			}
 		}
@@ -59,16 +61,16 @@ func visitXMLLink(link, protocolTemp, targetTemp, target string, intensive, igno
 }
 
 // huntSecrets hunts for secrets.
-func huntSecrets(secretsFile []string, target string, body string) []scanner.SecretMatched {
+func huntSecrets(target, body string, secretsFile *[]string) []scanner.SecretMatched {
 	secrets := SecretsMatch(target, body, secretsFile)
 	return secrets
 }
 
 // SecretsMatch checks if a body matches some secrets.
-func SecretsMatch(url string, body string, secretsFile []string) []scanner.SecretMatched {
+func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatched {
 	var secrets []scanner.SecretMatched
 
-	if len(secretsFile) == 0 {
+	if len(*secretsFile) == 0 {
 		for _, secret := range scanner.GetSecretRegexes() {
 			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(secret.Regex)
@@ -91,7 +93,7 @@ func SecretsMatch(url string, body string, secretsFile []string) []scanner.Secre
 			}
 		}
 	} else {
-		for _, secret := range secretsFile {
+		for _, secret := range *secretsFile {
 			if matched, err := regexp.Match(secret, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(secret)
 				match := re.FindStringSubmatch(body)
@@ -106,18 +108,18 @@ func SecretsMatch(url string, body string, secretsFile []string) []scanner.Secre
 }
 
 // huntEndpoints hunts for juicy endpoints.
-func huntEndpoints(endpointsFile []string, target string) []scanner.EndpointMatched {
+func huntEndpoints(target string, endpointsFile *[]string) []scanner.EndpointMatched {
 	endpoints := EndpointsMatch(target, endpointsFile)
 	return endpoints
 }
 
 // EndpointsMatch check if an endpoint matches a juicy parameter.
-func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMatched {
+func EndpointsMatch(target string, endpointsFile *[]string) []scanner.EndpointMatched {
 	endpoints := []scanner.EndpointMatched{}
 	matched := []scanner.Parameter{}
 	parameters := urlUtils.RetrieveParameters(target)
 
-	if len(endpointsFile) == 0 {
+	if len(*endpointsFile) == 0 {
 		for _, parameter := range scanner.GetJuicyParameters() {
 			for _, param := range parameters {
 				if strings.ToLower(param) == parameter.Parameter {
@@ -127,7 +129,7 @@ func EndpointsMatch(target string, endpointsFile []string) []scanner.EndpointMat
 		}
 		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 	} else {
-		for _, parameter := range endpointsFile {
+		for _, parameter := range *endpointsFile {
 			for _, param := range parameters {
 				if param == parameter {
 					matched = append(matched, scanner.Parameter{Parameter: parameter, Attacks: []string{}})
@@ -162,13 +164,13 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 }
 
 // huntErrors hunts for errors.
-func huntErrors(target string, body string) []scanner.ErrorMatched {
+func huntErrors(target, body string) []scanner.ErrorMatched {
 	errorsSlice := ErrorsMatch(target, body)
 	return errorsSlice
 }
 
 // ErrorsMatch checks the patterns for errors.
-func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
+func ErrorsMatch(url, body string) []scanner.ErrorMatched {
 	errors := []scanner.ErrorMatched{}
 
 	for _, errorItem := range scanner.GetErrorRegexes() {
@@ -186,13 +188,13 @@ func ErrorsMatch(url string, body string) []scanner.ErrorMatched {
 }
 
 // huntInfos hunts for infos.
-func huntInfos(target string, body string) []scanner.InfoMatched {
+func huntInfos(target, body string) []scanner.InfoMatched {
 	infosSlice := InfoMatch(target, body)
 	return infosSlice
 }
 
 // InfoMatch checks the patterns for infos.
-func InfoMatch(url string, body string) []scanner.InfoMatched {
+func InfoMatch(url, body string) []scanner.InfoMatched {
 	infos := []scanner.InfoMatched{}
 
 	for _, infoItem := range scanner.GetInfoRegexes() {
@@ -210,8 +212,8 @@ func InfoMatch(url string, body string) []scanner.InfoMatched {
 }
 
 // RetrieveBody retrieves the body (in the response) of a url.
-func RetrieveBody(target string) string {
-	sb, err := GetRequest(target)
+func RetrieveBody(target *string) string {
+	sb, err := GetRequest(*target)
 	if err == nil && sb != "" {
 		return sb
 	}
@@ -220,8 +222,8 @@ func RetrieveBody(target string) string {
 }
 
 // IgnoreMatch checks if the URL should be ignored or not.
-func IgnoreMatch(url string, ignoreSlice []string) bool {
-	for _, ignore := range ignoreSlice {
+func IgnoreMatch(url string, ignoreSlice *[]string) bool {
+	for _, ignore := range *ignoreSlice {
 		if strings.Contains(url, ignore) {
 			return true
 		}
