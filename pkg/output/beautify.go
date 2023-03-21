@@ -49,7 +49,7 @@ func Beautify() {
 	bannerPart2 := banner6 + banner7 + banner8 + banner9
 
 	color.Set(color.FgCyan)
-	fmt.Fprintf(os.Stderr, bannerPart1)
+	fmt.Fprint(os.Stderr, bannerPart1)
 	color.Unset()
-	fmt.Fprintf(os.Stderr, bannerPart2)
+	fmt.Fprint(os.Stderr, bannerPart2)
 }

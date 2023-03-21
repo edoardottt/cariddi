@@ -219,7 +219,7 @@ func New(scan *Scan) *Results {
 			}
 		}
 		if scan.JSON {
-			jsonOutput, err := output.GetJsonString(
+			jsonOutput, err := output.GetJSONString(
 				r, secrets, parameters, filetype, errors, infos,
 			)
 			if err == nil {
