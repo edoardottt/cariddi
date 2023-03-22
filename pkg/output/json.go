@@ -112,7 +112,6 @@ func GetJSONString(
 	}
 
 	// Process error list
-	errorList := []MatcherResult{}
 	for _, error := range errors {
 		errorMatch := MatcherResult{error.Error.ErrorName, error.Match}
 		errorList = append(errorList, errorMatch)
@@ -127,7 +126,7 @@ func GetJSONString(
 	}
 
 	// Construct JSON response
-	resp := &JsonData{
+	resp := &JSONData{
 		URL:           r.Request.URL.String(),
 		Method:        r.Request.Method,
 		StatusCode:    r.StatusCode,
