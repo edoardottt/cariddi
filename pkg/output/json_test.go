@@ -24,7 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 */
 
-package output
+package output_test
 
 import (
 	"net/http"
@@ -32,6 +32,7 @@ import (
 	"testing"
 	"net/url"
 	"github.com/gocolly/colly"
+	"github.com/edoardottt/cariddi/pkg/output"
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
@@ -39,6 +40,7 @@ func TestJSONOutput(t *testing.T) {
 	headers := http.Header{}
 	headers.Set("Content-Type", "application/pdf")
 	headers.Set("Content-Length", "128")
+
 	secrets := []scanner.SecretMatched{
 		scanner.SecretMatched{
 			Secret: scanner.Secret{
@@ -93,13 +95,13 @@ func TestJSONOutput(t *testing.T) {
 		Request: &req,
 		Headers: &headers,
 	}
-	headers_nocontent := http.Header{}
+	headersNoContent := http.Header{}
 	resp2 := &colly.Response{
 		StatusCode: 200,
 		Body: []byte("abcd"),
 		Ctx: nil,
 		Request: &req,
-		Headers: &headers_nocontent,
+		Headers: &headersNoContent,
 	}
 	tests := []struct {
 		name  string
@@ -119,7 +121,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype: filetype,
 			errors: errors,
 			infos: infos,
-			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`,
+			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`, //nolint:lll
 		},
 		{
 			name: "test_all_findings_nocontent",
@@ -129,7 +131,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype: filetype,
 			errors: errors,
 			infos: infos,
-			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`,
+			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`, //nolint:lll
 		},
 		{
 			name: "test_no_findings",
@@ -139,7 +141,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype: &scanner.FileType{},
 			errors: []scanner.ErrorMatched{},
 			infos: []scanner.InfoMatched{},
-			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128}`,
+			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128}`, //nolint: all
 		},
 		{
 			name: "test_only_secrets",
@@ -149,7 +151,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype: &scanner.FileType{},
 			errors: []scanner.ErrorMatched{},
 			infos: []scanner.InfoMatched{},
-			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`,
+			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`, //nolint:lll
 		},
 		{
 			name: "test_only_params",
@@ -159,7 +161,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype: &scanner.FileType{},
 			errors: []scanner.ErrorMatched{},
 			infos: []scanner.InfoMatched{},
-			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"parameters":[{"name":"id","attacks":[]}]}}`,
+			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"parameters":[{"name":"id","attacks":[]}]}}`, //nolint:lll
 		},
 		{
 			name: "test_only_errors",
@@ -169,7 +171,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype: &scanner.FileType{},
 			errors: errors,
 			infos: []scanner.InfoMatched{},
-			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}]}}`,
+			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}]}}`, //nolint:lll
 		},
 		{
 			name: "test_only_infos",
@@ -179,12 +181,13 @@ func TestJSONOutput(t *testing.T) {
 			filetype: &scanner.FileType{},
 			errors: []scanner.ErrorMatched{},
 			infos: infos,
-			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}]}}`,
+			want: `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}]}}`, //nolint:lll
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := GetJSONString(tt.r, tt.secrets, tt.parameters, tt.filetype, tt.errors, tt.infos); !reflect.DeepEqual(string(got), tt.want) {
+			if got, _ := output.GetJSONString(tt.r, tt.secrets, tt.parameters, tt.filetype, tt.errors, tt.infos); !reflect.DeepEqual(string(got), tt.want) { //nolint:lll
 				t.Errorf("GetJSONString\n%v", string(got))
 				t.Errorf("want\n%v", tt.want)
 			}
