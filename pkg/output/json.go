@@ -43,12 +43,12 @@ type JsonData struct {
 	Lines         int            `json:"lines"`
 	ContentType   string         `json:"content_type,omitempty"`
 	ContentLength int            `json:"content_length,omitempty"`
-	Matches       MatcherResults `json:"matches,omitempty"`
+	Matches       *MatcherResults `json:"matches,omitempty"`
 	// Host          string `json:"host"` # TODO: Available in Colly 2.x
 }
 
 type MatcherResults struct {
-	FileType   scanner.FileType    `json:"filetype,omitempty"`
+	FileType   *scanner.FileType   `json:"filetype,omitempty"`
 	Parameters []scanner.Parameter `json:"parameters,omitempty"`
 	Errors     []MatcherResult     `json:"errors,omitempty"`
 	Infos      []MatcherResult     `json:"infos,omitempty"`
@@ -64,7 +64,7 @@ func GetJsonString(
 	r *colly.Response,
 	secrets []scanner.SecretMatched,
 	parameters []scanner.Parameter,
-	filetype scanner.FileType,
+	filetype *scanner.FileType,
 	errors []scanner.ErrorMatched,
 	infos []scanner.InfoMatched,
 ) ([]byte, error) {
@@ -107,21 +107,22 @@ func GetJsonString(
 		infoList = append(infoList, secretMatch)
 	}
 
-	// Process
+	// Process error list
 	errorList := []MatcherResult{}
 	for _, error := range errors {
 		errorMatch := MatcherResult{error.Error.ErrorName, error.Match}
 		errorList = append(errorList, errorMatch)
 	}
 
-	// Construct JSON response
-	data := MatcherResults{
+	data := &MatcherResults{
 		FileType:   filetype,
 		Parameters: parameters,
 		Errors:     errorList,
 		Infos:      infoList,
 		Secrets:    secretList,
 	}
+
+	// Construct JSON response
 	resp := &JsonData{
 		URL:           r.Request.URL.String(),
 		Method:        r.Request.Method,
@@ -132,6 +133,19 @@ func GetJsonString(
 		ContentLength: contentLength,
 		Matches:       data,
 		// Host:          "", // TODO: this is available in Colly 2.x
+	}
+
+	// Set empty data if no matches to bridge the omitempty gap for empty structs
+	var isFileTypeNill bool = false
+	var isParametersEmpty bool = len(parameters) == 0
+	var isErrorsEmpty bool = len(errorList) == 0
+	var isInfoEmpty bool = len(infoList) == 0
+	if (*filetype == scanner.FileType{}){
+		data.FileType = nil
+		isFileTypeNill = true
+	}
+	if (isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty){
+		resp.Matches = nil
 	}
 
 	// Convert struct to JSON string

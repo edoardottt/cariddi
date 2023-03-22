@@ -253,7 +253,7 @@ func New(scan *Scan) *Results {
 		parameters := []scanner.Parameter{}
 		errors := []scanner.ErrorMatched{}
 		infos := []scanner.InfoMatched{}
-		filetype := scanner.FileType{}
+		filetype := &scanner.FileType{}
 
 		// if endpoints or secrets or filetype: scan
 		if scan.EndpointsFlag || scan.SecretsFlag ||
@@ -279,7 +279,7 @@ func New(scan *Scan) *Results {
 				extension := huntExtensions(r.Request.URL.String(), scan.FileType)
 				if extension.URL != "" {
 					results.Extensions = append(results.Extensions, extension)
-					filetype = extension.Filetype
+					filetype = &extension.Filetype
 				}
 			}
 			// HERE SCAN FOR ERRORS
