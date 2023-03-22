@@ -139,14 +139,18 @@ func GetJSONString(
 	}
 
 	// Set empty data if no matches to bridge the omitempty gap for empty structs
-	var isFileTypeNill bool = false
-	var isParametersEmpty bool = len(parameters) == 0
-	var isErrorsEmpty bool = len(errorList) == 0
-	var isInfoEmpty bool = len(infoList) == 0
+	var (
+		isFileTypeNill = false
+		isParametersEmpty = len(parameters) == 0
+		isErrorsEmpty = len(errorList) == 0
+		isInfoEmpty = len(infoList) == 0
+	)
+
 	if (*filetype == scanner.FileType{}){
 		data.FileType = nil
 		isFileTypeNill = true
 	}
+
 	if (isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty){
 		resp.Matches = nil
 	}
