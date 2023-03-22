@@ -107,8 +107,8 @@ func GetJSONString(
 
 	// Process infos
 	for _, info := range infos {
-		secretMatch := MatcherResult{info.Info.Name, info.Match}
-		infoList = append(infoList, secretMatch)
+		infoMatch := MatcherResult{info.Info.Name, info.Match}
+		infoList = append(infoList, infoMatch)
 	}
 
 	// Process error list
@@ -117,7 +117,8 @@ func GetJSONString(
 		errorList = append(errorList, errorMatch)
 	}
 
-	data := &MatcherResults{
+	// Construct matcher results
+	matcherResults := &MatcherResults{
 		FileType:   filetype,
 		Parameters: parameters,
 		Errors:     errorList,
@@ -134,7 +135,7 @@ func GetJSONString(
 		Lines:         lines,
 		ContentType:   contentType,
 		ContentLength: contentLength,
-		Matches:       data,
+		Matches:       matcherResults,
 		// Host:          "", // TODO: this is available in Colly 2.x
 	}
 
@@ -144,14 +145,15 @@ func GetJSONString(
 		isParametersEmpty = len(parameters) == 0
 		isErrorsEmpty = len(errorList) == 0
 		isInfoEmpty = len(infoList) == 0
+		isSecretsEmpty = len(secretList) == 0
 	)
 
 	if (*filetype == scanner.FileType{}){
-		data.FileType = nil
+		matcherResults.FileType = nil
 		isFileTypeNill = true
 	}
 
-	if (isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty){
+	if (isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty && isSecretsEmpty){
 		resp.Matches = nil
 	}
 
