@@ -2,6 +2,7 @@
 cariddi
 output-cariddi/
 .cariddi_cache/
+*.snap
 
 # Binaries for programs and plugins
 *.exe
