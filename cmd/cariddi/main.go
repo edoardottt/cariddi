@@ -73,6 +73,7 @@ func main() {
 		Ignore:        flags.Ignore,
 		IgnoreTxt:     flags.IgnoreTXT,
 		Cache:         flags.Cache,
+		JSON:          flags.JSON,
 		Timeout:       flags.Timeout,
 		Intensive:     flags.Intensive,
 		Rua:           flags.Rua,
@@ -170,14 +171,14 @@ func main() {
 	}
 
 	// If needed print secrets.
-	if !flags.Plain && len(finalSecret) != 0 {
+	if !flags.JSON && !flags.Plain && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, elem.Match+" in "+elem.URL)
 		}
 	}
 
 	// If needed print endpoints.
-	if !flags.Plain && len(finalEndpoints) != 0 {
+	if !flags.JSON && !flags.Plain && len(finalEndpoints) != 0 {
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
 				finalString := "" + parameter.Parameter
@@ -194,21 +195,21 @@ func main() {
 	}
 
 	// If needed print extensions.
-	if !flags.Plain && len(finalExtensions) != 0 {
+	if !flags.JSON && !flags.Plain && len(finalExtensions) != 0 {
 		for _, elem := range finalExtensions {
 			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.URL+" matched!")
 		}
 	}
 
 	// If needed print errors.
-	if !flags.Plain && len(finalErrors) != 0 {
+	if !flags.JSON && !flags.Plain && len(finalErrors) != 0 {
 		for _, elem := range finalErrors {
 			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.URL)
 		}
 	}
 
 	// If needed print infos.
-	if !flags.Plain && len(finalInfos) != 0 {
+	if !flags.JSON && !flags.Plain && len(finalInfos) != 0 {
 		for _, elem := range finalInfos {
 			output.EncapsulateCustomGreen(elem.Info.Name, elem.Match+" in "+elem.URL)
 		}

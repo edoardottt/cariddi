@@ -28,6 +28,7 @@ package output
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/fatih/color"
 )
@@ -39,14 +40,16 @@ func Beautify() {
 	banner3 := "  / __/ _` | '__| |/ _` |/ _` | |\n"
 	banner4 := " | (_| (_| | |  | | (_| | (_| | |\n"
 	banner5 := "  \\___\\__,_|_|  |_|\\__,_|\\__,_|_| v1.3.0\n"
-	banner6 := ""
+	banner6 := "\n"
 	banner7 := " > github.com/edoardottt/cariddi\n"
 	banner8 := " > edoardoottavianelli.it\n"
-	banner9 := "========================================"
+	banner9 := "========================================\n"
 
 	bannerPart1 := banner1 + banner2 + banner3 + banner4 + banner5
 	bannerPart2 := banner6 + banner7 + banner8 + banner9
 
-	color.Cyan("%s\n", bannerPart1)
-	fmt.Println(bannerPart2)
+	color.Set(color.FgCyan)
+	fmt.Fprint(os.Stderr, bannerPart1)
+	color.Unset()
+	fmt.Fprint(os.Stderr, bannerPart2)
 }

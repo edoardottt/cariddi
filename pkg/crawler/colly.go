@@ -69,6 +69,7 @@ type Scan struct {
 	SecretsFlag   bool
 	Ignore        string
 	IgnoreTxt     string
+	JSON          bool
 	HTML          string
 	Proxy         string
 	Target        string
@@ -150,6 +151,7 @@ func New(scan *Scan) *Results {
 		Intensive:    scan.Intensive,
 		Ignore:       ignoreBool,
 		Debug:        scan.Debug,
+		JSON:		  scan.JSON,
 		IgnoreSlice:  ignoreSlice,
 		URLs:         &results.URLs,
 	}
@@ -168,8 +170,12 @@ func New(scan *Scan) *Results {
 
 	c.OnResponse(func(r *colly.Response) {
 		minBodyLentgh := 10
-
 		lengthOk := len(string(r.Body)) > minBodyLentgh
+		secrets := []scanner.SecretMatched{}
+		parameters := []scanner.Parameter{}
+		errors := []scanner.ErrorMatched{}
+		infos := []scanner.InfoMatched{}
+		filetype := &scanner.FileType{}
 
 		// if endpoints or secrets or filetype: scan
 		if scan.EndpointsFlag || scan.SecretsFlag ||
@@ -178,6 +184,7 @@ func New(scan *Scan) *Results {
 			if scan.SecretsFlag && lengthOk {
 				secretsSlice := huntSecrets(r.Request.URL.String(), string(r.Body), &scan.SecretsSlice)
 				results.Secrets = append(results.Secrets, secretsSlice...)
+				secrets = append(secrets, secretsSlice...)
 			}
 			// HERE SCAN FOR ENDPOINTS
 			if scan.EndpointsFlag {
@@ -185,6 +192,7 @@ func New(scan *Scan) *Results {
 				for _, elem := range endpointsSlice {
 					if len(elem.Parameters) != 0 {
 						results.Endpoints = append(results.Endpoints, elem)
+						parameters = append(parameters, elem.Parameters...)
 					}
 				}
 			}
@@ -193,18 +201,31 @@ func New(scan *Scan) *Results {
 				extension := huntExtensions(r.Request.URL.String(), scan.FileType)
 				if extension.URL != "" {
 					results.Extensions = append(results.Extensions, extension)
+					filetype = &extension.Filetype
 				}
 			}
 			// HERE SCAN FOR ERRORS
 			if scan.ErrorsFlag {
 				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
 				results.Errors = append(results.Errors, errorsSlice...)
+				errors = append(errors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
 			if scan.InfoFlag {
 				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
 				results.Infos = append(results.Infos, infosSlice...)
+				infos = append(infos, infosSlice...)
+			}
+		}
+		if scan.JSON {
+			jsonOutput, err := output.GetJSONString(
+				r, secrets, parameters, filetype, errors, infos,
+			)
+			if err == nil {
+				fmt.Println(string(jsonOutput))
+			} else {
+				log.Println(err)
 			}
 		}
 	})
@@ -342,7 +363,9 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 func registerHTMLEvents(c *colly.Collector, event *Event) {
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
-		fmt.Println(e.URL.String())
+		if (!event.JSON){
+			fmt.Println(e.URL.String())
+		}
 	})
 
 	// On every a element which has href attribute call callback
