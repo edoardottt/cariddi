@@ -30,8 +30,8 @@ package scanner
 // Parameter = the name of the parameter.
 // Attacks = Possible attacks.
 type Parameter struct {
-	Parameter string
-	Attacks   []string
+	Parameter string   `json:"name"`
+	Attacks   []string `json:"attacks"`
 }
 
 // EndpointMatched struct.

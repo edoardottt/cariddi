@@ -49,15 +49,15 @@ func CheckOutputFile(input string) bool {
 
 // CheckFlags checks the flags taken as input.
 func CheckFlags(flags Input) {
-	if flags.TXT != "" {
-		if !CheckOutputFile(flags.TXT) {
+	if flags.TXTout != "" {
+		if !CheckOutputFile(flags.TXTout) {
 			fmt.Println("The output file must avoid weird symbols. Try to use - , _ , . instead.")
 			os.Exit(1)
 		}
 	}
 
-	if flags.HTML != "" {
-		if !CheckOutputFile(flags.HTML) {
+	if flags.HTMLout != "" {
+		if !CheckOutputFile(flags.HTMLout) {
 			fmt.Println("The output file must avoid weird symbols. Try to use - , _ , . instead.")
 			os.Exit(1)
 		}
@@ -86,7 +86,7 @@ func CheckFlags(flags Input) {
 		}
 	}
 
-	if flags.Plain && flags.TXT == "" && flags.HTML == "" {
+	if flags.Plain && flags.TXTout == "" && flags.HTMLout == "" {
 		if flags.Secrets || flags.Endpoints || flags.Extensions != 0 {
 			fmt.Println("In the plain mode cariddi prints only links found on targets.")
 			fmt.Println("If you want to see the results of secrets, endpoints and extensions found")

@@ -90,7 +90,7 @@ You need [Go](https://golang.org/).
 
   - `git clone https://github.com/edoardottt/cariddi.git`
   - `cd cariddi`
-  - `go get`
+  - `go get ./...`
   - `make linux` (to install)
   - `make unlinux` (to uninstall)
 
@@ -100,7 +100,7 @@ You need [Go](https://golang.org/).
 
   - `git clone https://github.com/edoardottt/cariddi.git`
   - `cd cariddi`
-  - `go get`
+  - `go get ./...`
   - `.\make.bat windows` (to install)    
   - `.\make.bat unwindows` (to uninstall)
 
@@ -135,12 +135,12 @@ Usage of cariddi:
     	Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
   -headersfile string
     	Read from an external file custom headers (same format of headers flag).
+  -json
+      Print the output as JSON in stdout.
   -i string
     	Ignore the URL containing at least one of the elements of this array.
   -info
     	Hunt for useful informations in websites.
-  -insecure
-    	Ignore invalid HTTPS certificates.
   -intensive
     	Crawl searching for resources matching 2nd level domain.
   -it string
@@ -196,7 +196,8 @@ Examples 💡
   - `cat urls | cariddi -info` (Hunt for useful informations in websites)
   - `cat urls | cariddi -debug` (Print debug information while crawling)
   - `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
-  - `cat urls | cariddi -insecure` (Ignore invalid HTTPS certificates)
+  - `cat urls | cariddi -json` (Print the output as JSON in stdout)
+  - `cat urls | cariddi -json | jq .` (Pipe the JSON output into jq)
 
   - For Windows:
   	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt

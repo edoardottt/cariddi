@@ -28,7 +28,7 @@ package scanner
 // Regex = The regular expression to be matched.
 type Info struct {
 	Name  string
-	Regex []string
+	Regex string
 }
 
 // InfoMatched struct.
@@ -46,29 +46,24 @@ func GetInfoRegexes() []Info {
 	var regexes = []Info{
 		{
 			"Email address",
-			[]string{
-				`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`},
+			`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`,
 		},
 		{
 			"HTML comment",
-			[]string{
-				`(?i)(\<![\s]*--[\-!@#$%^&*:;ºª.,"'(){}\w\s\/\\[\]]*--[\s]*\>)`},
+			`(?i)(\<![\s]*--[\-!@#$%^&*:;ºª.,"'(){}\w\s\/\\[\]]*--[\s]*\>)`,
 		},
 		{
 			"Internal IP address",
-			[]string{
-				`((172\.\d{1,3}\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|` +
-					`(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|([fF][eE][89aAbBcCdDeEfF]::))`},
+			`((172\.\d{1,3}\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|` +
+				`(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|([fF][eE][89aAbBcCdDeEfF]::))`,
 		},
 		{
 			"IPv4 address",
-			[]string{
-				`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`},
+			`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`,
 		},
 		{
 			"BTC address",
-			[]string{
-				`([13]|bc1)[A-HJ-NP-Za-km-z1-9]{27,34}`},
+			`([13]|bc1)[A-HJ-NP-Za-km-z1-9]{27,34}`,
 		},
 		/*
 			HOW TO AVOID VERY VERY LONG BASE64 IMAGES ???

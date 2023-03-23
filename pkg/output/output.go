@@ -58,14 +58,14 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 		fileUtils.CreateOutputFolder()
 	}
 
-	ResultFilename := fileUtils.CreateOutputFile(flags.TXT, "results", "txt")
+	ResultFilename := fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
 	for _, elem := range finalResults {
 		AppendOutputToTxt(elem, ResultFilename)
 	}
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {
-		SecretFilename := fileUtils.CreateOutputFile(flags.TXT, "secrets", "txt")
+		SecretFilename := fileUtils.CreateOutputFile(flags.TXTout, "secrets", "txt")
 		for _, elem := range finalSecret {
 			AppendOutputToTxt(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, SecretFilename)
 		}
@@ -73,7 +73,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints {
-		EndpointFilename := fileUtils.CreateOutputFile(flags.TXT, "endpoints", "txt")
+		EndpointFilename := fileUtils.CreateOutputFile(flags.TXTout, "endpoints", "txt")
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
@@ -92,7 +92,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if extensions flag enabled save also secrets
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
-		ExtensionsFilename := fileUtils.CreateOutputFile(flags.TXT, "extensions", "txt")
+		ExtensionsFilename := fileUtils.CreateOutputFile(flags.TXTout, "extensions", "txt")
 		for _, elem := range finalExtensions {
 			AppendOutputToTxt(elem.Filetype.Extension+" in "+elem.URL, ExtensionsFilename)
 		}
@@ -100,7 +100,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if errors flag enabled save also errors
 	if flags.Errors {
-		ErrorsFilename := fileUtils.CreateOutputFile(flags.TXT, "errors", "txt")
+		ErrorsFilename := fileUtils.CreateOutputFile(flags.TXTout, "errors", "txt")
 		for _, elem := range finalErrors {
 			AppendOutputToTxt(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, ErrorsFilename)
 		}
@@ -108,7 +108,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if info flag enabled save also infos
 	if flags.Info {
-		InfosFilename := fileUtils.CreateOutputFile(flags.TXT, "info", "txt")
+		InfosFilename := fileUtils.CreateOutputFile(flags.TXTout, "info", "txt")
 		for _, elem := range finalInfos {
 			AppendOutputToTxt(elem.Info.Name+" - "+elem.Match+" in "+elem.URL, InfosFilename)
 		}
