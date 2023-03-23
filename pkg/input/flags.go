@@ -45,8 +45,8 @@ type Input struct {
 	Examples      bool
 	Plain         bool
 	JSON          bool
-	HTML          string
-	TXT           string
+	HTMLout       string
+	TXTout        string
 	Ignore        string
 	IgnoreTXT     string
 	Cache         bool
@@ -77,7 +77,7 @@ func ScanFlag() Input {
 	helpPtr := flag.Bool("h", false, "Print the help.")
 	examplesPtr := flag.Bool("examples", false, "Print the examples.")
 	plainPtr := flag.Bool("plain", false, "Print only the results.")
-	outputJSONPtr := flag.Bool("json", false, "Write the output as JSON lines.")
+	JSONPtr := flag.Bool("json", false, "Print the output as JSON in stdout.")
 	outputHTMLPtr := flag.String("oh", "", "Write the output into an HTML file.")
 	outputTXTPtr := flag.String("ot", "", "Write the output into a TXT file.")
 	ignorePtr := flag.String("i", "", "Ignore the URL containing at least one of the elements of this array.")
@@ -120,7 +120,7 @@ func ScanFlag() Input {
 		*helpPtr,
 		*examplesPtr,
 		*plainPtr,
-		*outputJSONPtr,
+		*JSONPtr,
 		*outputHTMLPtr,
 		*outputTXTPtr,
 		*ignorePtr,

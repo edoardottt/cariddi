@@ -115,13 +115,13 @@ func main() {
 
 	// Create output files if needed (txt / html).
 	config.Txt = ""
-	if flags.TXT != "" {
-		config.Txt = fileUtils.CreateOutputFile(flags.TXT, "results", "txt")
+	if flags.TXTout != "" {
+		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
 	}
 
 	var ResultHTML = ""
-	if flags.HTML != "" {
-		ResultHTML = fileUtils.CreateOutputFile(flags.HTML, "", "html")
+	if flags.HTMLout != "" {
+		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
 		output.BannerHTML(ResultHTML)
 		output.HeaderHTML("Results", ResultHTML)
 	}
@@ -159,13 +159,13 @@ func main() {
 	finalInfos = scanner.RemoveDuplicateInfos(finalInfos)
 
 	// IF TXT OUTPUT >
-	if flags.TXT != "" {
+	if flags.TXTout != "" {
 		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints,
 			finalExtensions, finalErrors, finalInfos)
 	}
 
 	// IF HTML OUTPUT >
-	if flags.HTML != "" {
+	if flags.HTMLout != "" {
 		output.HTMLOutput(flags, ResultHTML, finalResults, finalSecret,
 			finalEndpoints, finalExtensions, finalErrors, finalInfos)
 	}

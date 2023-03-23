@@ -54,12 +54,12 @@ func PrintHelp() {
 		Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
   	-headersfile string
 	  	Read from an external file custom headers (same format of headers flag).
+	-json
+		Print the output as JSON in stdout.
 	-i string
 		Ignore the URL containing at least one of the elements of this array.
 	-info
 		Hunt for useful informations in websites.
-	-insecure
-		Ignore invalid HTTPS certificates.
 	-intensive
 		Crawl searching for resources matching 2nd level domain.
 	-it string
