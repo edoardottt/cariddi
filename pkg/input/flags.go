@@ -76,7 +76,7 @@ func ScanFlag() Input {
 	concurrencyPtr := flag.Int("c", DefaultConcurrency, "Concurrency level.")
 	helpPtr := flag.Bool("h", false, "Print the help.")
 	examplesPtr := flag.Bool("examples", false, "Print the examples.")
-	plainPtr := flag.Bool("plain", false, "Print only the results.")
+	plainPtr := flag.Bool("plain", false, "Print only results.")
 	JSONPtr := flag.Bool("json", false, "Print the output as JSON in stdout.")
 	outputHTMLPtr := flag.String("oh", "", "Write the output into an HTML file.")
 	outputTXTPtr := flag.String("ot", "", "Write the output into a TXT file.")
@@ -86,7 +86,7 @@ func ScanFlag() Input {
 	timeoutPtr := flag.Int("t", TimeoutRequest, "Set timeout for the requests.")
 	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching 2nd level domain.")
 	ruaPtr := flag.Bool("rua", false, "Use a random browser user agent on every request.")
-	proxyPtr := flag.String("proxy", "", "Set a Proxy to be used (http and socks5 supported).")
+	proxyPtr := flag.String("proxy", "", "Set a Proxy, http and socks5 supported.")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line)"+

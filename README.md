@@ -107,9 +107,7 @@ You need [Go](https://golang.org/).
 Get Started 🎉
 ----------
 
-`cariddi -h` prints the help in the command line.
-
-*Note*: Don't rely on the CLI output, use always `-ot/-oh` to save the output.
+`cariddi -h` prints the help.
 
 ```
 Usage of cariddi:
@@ -177,7 +175,7 @@ Examples 💡
   - `cat urls | cariddi -d 2` (2 seconds between a page crawled and another)
   - `cat urls | cariddi -c 200` (Set the concurrency level to 200)
   - `cat urls | cariddi -e` (Hunt for juicy endpoints)
-  - `cat urls | cariddi -plain` (Print only useful things)
+  - `cat urls | cariddi -plain` (Print only results)
   - `cat urls | cariddi -ot target_name` (Results in txt file)
   - `cat urls | cariddi -oh target_name` (Results in html file)
   - `cat urls | cariddi -ext 2` (Hunt for juicy (level 2 out of 7) files)
@@ -189,7 +187,7 @@ Examples 💡
   - `cat urls | cariddi -t 5` (Set the timeout for the requests)
   - `cat urls | cariddi -intensive` (Crawl searching also subdomains, same as `*.target.com`)
   - `cat urls | cariddi -rua` (Use a random browser user agent on every request)
-  - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy (http and socks5 supported))
+  - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
   - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
   - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
   - `cat urls | cariddi -err` (Hunt for errors in websites)
@@ -222,7 +220,7 @@ If there aren't errors, go ahead :)
 
 **Help me building this!**
 
-Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples) and [RegexPassive](https://github.com/hahwul/RegexPassive).
+Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and the contributors.
 
 **To do:**
 

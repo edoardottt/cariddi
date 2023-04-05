@@ -44,8 +44,8 @@ const (
   \___\__,_|_|  |_|\__,_|\__,_|_| `
 )
 
-// Beautify prints the banner + version.
-func Beautify() {
+// Banner prints the banner + version.
+func Banner() {
 	links := " > github.com/edoardottt/cariddi\n > edoardoottavianelli.it\n"
 	sepLine := "========================================\n"
 

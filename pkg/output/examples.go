@@ -30,7 +30,7 @@ import "fmt"
 
 // PrintExamples prints some examples.
 func PrintExamples() {
-	Beautify()
+	Banner()
 	fmt.Println(`
 	cariddi -version (Print the version)
 
@@ -38,15 +38,15 @@ func PrintExamples() {
 
 	cariddi -examples (Print the examples)
 	
-	cat urls | cariddi -e (Hunt for secrets)
+	cat urls | cariddi -s (Hunt for secrets)
 	
 	cat urls | cariddi -d 2 (2 seconds between a page crawled and another)
 	
 	cat urls | cariddi -c 200 (Set the concurrency level to 200)
 	
-	cat urls | cariddi -s (Hunt for juicy endpoints)
+	cat urls | cariddi -e (Hunt for juicy endpoints)
 	
-	cat urls | cariddi -plain (Print only useful things)
+	cat urls | cariddi -plain (Print only results)
 	
 	cat urls | cariddi -ot target_name (Results in txt file)
 	
@@ -84,5 +84,7 @@ func PrintExamples() {
 	
 	cat urls | cariddi -ua "Custom User Agent"
 	
-	cat urls | cariddi -insecure`)
+	cat urls | cariddi -json
+	
+	cat urls | cariddi -json | jq .`)
 }

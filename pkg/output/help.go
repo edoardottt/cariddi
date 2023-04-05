@@ -30,7 +30,7 @@ import "fmt"
 
 // PrintHelp prints the help.
 func PrintHelp() {
-	Beautify()
+	Banner()
 	fmt.Println(`Usage of cariddi:
 	-c int
 		Concurrency level. (default 20)

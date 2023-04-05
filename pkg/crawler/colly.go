@@ -35,6 +35,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
@@ -86,6 +87,18 @@ type Scan struct {
 	// Storage
 	SecretsSlice   []string
 	EndpointsSlice []string
+}
+
+type Event struct {
+	ProtocolTemp string
+	TargetTemp   string
+	Target       string
+	Intensive    bool
+	Ignore       bool
+	Debug        bool
+	JSON         bool
+	IgnoreSlice  []string
+	URLs         *[]string
 }
 
 // New it's the actual crawler engine.
@@ -151,7 +164,7 @@ func New(scan *Scan) *Results {
 		Intensive:    scan.Intensive,
 		Ignore:       ignoreBool,
 		Debug:        scan.Debug,
-		JSON:		  scan.JSON,
+		JSON:         scan.JSON,
 		IgnoreSlice:  ignoreSlice,
 		URLs:         &results.URLs,
 	}
@@ -363,7 +376,7 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 func registerHTMLEvents(c *colly.Collector, event *Event) {
 	// On every request that Colly is making, print the URL it's currently visiting
 	c.OnRequest(func(e *colly.Request) {
-		if (!event.JSON){
+		if !event.JSON {
 			fmt.Println(e.URL.String())
 		}
 	})
@@ -434,4 +447,41 @@ func registerXMLEvents(c *colly.Collector, event *Event) {
 	c.OnXML("//fileurl", func(e *colly.XMLElement) {
 		visitXMLLink(e.Text, event, e, c)
 	})
+}
+
+// visitHTMLLink checks if the collector should visit a link or not.
+func visitHTMLLink(link string, event *Event, e *colly.HTMLElement, c *colly.Collector) {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
+		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		visitLink(event, c, absoluteURL)
+	}
+}
+
+// visitXMLLink checks if the collector should visit a link or not.
+func visitXMLLink(link string, event *Event, e *colly.XMLElement, c *colly.Collector) {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
+		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
+		// Visit link found on page
+		// Only those links are visited which are in AllowedDomains
+		visitLink(event, c, absoluteURL)
+	}
+}
+
+// visitLink is a protocol agnostic wrapper to visit a link.
+func visitLink(event *Event, c *colly.Collector, absoluteURL string) {
+	if (!event.Intensive && urlUtils.SameDomain(event.ProtocolTemp+"://"+event.Target, absoluteURL)) ||
+		(event.Intensive && intensiveOk(event.TargetTemp, absoluteURL, event.Debug)) {
+		if !event.Ignore || (event.Ignore && !IgnoreMatch(absoluteURL, &event.IgnoreSlice)) {
+			err := c.Visit(absoluteURL)
+			if !errors.Is(err, colly.ErrAlreadyVisited) {
+				*event.URLs = append(*event.URLs, absoluteURL)
+
+				if err != nil && event.Debug {
+					log.Println(err)
+				}
+			}
+		}
+	}
 }
