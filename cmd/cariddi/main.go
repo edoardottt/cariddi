@@ -44,7 +44,7 @@ func main() {
 
 	// Print version and exit.
 	if flags.Version {
-		output.Beautify()
+		output.Banner()
 		os.Exit(0)
 	}
 
@@ -62,7 +62,7 @@ func main() {
 
 	// If it's possible print the cariddi banner.
 	if !flags.Plain {
-		output.Beautify()
+		output.Banner()
 	}
 
 	// Setup the config according to the flags that were
