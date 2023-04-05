@@ -17,8 +17,8 @@ IF "%ARG%"=="update" (
   GOTO Done
 )
 
-IF "%ARG%"=="fmt" (
-  CALL :Fmt
+IF "%ARG%"=="tidy" (
+  CALL :Tidy
   GOTO Done
 )
 
@@ -50,10 +50,9 @@ go test -v ./...
 echo Done
 EXIT /B 0
 
-:Fmt
-set GO111MODULE=on
-echo Formatting ...
-go fmt ./...
+:Tidy
+go get -u ./...
+go mod tidy -v
 echo Done.
 EXIT /B 0
 
@@ -64,7 +63,7 @@ EXIT /B 0
 :Update
 set GO111MODULE=on
 echo Updating ...
-go get -u
+go get -u ./...
 go mod tidy -v
 CALL :Unwindows
 git pull

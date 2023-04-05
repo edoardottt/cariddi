@@ -1,8 +1,8 @@
 REPO=github.com/edoardottt/cariddi
 
-fmt:
-	@gofmt -s ./*
-	@echo "Done."
+tidy:
+	@go get -u ./...
+	@go mod tidy -v
 
 remod:
 	@rm -rf go.*
@@ -11,7 +11,7 @@ remod:
 	@echo "Done."
 
 update:
-	@go get -u
+	@go get -u ./...
 	@go mod tidy -v
 	@make unlinux
 	@git pull
