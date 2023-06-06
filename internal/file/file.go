@@ -33,6 +33,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -52,11 +53,23 @@ func CreateOutputFolder() {
 	}
 }
 
+// CreateHostOutputFolder creates the host output folder
+// for the HTTP responses.
+// If it fails exits with an error message.
+func CreateHostOutputFolder(host string) {
+	// Create a folder/directory at a full qualified path
+	err := os.MkdirAll(filepath.Join("output-cariddi", host), Permission0755)
+	if err != nil {
+		fmt.Println("Can't create host output folder.")
+		os.Exit(1)
+	}
+}
+
 // CreateOutputFile takes a target (of the attack), a subcommand
 // (PORT-DNS-DIR-SUBDOMAIN-REPORT) and a format (json-html-txt).
 // It creates the output folder if needed, then checks if the output file
-// already exists, if yes asks the user if scilla has to overwrite it;
-// if no scilla creates it.
+// already exists, if yes asks the user if cariddi has to overwrite it;
+// if no cariddi creates it.
 // Whenever an instruction fails, it exits with an error message.
 func CreateOutputFile(target string, subcommand string, format string) string {
 	target = ReplaceBadCharacterOutput(target)
