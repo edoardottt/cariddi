@@ -48,59 +48,6 @@ import (
 	"github.com/gocolly/colly/extensions"
 )
 
-type Results struct {
-	URLs       []string
-	Secrets    []scanner.SecretMatched
-	Endpoints  []scanner.EndpointMatched
-	Extensions []scanner.FileTypeMatched
-	Errors     []scanner.ErrorMatched
-	Infos      []scanner.InfoMatched
-}
-
-type Scan struct {
-	// Flags
-	Cache         bool
-	Debug         bool
-	EndpointsFlag bool
-	ErrorsFlag    bool
-	InfoFlag      bool
-	Intensive     bool
-	Plain         bool
-	Rua           bool
-	SecretsFlag   bool
-	Ignore        string
-	IgnoreTxt     string
-	JSON          bool
-	HTML          string
-	Proxy         string
-	Target        string
-	Txt           string
-	UserAgent     string
-	FileType      int
-	Headers       map[string]string
-
-	// Settings
-	Concurrency int
-	Delay       int
-	Timeout     int
-
-	// Storage
-	SecretsSlice   []string
-	EndpointsSlice []string
-}
-
-type Event struct {
-	ProtocolTemp string
-	TargetTemp   string
-	Target       string
-	Intensive    bool
-	Ignore       bool
-	Debug        bool
-	JSON         bool
-	IgnoreSlice  []string
-	URLs         *[]string
-}
-
 // New it's the actual crawler engine.
 // It controls all the behaviours of a scan
 // (event handlers, secrets, errors, extensions and endpoints scanning).
@@ -182,6 +129,17 @@ func New(scan *Scan) *Results {
 	}
 
 	c.OnResponse(func(r *colly.Response) {
+		if !scan.JSON {
+			fmt.Println(r.Request.URL)
+		}
+
+		if scan.StoreResp {
+			err := output.StoreHTTPResponse(r)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
 		minBodyLentgh := 10
 		lengthOk := len(string(r.Body)) > minBodyLentgh
 		secrets := []scanner.SecretMatched{}
@@ -231,10 +189,12 @@ func New(scan *Scan) *Results {
 				infos = append(infos, infosSlice...)
 			}
 		}
+
 		if scan.JSON {
 			jsonOutput, err := output.GetJSONString(
 				r, secrets, parameters, filetype, errors, infos,
 			)
+
 			if err == nil {
 				fmt.Println(string(jsonOutput))
 			} else {
@@ -374,13 +334,6 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 // registerHTMLEvents registers the associated functions for each
 // HTML event triggering an action.
 func registerHTMLEvents(c *colly.Collector, event *Event) {
-	// On every request that Colly is making, print the URL it's currently visiting
-	c.OnRequest(func(e *colly.Request) {
-		if !event.JSON {
-			fmt.Println(e.URL.String())
-		}
-	})
-
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
