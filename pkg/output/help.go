@@ -59,7 +59,7 @@ func PrintHelp() {
 	-i string
 		Ignore the URL containing at least one of the elements of this array.
 	-info
-		Hunt for useful informations in websites.
+		Hunt for useful information in websites.
 	-intensive
 		Crawl searching for resources matching 2nd level domain.
 	-it string
@@ -77,6 +77,8 @@ func PrintHelp() {
 	-s	Hunt for secrets.
 	-sf string
 		Use an external file (txt, one per line) to use custom regexes for secrets hunting.
+	-sr
+		Store HTTP responses.
 	-t int
 		Set timeout for the requests. (default 10)
 	-ua

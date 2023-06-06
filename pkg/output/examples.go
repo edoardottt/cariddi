@@ -72,19 +72,19 @@ func PrintExamples() {
 
 	cat urls | cariddi -proxy http://127.0.0.1:8080 (Set a Proxy to be used (http and socks5 supported))
 	
-	cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"
+	cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader (Use custom headers)"
 	
-	cat urls | cariddi -headersfile headers.txt
+	cat urls | cariddi -headersfile headers.txt (Read from an external file custom headers)
 
-	cat urls | cariddi -err
+	cat urls | cariddi -err (Hunt for errors)
 	
-	cat urls | cariddi -info
+	cat urls | cariddi -info (Hunt for useful information)
 	
-	cat urls | cariddi -debug
+	cat urls | cariddi -debug (Print debug information)
 	
-	cat urls | cariddi -ua "Custom User Agent"
+	cat urls | cariddi -ua "Custom User Agent" (Use a custom User Agent)
 	
-	cat urls | cariddi -json
+	cat urls | cariddi -json (Print the output as JSON)
 	
-	cat urls | cariddi -json | jq .`)
+	cat urls | cariddi -sr (Store HTTP responses)`)
 }
