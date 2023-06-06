@@ -56,7 +56,7 @@
   <a href="#license-">License</a>
 </p>
 
-Preview :bar_chart
+Preview 📊
 ----------
 
 <!--[![asciicast](https://asciinema.org/a/415989.svg)](https://asciinema.org/a/415989)-->
