@@ -38,34 +38,62 @@ const (
 // Input struct.
 // It contains all the possible options.
 type Input struct {
-	Version       bool
-	Delay         int
-	Concurrency   int
-	Help          bool
-	Examples      bool
-	Plain         bool
-	JSON          bool
-	HTMLout       string
-	TXTout        string
-	Ignore        string
-	IgnoreTXT     string
-	Cache         bool
-	Timeout       int
-	Intensive     bool
-	Rua           bool
-	Proxy         string
-	Secrets       bool
-	SecretsFile   string
-	Endpoints     bool
+	// Version prints the version banner.
+	Version bool
+	// Delay between a page crawled and another.
+	Delay int
+	// Concurrency level.
+	Concurrency int
+	// Help prints the help banner.
+	Help bool
+	// Examples prints the examples banner.
+	Examples bool
+	// Plain prints only the results.
+	Plain bool
+	// JSON prints the output as JSON in stdout.
+	JSON bool
+	// HTMLout writes the output into an HTML file.
+	HTMLout string
+	// TXTout writes the output into an TXT file.
+	TXTout string
+	// Ignore ignores the URL containing at least one of the elements of this array.
+	Ignore string
+	// IgnoreTXT ignores the URL containing at least one of the lines of this file.
+	IgnoreTXT string
+	// Cache uses the .cariddi_cache folder as cache.
+	Cache bool
+	// Timeout set timeout for the requests. (default 10)
+	Timeout int
+	// Intensive crawls searching for resources matching 2nd level domain.
+	Intensive bool
+	// Rua uses a random browser user agent on every request.
+	Rua bool
+	// Proxy set a Proxy to be used (http and socks5 supported).
+	Proxy string
+	// Secrets hunts for secrets.
+	Secrets bool
+	// SecretsFile uses an external file (txt, one per line) to use custom regexes for secrets hunting.
+	SecretsFile string
+	// Endpoints hunts for juicy endpoints.
+	Endpoints bool
+	// EndpointsFile uses an external file (txt, one per line) to use custom parameters for endpoints hunting.
 	EndpointsFile string
-	Extensions    int
-	Headers       string
-	HeadersFile   string
-	Errors        bool
-	Info          bool
-	Debug         bool
-	UserAgent     string
-	StoreResp     bool
+	// Extensions hunts for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
+	Extensions int
+	// Headers uses custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
+	Headers string
+	// HeadersFile reads from an external file custom headers (same format of headers flag).
+	HeadersFile string
+	// Errors hunts for errors in websites.
+	Errors bool
+	// Info hunts for useful informations in websites.
+	Info bool
+	// Debug prints debug information while crawling.
+	Debug bool
+	// UserAgent uses a custom User Agent.
+	UserAgent string
+	// StoreResp stores HTTP responses.
+	StoreResp bool
 }
 
 // ScanFlag defines all the options taken
