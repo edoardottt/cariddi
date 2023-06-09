@@ -128,7 +128,7 @@ func main() {
 	}
 
 	if config.StoreResp {
-		fileUtils.CreateOutputFile("index", "responses", "txt")
+		fileUtils.CreateIndexOutputFile("index.responses.txt")
 	}
 
 	// Read headers if needed
