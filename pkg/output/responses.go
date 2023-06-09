@@ -119,7 +119,9 @@ func getResponseFileName(folder, url string) string {
 // correct information linking to HTTP responses files.
 // If it fails returns an error.
 func UpdateIndex(resp *colly.Response) error {
-	index, err := os.OpenFile(filepath.Join(CariddiOutputFolder, index), os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
+	index, err := os.OpenFile(filepath.Join(CariddiOutputFolder, index),
+		os.O_APPEND|os.O_WRONLY,
+		fileUtils.Permission0644)
 	if err != nil {
 		return err
 	}
