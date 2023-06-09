@@ -56,7 +56,7 @@
   <a href="#license-">License</a>
 </p>
 
-Preview :bar_chart:
+Preview 📊
 ----------
 
 <!--[![asciicast](https://asciinema.org/a/415989.svg)](https://asciinema.org/a/415989)-->
@@ -69,11 +69,13 @@ Installation 📡
 ----------
 
 ### Using Snap
+
 ```bash
 sudo snap install cariddi
 ```
 
 ### Using Go
+
 ```bash
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
 ```
@@ -97,7 +99,7 @@ You need [Go](https://golang.org/).
   - `git clone https://github.com/edoardottt/cariddi.git`
   - `cd cariddi`
   - `go get ./...`
-  - `.\make.bat windows` (to install)    
+  - `.\make.bat windows` (to install)
   - `.\make.bat unwindows` (to uninstall)
 
 Get Started 🎉
@@ -108,99 +110,101 @@ Get Started 🎉
 ```
 Usage of cariddi:
   -c int
-    	Concurrency level. (default 20)
+     Concurrency level. (default 20)
   -cache
-    	Use the .cariddi_cache folder as cache.
+     Use the .cariddi_cache folder as cache.
   -d int
-    	Delay between a page crawled and another.
+     Delay between a page crawled and another.
   -debug
-    	Print debug information while crawling.
-  -e	Hunt for juicy endpoints.
+     Print debug information while crawling.
+  -e Hunt for juicy endpoints.
   -ef string
-    	Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
+     Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
   -err
-    	Hunt for errors in websites.
+     Hunt for errors in websites.
   -examples
-    	Print the examples.
+     Print the examples.
   -ext int
-    	Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
-  -h	Print the help.
+     Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
+  -h Print the help.
   -headers string
-    	Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
+     Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
   -headersfile string
-    	Read from an external file custom headers (same format of headers flag).
+     Read from an external file custom headers (same format of headers flag).
   -json
-      Print the output as JSON in stdout.
+     Print the output as JSON in stdout.
   -i string
-    	Ignore the URL containing at least one of the elements of this array.
+     Ignore the URL containing at least one of the elements of this array.
   -info
-    	Hunt for useful informations in websites.
+     Hunt for useful informations in websites.
   -intensive
-    	Crawl searching for resources matching 2nd level domain.
+     Crawl searching for resources matching 2nd level domain.
   -it string
-    	Ignore the URL containing at least one of the lines of this file.
+     Ignore the URL containing at least one of the lines of this file.
   -oh string
-    	Write the output into an HTML file.
+     Write the output into an HTML file.
   -ot string
-    	Write the output into a TXT file.
+     Write the output into a TXT file.
   -plain
-    	Print only the results.
+     Print only the results.
   -proxy string
-    	Set a Proxy to be used (http and socks5 supported).
+     Set a Proxy to be used (http and socks5 supported).
   -rua
-    	Use a random browser user agent on every request.
-  -s	Hunt for secrets.
+     Use a random browser user agent on every request.
+  -s Hunt for secrets.
   -sf string
-    	Use an external file (txt, one per line) to use custom regexes for secrets hunting.
+     Use an external file (txt, one per line) to use custom regexes for secrets hunting.
+  -sr
+     Store HTTP responses.
   -t int
-    	Set timeout for the requests. (default 10)
+     Set timeout for the requests. (default 10)
   -ua string
-    	Use a custom User Agent.
+     Use a custom User Agent.
   -version
-    	Print the version.
+     Print the version.
 ```
-
 
 Examples 💡
 ----------
 
-  - `cariddi -version` (Print the version)
-  - `cariddi -h` (Print the help)
-  - `cariddi -examples` (Print the examples)
-  - `cat urls | cariddi -s` (Hunt for secrets)
-  - `cat urls | cariddi -d 2` (2 seconds between a page crawled and another)
-  - `cat urls | cariddi -c 200` (Set the concurrency level to 200)
-  - `cat urls | cariddi -e` (Hunt for juicy endpoints)
-  - `cat urls | cariddi -plain` (Print only results)
-  - `cat urls | cariddi -ot target_name` (Results in txt file)
-  - `cat urls | cariddi -oh target_name` (Results in html file)
-  - `cat urls | cariddi -ext 2` (Hunt for juicy (level 2 out of 7) files)
-  - `cat urls | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
-  - `cat urls | cariddi -s -sf secrets_file` (Hunt for custom secrets)
-  - `cat urls | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
-  - `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
-  - `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
-  - `cat urls | cariddi -t 5` (Set the timeout for the requests)
-  - `cat urls | cariddi -intensive` (Crawl searching also subdomains, same as `*.target.com`)
-  - `cat urls | cariddi -rua` (Use a random browser user agent on every request)
-  - `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
-  - `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
-  - `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
-  - `cat urls | cariddi -err` (Hunt for errors in websites)
-  - `cat urls | cariddi -info` (Hunt for useful informations in websites)
-  - `cat urls | cariddi -debug` (Print debug information while crawling)
-  - `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
-  - `cat urls | cariddi -json` (Print the output as JSON in stdout)
-  - `cat urls | cariddi -json | jq .` (Pipe the JSON output into jq)
+- `cariddi -version` (Print the version)
+- `cariddi -h` (Print the help)
+- `cariddi -examples` (Print the examples)
+- `cat urls | cariddi -s` (Hunt for secrets)
+- `cat urls | cariddi -d 2` (2 seconds between a page crawled and another)
+- `cat urls | cariddi -c 200` (Set the concurrency level to 200)
+- `cat urls | cariddi -e` (Hunt for juicy endpoints)
+- `cat urls | cariddi -plain` (Print only results)
+- `cat urls | cariddi -ot target_name` (Results in txt file)
+- `cat urls | cariddi -oh target_name` (Results in html file)
+- `cat urls | cariddi -ext 2` (Hunt for juicy (level 2 out of 7) files)
+- `cat urls | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
+- `cat urls | cariddi -s -sf secrets_file` (Hunt for custom secrets)
+- `cat urls | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
+- `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
+- `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
+- `cat urls | cariddi -t 5` (Set the timeout for the requests)
+- `cat urls | cariddi -intensive` (Crawl searching also subdomains, same as `*.target.com`)
+- `cat urls | cariddi -rua` (Use a random browser user agent on every request)
+- `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
+- `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
+- `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
+- `cat urls | cariddi -err` (Hunt for errors in websites)
+- `cat urls | cariddi -info` (Hunt for useful informations in websites)
+- `cat urls | cariddi -debug` (Print debug information while crawling)
+- `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
+- `cat urls | cariddi -json` (Print the output as JSON in stdout)
+- `cat urls | cariddi -sr` (Store HTTP responses)
 
-  - For Windows:
-  	- use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
-  	- or just `cat urls | cariddi.exe` using PowerShell
+- For Windows:
+  - use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
+  - or just `cat urls | cariddi.exe` using PowerShell
 
-  - To integrate cariddi with Burpsuite [make sure to follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration).
+- To integrate cariddi with Burpsuite [make sure to follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration).
 
 Changelog 📌
 -------
+
 Detailed changes for each release are documented in the [release notes](https://github.com/edoardottt/cariddi/releases).
 
 Contributing 🛠
@@ -209,16 +213,17 @@ Contributing 🛠
 Just open an [issue](https://github.com/edoardottt/cariddi/issues)/[pull request](https://github.com/edoardottt/cariddi/pulls).
 
 Before opening a pull request, download [golangci-lint](https://golangci-lint.run/usage/install/) and run
+
 ```bash
 golangci-lint run
 ```
+
 If there aren't errors, go ahead :)
 
 **Help me building this!**
 
 Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/wiki/Contributors).
 
-  
 License 📝
 -------
 

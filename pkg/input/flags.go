@@ -65,6 +65,7 @@ type Input struct {
 	Info          bool
 	Debug         bool
 	UserAgent     string
+	StoreResp     bool
 }
 
 // ScanFlag defines all the options taken
@@ -111,6 +112,8 @@ func ScanFlag() Input {
 
 	userAgentPtr := flag.String("ua", "", "Use a custom User Agent.")
 
+	storeRespPtr := flag.Bool("sr", false, "Store HTTP responses.")
+
 	flag.Parse()
 
 	result := Input{
@@ -141,6 +144,7 @@ func ScanFlag() Input {
 		*infoPtr,
 		*debugPtr,
 		*userAgentPtr,
+		*storeRespPtr,
 	}
 
 	return result

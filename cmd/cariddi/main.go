@@ -86,6 +86,7 @@ func main() {
 		InfoFlag:      flags.Info,
 		Debug:         flags.Debug,
 		UserAgent:     flags.UserAgent,
+		StoreResp:     flags.StoreResp,
 	}
 
 	// Read the targets from standard input.
@@ -124,6 +125,10 @@ func main() {
 		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
 		output.BannerHTML(ResultHTML)
 		output.HeaderHTML("Results", ResultHTML)
+	}
+
+	if config.StoreResp {
+		fileUtils.CreateIndexOutputFile("index.responses.txt")
 	}
 
 	// Read headers if needed
