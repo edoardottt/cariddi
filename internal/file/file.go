@@ -127,6 +127,7 @@ func CreateIndexOutputFile(filename string) {
 		}
 		// If the file doesn't exist, create it.
 		filename = filepath.Join("output-cariddi", filename)
+
 		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
 		if err != nil {
 			fmt.Println("Can't create output file.")
