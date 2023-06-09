@@ -35,7 +35,7 @@ import (
 
 // nolint: checknoglobals
 const (
-	version = "v1.3.1"
+	version = "v1.3.2"
 	banner  = `                 _     _     _ _ 
                 (_)   | |   | (_)
    ___ __ _ _ __ _  __| | __| |_ 
@@ -44,8 +44,8 @@ const (
   \___\__,_|_|  |_|\__,_|\__,_|_| `
 )
 
-// Beautify prints the banner + version.
-func Beautify() {
+// Banner prints the banner + version.
+func Banner() {
 	links := " > github.com/edoardottt/cariddi\n > edoardoottavianelli.it\n"
 	sepLine := "========================================\n"
 

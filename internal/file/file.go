@@ -33,6 +33,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -52,20 +53,32 @@ func CreateOutputFolder() {
 	}
 }
 
-// CreateOutputFile takes a target (of the attack), a subcommand
+// CreateHostOutputFolder creates the host output folder
+// for the HTTP responses.
+// If it fails exits with an error message.
+func CreateHostOutputFolder(host string) {
+	// Create a folder/directory at a full qualified path
+	err := os.MkdirAll(filepath.Join("output-cariddi", host), Permission0755)
+	if err != nil {
+		fmt.Println("Can't create host output folder.")
+		os.Exit(1)
+	}
+}
+
+// CreateOutputFile takes as input a target (of the attack), a subcommand
 // (PORT-DNS-DIR-SUBDOMAIN-REPORT) and a format (json-html-txt).
 // It creates the output folder if needed, then checks if the output file
-// already exists, if yes asks the user if scilla has to overwrite it;
-// if no scilla creates it.
+// already exists, if yes asks the user if cariddi has to overwrite it;
+// if no cariddi creates it.
 // Whenever an instruction fails, it exits with an error message.
 func CreateOutputFile(target string, subcommand string, format string) string {
 	target = ReplaceBadCharacterOutput(target)
 
 	var filename string
 	if subcommand != "" {
-		filename = "output-cariddi" + "/" + target + "." + subcommand + "." + format
+		filename = filepath.Join("output-cariddi", target+"."+subcommand+"."+format)
 	} else {
-		filename = "output-cariddi" + "/" + target + "." + format
+		filename = filepath.Join("output-cariddi", target+"."+format)
 	}
 
 	_, err := os.Stat(filename)
@@ -99,6 +112,30 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 	}
 
 	return filename
+}
+
+// CreateIndexOutputFile takes as input the name of the index file.
+// It creates the output folder if needed, then checks if the index output file
+// already exists, if no cariddi creates it.
+// Whenever an instruction fails, it exits with an error message.
+func CreateIndexOutputFile(filename string) {
+	_, err := os.Stat(filename)
+
+	if os.IsNotExist(err) {
+		if _, err := os.Stat("output-cariddi/"); os.IsNotExist(err) {
+			CreateOutputFolder()
+		}
+		// If the file doesn't exist, create it.
+		filename = filepath.Join("output-cariddi", filename)
+
+		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
+		if err != nil {
+			fmt.Println("Can't create output file.")
+			os.Exit(1)
+		}
+
+		f.Close()
+	}
 }
 
 // ReplaceBadCharacterOutput replaces forward-slashes

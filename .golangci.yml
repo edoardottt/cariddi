@@ -5,7 +5,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - depguard
     - dogsled
     - dupl
     - errcheck
@@ -59,5 +58,5 @@ issues:
   exclude-rules:
     - path: crawler/colly.go
       text: "should replace loop with `(FinalInfos|FinalErrors|FinalSecrets)"
-    - path: pkg/output/beautify.go
+    - path: pkg/output/banner.go
       text: "should be written without leading space as"

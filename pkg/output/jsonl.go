@@ -36,13 +36,13 @@ import (
 )
 
 type JSONData struct {
-	URL           string         `json:"url"`
-	Method        string         `json:"method"`
-	StatusCode    int            `json:"status_code"`
-	Words         int            `json:"words"`
-	Lines         int            `json:"lines"`
-	ContentType   string         `json:"content_type,omitempty"`
-	ContentLength int            `json:"content_length,omitempty"`
+	URL           string          `json:"url"`
+	Method        string          `json:"method"`
+	StatusCode    int             `json:"status_code"`
+	Words         int             `json:"words"`
+	Lines         int             `json:"lines"`
+	ContentType   string          `json:"content_type,omitempty"`
+	ContentLength int             `json:"content_length,omitempty"`
 	Matches       *MatcherResults `json:"matches,omitempty"`
 	// Host          string `json:"host"` # TODO: Available in Colly 2.x
 }
@@ -141,19 +141,19 @@ func GetJSONString(
 
 	// Set empty data if no matches to bridge the omitempty gap for empty structs
 	var (
-		isFileTypeNill = false
+		isFileTypeNill    = false
 		isParametersEmpty = len(parameters) == 0
-		isErrorsEmpty = len(errorList) == 0
-		isInfoEmpty = len(infoList) == 0
-		isSecretsEmpty = len(secretList) == 0
+		isErrorsEmpty     = len(errorList) == 0
+		isInfoEmpty       = len(infoList) == 0
+		isSecretsEmpty    = len(secretList) == 0
 	)
 
-	if (*filetype == scanner.FileType{}){
+	if (*filetype == scanner.FileType{}) {
 		matcherResults.FileType = nil
 		isFileTypeNill = true
 	}
 
-	if (isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty && isSecretsEmpty){
+	if isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty && isSecretsEmpty {
 		resp.Matches = nil
 	}
 

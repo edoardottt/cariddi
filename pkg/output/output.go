@@ -36,6 +36,10 @@ import (
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
+const (
+	CariddiOutputFolder = "output-cariddi"
+)
+
 // PrintSimpleOutput prints line by line.
 func PrintSimpleOutput(out []string) {
 	for _, elem := range out {
@@ -48,7 +52,7 @@ func PrintSimpleOutput(out []string) {
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-	exists, err := fileUtils.ElementExists("output-cariddi")
+	exists, err := fileUtils.ElementExists(CariddiOutputFolder)
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
 		os.Exit(1)
@@ -120,7 +124,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 func HTMLOutput(flags input.Input, resultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-	exists, err := fileUtils.ElementExists("output-cariddi")
+	exists, err := fileUtils.ElementExists(CariddiOutputFolder)
 
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
