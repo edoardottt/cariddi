@@ -50,16 +50,12 @@ type JSONData struct {
 type MatcherResults struct {
 	FileType   *scanner.FileType   `json:"filetype,omitempty"`
 	Parameters []scanner.Parameter `json:"parameters,omitempty"`
-	Errors     []MatcherResult     `json:"errors,omitempty"`
-	Infos      []MatcherResult     `json:"infos,omitempty"`
-	Secrets    []MatcherResult     `json:"secrets,omitempty"`
+	Errors     map[string][]string `json:"errors,omitempty"`
+	Infos      map[string][]string `json:"infos,omitempty"`
+	Secrets    map[string][]string `json:"secrets,omitempty"`
 }
 
-type MatcherResult struct {
-	Name  string `json:"name"`
-	Match string `json:"match"`
-}
-
+// GetJSONString returns the JSON byte object.
 func GetJSONString(
 	r *colly.Response,
 	secrets []scanner.SecretMatched,
@@ -74,9 +70,6 @@ func GetJSONString(
 	contentLengths := (*headers)["Content-Length"]
 	contentType := ""
 	contentLength := 0
-	errorList := []MatcherResult{}
-	infoList := []MatcherResult{}
-	secretList := []MatcherResult{}
 
 	// Set content type
 	if len(contentTypes) > 0 {
@@ -99,31 +92,17 @@ func GetJSONString(
 	// Parse lines from body
 	lines := len(strings.Split(string(r.Body), "\n"))
 
-	// Process secrets
-	for _, secret := range secrets {
-		secretMatch := MatcherResult{secret.Secret.Name, secret.Match}
-		secretList = append(secretList, secretMatch)
-	}
-
-	// Process infos
-	for _, info := range infos {
-		infoMatch := MatcherResult{info.Info.Name, info.Match}
-		infoList = append(infoList, infoMatch)
-	}
-
-	// Process error list
-	for _, error := range errors {
-		errorMatch := MatcherResult{error.Error.ErrorName, error.Match}
-		errorList = append(errorList, errorMatch)
-	}
+	secretM := processSecrets(secrets)
+	infoM := processInfos(infos)
+	errorM := processErrors(errors)
 
 	// Construct matcher results
 	matcherResults := &MatcherResults{
 		FileType:   filetype,
 		Parameters: parameters,
-		Errors:     errorList,
-		Infos:      infoList,
-		Secrets:    secretList,
+		Errors:     errorM,
+		Infos:      infoM,
+		Secrets:    secretM,
 	}
 
 	// Construct JSON response
@@ -143,9 +122,9 @@ func GetJSONString(
 	var (
 		isFileTypeNill    = false
 		isParametersEmpty = len(parameters) == 0
-		isErrorsEmpty     = len(errorList) == 0
-		isInfoEmpty       = len(infoList) == 0
-		isSecretsEmpty    = len(secretList) == 0
+		isErrorsEmpty     = len(errorM) == 0
+		isInfoEmpty       = len(infoM) == 0
+		isSecretsEmpty    = len(secretM) == 0
 	)
 
 	if (*filetype == scanner.FileType{}) {
@@ -164,4 +143,52 @@ func GetJSONString(
 	}
 
 	return jsonOutput, nil
+}
+
+func processSecrets(secrets []scanner.SecretMatched) map[string][]string {
+	secretM := map[string][]string{}
+
+	for _, secret := range secrets {
+		if _, ok := secretM[secret.Secret.Name]; ok {
+			tempV := secretM[secret.Secret.Name]
+			tempV = append(tempV, secret.Match)
+			secretM[secret.Secret.Name] = tempV
+		} else {
+			secretM[secret.Secret.Name] = []string{secret.Match}
+		}
+	}
+
+	return secretM
+}
+
+func processInfos(infos []scanner.InfoMatched) map[string][]string {
+	infoM := map[string][]string{}
+
+	for _, info := range infos {
+		if _, ok := infoM[info.Info.Name]; ok {
+			tempV := infoM[info.Info.Name]
+			tempV = append(tempV, info.Match)
+			infoM[info.Info.Name] = tempV
+		} else {
+			infoM[info.Info.Name] = []string{info.Match}
+		}
+	}
+
+	return infoM
+}
+
+func processErrors(errors []scanner.ErrorMatched) map[string][]string {
+	errorM := map[string][]string{}
+
+	for _, er := range errors {
+		if _, ok := errorM[er.Error.ErrorName]; ok {
+			tempV := errorM[er.Error.ErrorName]
+			tempV = append(tempV, er.Match)
+			errorM[er.Error.ErrorName] = tempV
+		} else {
+			errorM[er.Error.ErrorName] = []string{er.Match}
+		}
+	}
+
+	return errorM
 }
