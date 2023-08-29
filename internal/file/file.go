@@ -71,49 +71,36 @@ func CreateHostOutputFolder(host string) {
 // already exists, if yes asks the user if cariddi has to overwrite it;
 // if no cariddi creates it.
 // Whenever an instruction fails, it exits with an error message.
+
 func CreateOutputFile(target string, subcommand string, format string) string {
-	target = ReplaceBadCharacterOutput(target)
+ target = ReplaceBadCharacterOutput(target)
 
-	var filename string
-	if subcommand != "" {
-		filename = filepath.Join("output-cariddi", target+"."+subcommand+"."+format)
-	} else {
-		filename = filepath.Join("output-cariddi", target+"."+format)
-	}
+ filename := filepath.Join("output-cariddi", target)
+ if subcommand != "" {
+  filename += "." + subcommand
+ }
+ filename += "." + format
 
-	_, err := os.Stat(filename)
+ if _, err := os.Stat(filename); os.IsNotExist(err) {
+  CreateOutputFolder()
 
-	if os.IsNotExist(err) {
-		if _, err := os.Stat("output-cariddi/"); os.IsNotExist(err) {
-			CreateOutputFolder()
-		}
-		// If the file doesn't exist, create it.
-		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
-		if err != nil {
-			fmt.Println("Can't create output file.")
-			os.Exit(1)
-		}
+  f, err := os.Create(filename)
+  if err != nil {
+   fmt.Println("Can't create output file.")
+   os.Exit(1)
+  }
+  f.Close()
+ } else {
+  f, err := os.OpenFile(filename, os.O_TRUNC|os.O_WRONLY, Permission0644)
+  if err != nil {
+   fmt.Println("Can't create output file.")
+   os.Exit(1)
+  }
+  f.Close()
+ }
 
-		f.Close()
-	} else {
-		// The file already exists, overwrite.
-
-		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
-		if err != nil {
-			fmt.Println("Can't create output file.")
-			os.Exit(1)
-		}
-		err = f.Truncate(0)
-		if err != nil {
-			fmt.Println("Can't create output file.")
-			os.Exit(1)
-		}
-		f.Close()
-	}
-
-	return filename
+ return filename
 }
-
 // CreateIndexOutputFile takes as input the name of the index file.
 // It creates the output folder if needed, then checks if the index output file
 // already exists, if no cariddi creates it.
