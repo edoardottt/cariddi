@@ -2,21 +2,28 @@
 ==========
 Cariddi
 ==========
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
 
 	@Repository:  https://github.com/edoardottt/cariddi
+
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
+
 	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
+
 */
+
 package output
 
 import (
@@ -39,6 +46,7 @@ type JSONData struct {
 	Matches       *MatcherResults `json:"matches,omitempty"`
 	// Host          string `json:"host"` # TODO: Available in Colly 2.x
 }
+
 type MatcherResults struct {
 	FileType   *scanner.FileType   `json:"filetype,omitempty"`
 	Parameters []scanner.Parameter `json:"parameters,omitempty"`
@@ -74,14 +82,17 @@ func GetJSONString(
 	if len(contentTypes) > 0 {
 		contentType = strings.Split(contentTypes[0], "; ")[0]
 	}
+
 	// Set content length
 	if len(contentLengths) > 0 {
 		ret, err := strconv.Atoi(contentLengths[0])
 		if err != nil {
 			return nil, err
 		}
+
 		contentLength = ret
 	}
+
 	// Parse words from body
 	words := len(strings.Fields(string(r.Body)))
 	// Parse lines from body
@@ -124,8 +135,9 @@ func GetJSONString(
 		ContentType:   contentType,
 		ContentLength: contentLength,
 		Matches:       matcherResults,
-		// Host:          "", // TODO: this is available in Colly 2.x
+		// Host:          "", // TODO
 	}
+
 	// Set empty data if no matches to bridge the omitempty gap for empty structs
 	var (
 		isFileTypeNill    = false
@@ -139,9 +151,11 @@ func GetJSONString(
 		matcherResults.FileType = nil
 		isFileTypeNill = true
 	}
+
 	if isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty && isSecretsEmpty {
 		resp.Matches = nil
 	}
+
 	// Convert struct to JSON string
 	jsonOutput, err := json.Marshal(resp)
 	if err != nil {
