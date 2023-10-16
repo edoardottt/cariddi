@@ -136,7 +136,7 @@ func GetJSONString(
 		ContentType:   contentType,
 		ContentLength: contentLength,
 		Matches:       matcherResults,
-		// Host:          "", // TODO: this is available in Colly 2.x
+		// Host:          "", // TODO
 	}
 
 	// Set empty data if no matches to bridge the omitempty gap for empty structs
