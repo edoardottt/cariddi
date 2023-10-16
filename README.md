@@ -218,7 +218,7 @@ If there aren't errors, go ahead :)
 
 **Help me building this!**
 
-Special thanks to: [go-colly](http://go-colly.org/), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/wiki/Contributors).
+Special thanks to: [go-colly](http://go-colly.org/), [ocervell](https://github.com/ocervell), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/wiki/Contributors).
 
 License 📝
 -------
