@@ -95,6 +95,7 @@ func GetJSONString(
 
 	// Parse words from body
 	words := len(strings.Fields(string(r.Body)))
+
 	// Parse lines from body
 	lines := len(strings.Split(string(r.Body), "\n"))
 
