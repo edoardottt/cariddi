@@ -2,28 +2,21 @@
 ==========
 Cariddi
 ==========
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
 
 	@Repository:  https://github.com/edoardottt/cariddi
-
 	@Author:      edoardottt, https://www.edoardoottavianelli.it
-
 	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
-
 */
-
 package output
 
 import (
@@ -46,16 +39,19 @@ type JSONData struct {
 	Matches       *MatcherResults `json:"matches,omitempty"`
 	// Host          string `json:"host"` # TODO: Available in Colly 2.x
 }
-
 type MatcherResults struct {
 	FileType   *scanner.FileType   `json:"filetype,omitempty"`
 	Parameters []scanner.Parameter `json:"parameters,omitempty"`
-	Errors     map[string][]string `json:"errors,omitempty"`
-	Infos      map[string][]string `json:"infos,omitempty"`
-	Secrets    map[string][]string `json:"secrets,omitempty"`
+	Errors     []MatcherResult     `json:"errors,omitempty"`
+	Infos      []MatcherResult     `json:"infos,omitempty"`
+	Secrets    []MatcherResult     `json:"secrets,omitempty"`
 }
 
-// GetJSONString returns the JSON byte object.
+type MatcherResult struct {
+	Name  string `json:"name"`
+	Match string `json:"match"`
+}
+
 func GetJSONString(
 	r *colly.Response,
 	secrets []scanner.SecretMatched,
@@ -70,39 +66,52 @@ func GetJSONString(
 	contentLengths := (*headers)["Content-Length"]
 	contentType := ""
 	contentLength := 0
+	errorList := []MatcherResult{}
+	infoList := []MatcherResult{}
+	secretList := []MatcherResult{}
 
 	// Set content type
 	if len(contentTypes) > 0 {
 		contentType = strings.Split(contentTypes[0], "; ")[0]
 	}
-
 	// Set content length
 	if len(contentLengths) > 0 {
 		ret, err := strconv.Atoi(contentLengths[0])
 		if err != nil {
 			return nil, err
 		}
-
 		contentLength = ret
 	}
-
 	// Parse words from body
 	words := len(strings.Fields(string(r.Body)))
-
 	// Parse lines from body
 	lines := len(strings.Split(string(r.Body), "\n"))
 
-	secretM := processSecrets(secrets)
-	infoM := processInfos(infos)
-	errorM := processErrors(errors)
+	// Process secrets
+	for _, secret := range secrets {
+		secretMatch := MatcherResult{secret.Secret.Name, secret.Match}
+		secretList = append(secretList, secretMatch)
+	}
+
+	// Process infos
+	for _, info := range infos {
+		infoMatch := MatcherResult{info.Info.Name, info.Match}
+		infoList = append(infoList, infoMatch)
+	}
+
+	// Process error list
+	for _, error := range errors {
+		errorMatch := MatcherResult{error.Error.ErrorName, error.Match}
+		errorList = append(errorList, errorMatch)
+	}
 
 	// Construct matcher results
 	matcherResults := &MatcherResults{
 		FileType:   filetype,
 		Parameters: parameters,
-		Errors:     errorM,
-		Infos:      infoM,
-		Secrets:    secretM,
+		Errors:     errorList,
+		Infos:      infoList,
+		Secrets:    secretList,
 	}
 
 	// Construct JSON response
@@ -117,25 +126,22 @@ func GetJSONString(
 		Matches:       matcherResults,
 		// Host:          "", // TODO: this is available in Colly 2.x
 	}
-
 	// Set empty data if no matches to bridge the omitempty gap for empty structs
 	var (
 		isFileTypeNill    = false
 		isParametersEmpty = len(parameters) == 0
-		isErrorsEmpty     = len(errorM) == 0
-		isInfoEmpty       = len(infoM) == 0
-		isSecretsEmpty    = len(secretM) == 0
+		isErrorsEmpty     = len(errorList) == 0
+		isInfoEmpty       = len(infoList) == 0
+		isSecretsEmpty    = len(secretList) == 0
 	)
 
 	if (*filetype == scanner.FileType{}) {
 		matcherResults.FileType = nil
 		isFileTypeNill = true
 	}
-
 	if isFileTypeNill && isParametersEmpty && isErrorsEmpty && isInfoEmpty && isSecretsEmpty {
 		resp.Matches = nil
 	}
-
 	// Convert struct to JSON string
 	jsonOutput, err := json.Marshal(resp)
 	if err != nil {
@@ -143,52 +149,4 @@ func GetJSONString(
 	}
 
 	return jsonOutput, nil
-}
-
-func processSecrets(secrets []scanner.SecretMatched) map[string][]string {
-	secretM := map[string][]string{}
-
-	for _, secret := range secrets {
-		if _, ok := secretM[secret.Secret.Name]; ok {
-			tempV := secretM[secret.Secret.Name]
-			tempV = append(tempV, secret.Match)
-			secretM[secret.Secret.Name] = tempV
-		} else {
-			secretM[secret.Secret.Name] = []string{secret.Match}
-		}
-	}
-
-	return secretM
-}
-
-func processInfos(infos []scanner.InfoMatched) map[string][]string {
-	infoM := map[string][]string{}
-
-	for _, info := range infos {
-		if _, ok := infoM[info.Info.Name]; ok {
-			tempV := infoM[info.Info.Name]
-			tempV = append(tempV, info.Match)
-			infoM[info.Info.Name] = tempV
-		} else {
-			infoM[info.Info.Name] = []string{info.Match}
-		}
-	}
-
-	return infoM
-}
-
-func processErrors(errors []scanner.ErrorMatched) map[string][]string {
-	errorM := map[string][]string{}
-
-	for _, er := range errors {
-		if _, ok := errorM[er.Error.ErrorName]; ok {
-			tempV := errorM[er.Error.ErrorName]
-			tempV = append(tempV, er.Match)
-			errorM[er.Error.ErrorName] = tempV
-		} else {
-			errorM[er.Error.ErrorName] = []string{er.Match}
-		}
-	}
-
-	return errorM
 }
