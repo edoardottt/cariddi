@@ -76,6 +76,12 @@ sudo snap install cariddi
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
 ```
 
+### Using BlackArch Linux
+
+```bash
+pacman -Syu cariddi
+```
+
 ### Building from source
 
 You need [Go](https://golang.org/).
