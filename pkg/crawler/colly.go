@@ -33,6 +33,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"strings"
@@ -317,16 +318,23 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 
 	// Use a Proxy if needed
 	if proxy != "" {
-		err := c.SetProxy(proxy)
+		proxyParsed, err := url.Parse(proxy)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-	}
 
-	c.WithTransport(&http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	})
+		c.WithTransport(&http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true},
+			Proxy:             http.ProxyURL(proxyParsed),
+			DisableKeepAlives: true,
+		})
+	} else {
+		c.WithTransport(&http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		})
+	}
 
 	return c
 }
