@@ -97,17 +97,18 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 		f.Close()
 	} else {
 		// The file already exists, overwrite.
-
 		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
 		if err != nil {
 			fmt.Println("Can't create output file.")
 			os.Exit(1)
 		}
+
 		err = f.Truncate(0)
 		if err != nil {
 			fmt.Println("Can't create output file.")
 			os.Exit(1)
 		}
+
 		f.Close()
 	}
 

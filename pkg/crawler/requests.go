@@ -61,13 +61,14 @@ func GetRequest(target string) (string, error) {
 func PostRequest(target string, data map[string]string) (string, error) {
 	postBody, _ := json.Marshal(data)
 	responseBody := bytes.NewBuffer(postBody)
-	// Leverage Go's HTTP Post function to make request
+
 	resp, err := http.Post(target, "application/json", responseBody)
-	// Handle Error
 	if err != nil {
 		return "", err
 	}
+
 	defer resp.Body.Close()
+
 	// Read the response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

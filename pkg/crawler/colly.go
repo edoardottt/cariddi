@@ -257,6 +257,7 @@ func New(scan *Scan) *Results {
 			if !scan.Plain {
 				fmt.Fprint(os.Stdout, "\r")
 				fmt.Println("CTRL+C pressed: Exiting")
+
 				cCount++
 			}
 
