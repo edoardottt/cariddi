@@ -10,38 +10,15 @@
   <a href="https://github.com/edoardottt/cariddi/actions">
     <img src="https://github.com/edoardottt/cariddi/workflows/Go/badge.svg?branch=main" alt="workflows" />
   </a>
-  <!-- ubuntu-build -->
-  <a href="https://edoardoottavianelli.it">
-    <img src="https://github.com/edoardottt/images/blob/main/cariddi/ubuntu-build.svg" alt="ubuntu-build" />
-  </a>
-  <!-- win10-build -->
-  <a href="https://edoardoottavianelli.it">
-    <img src="https://github.com/edoardottt/images/blob/main/cariddi/win10.svg" alt="win10-build" />
-  </a>
-  <!-- pr-welcome -->
-  <a href="https://edoardoottavianelli.it">
-    <img src="https://github.com/edoardottt/images/blob/main/cariddi/pr-welcome.svg" alt="pr-welcome" />
-  </a>
 
   <br>
   
-  <!-- mainteinance -->
-  <a href="https://edoardoottavianelli.it">
-    <img src="https://github.com/edoardottt/images/blob/main/cariddi/maintained-yes.svg" alt="Mainteinance yes" />
-  </a>
-  <!-- ask-me-anything -->
-  <a href="https://edoardoottavianelli.it">
-    <img src="https://github.com/edoardottt/images/blob/main/cariddi/ask-me-anything.svg" alt="ask me anything" />
-  </a>
-  <!-- license GPLv3.0 -->
-  <a href="https://github.com/edoardottt/cariddi/blob/master/LICENSE">
-    <img src="https://github.com/edoardottt/images/blob/main/cariddi/license-GPL3.svg" alt="license-GPL3" />
-  </a>
-  <br>
   <sub>
     Coded with 💙 by edoardottt
   </sub>
+  
   <br>
+  
   <!--Tweet button-->
   <a href="https://twitter.com/intent/tweet?url=https://github.com/edoardottt/cariddi&text=Take%20a%20list%20of%20domains,%20crawl%20urls%20and%20scan%20for%20endpoints,%20secrets,%20api%20keys,%20file%20extensions,%20tokens%20and%20more...%20%23network%20%23security%20%23infosec%20%23oss%20%23github%20%23bugbounty%20%23linux" target="_blank">Share on Twitter!
   </a>
