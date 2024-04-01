@@ -61,17 +61,19 @@ func GetInfoRegexes() []Info {
 			"IPv4 address",
 			`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`,
 		},
-		{
-			"BTC address",
-			`([13]|bc1)[A-HJ-NP-Za-km-z1-9]{27,34}`,
-		},
+		/*
+			TOO MANY FALSE POSITIVES
+			{
+				"BTC address",
+				`([13]|bc1)[A-HJ-NP-Za-km-z1-9]{27,34}`,
+			},
+		*/
 		/*
 			HOW TO AVOID VERY VERY LONG BASE64 IMAGES ???
-				{
-					"Base64-encoded JSON",
-					[]string{
-						`ey(A|B)[A-Za-z0-9+\/]{20,}(={0,2})`},
-				},
+			{
+				"Base64-encoded JSON",
+				`ey(A|B)[A-Za-z0-9+\/]{20,}(={0,2})`,
+			},
 		*/
 	}
 

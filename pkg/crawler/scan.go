@@ -73,6 +73,7 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 			if matched, err := regexp.Match(secret, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(secret)
 				matches := re.FindAllStringSubmatch(body, -1)
+
 				for _, match := range matches {
 					secretScanned := scanner.Secret{Name: "CustomFromFile", Description: "", Regex: secret, Poc: ""}
 					secretFound := scanner.SecretMatched{Secret: secretScanned, URL: url, Match: match[0]}
