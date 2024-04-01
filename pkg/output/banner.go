@@ -35,7 +35,7 @@ import (
 
 // nolint: checknoglobals
 const (
-	version = "v1.3.2"
+	version = "v1.3.3"
 	banner  = `                 _     _     _ _ 
                 (_)   | |   | (_)
    ___ __ _ _ __ _  __| | __| |_ 
