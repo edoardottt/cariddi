@@ -37,19 +37,24 @@
 Installation 📡
 ----------
 
-### Using Snap
+### Homebrew
+```
+brew install cariddi
+```
+
+### Snap
 
 ```bash
 sudo snap install cariddi
 ```
 
-### Using Go
+### Go
 
 ```bash
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
 ```
 
-### Using BlackArch Linux
+### Pacman
 
 ```bash
 pacman -Syu cariddi
