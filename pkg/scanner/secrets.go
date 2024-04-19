@@ -372,6 +372,13 @@ func GetSecretRegexes() []Secret {
 			[]string{},
 			"?",
 		},
+		{
+			"Alibaba OSS Bucket",
+			"Alibaba OSS Bucket",
+			`(?:[a-zA-Z0-9-\.\_]+\.oss-[a-zA-Z0-9-\.\_]+\.aliyuncs\.com|oss\:\/\/[a-zA-Z0-9-\.\_]+|oss-[a-zA-Z0-9-\.\_]+\.aliyuncs\.com/[a-zA-Z0-9-\.\_]+)`,
+			[]string{},
+			"?",
+		},
 	}
 
 	return regexes
