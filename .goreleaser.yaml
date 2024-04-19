@@ -1,3 +1,11 @@
+release:
+  header: |
+    ## cariddi {{ .Tag }} 🥳
+    *Take a list of domains, crawl urls and scan for endpoints, secrets, api keys, file extensions, tokens and more*
+
+  footer: |
+      If you encounter a problem, just open an [issue](https://github.com/edoardottt/cariddi/issues)
+
 before:
   hooks:
     - go mod tidy
