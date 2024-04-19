@@ -72,7 +72,7 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 					wgScanners.Done()
 				}()
 
-				res, err := s.FromData(ctx, false, []byte(body))
+				res, err := s.FromData(ctx, true, []byte(body))
 				if err != nil {
 					return
 				}

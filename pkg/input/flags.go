@@ -74,6 +74,8 @@ type Input struct {
 	Secrets bool
 	// SecretsFile uses an external file (txt, one per line) to use custom regexes for secrets hunting.
 	SecretsFile string
+	// Exclude specific extension from secret scaning
+	SecretExtensionFilter string
 	// Endpoints hunts for juicy endpoints.
 	Endpoints bool
 	// EndpointsFile uses an external file (txt, one per line) to use custom parameters for endpoints hunting.
@@ -120,6 +122,8 @@ func ScanFlag() Input {
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line)"+
 		" to use custom regexes for secrets hunting.")
+	secretsExtensionFilterPtr := flag.String("secret-extension-filter", "", "Comma"+
+		"separated list of extension to ignore for secret scanning.")
 
 	endpointsPtr := flag.Bool("e", false, "Hunt for juicy endpoints.")
 	endpointsFilePtr := flag.String("ef", "", "Use an external file (txt, one per line)"+
@@ -163,6 +167,7 @@ func ScanFlag() Input {
 		*proxyPtr,
 		*secretsPtr,
 		*secretsFilePtr,
+		*secretsExtensionFilterPtr,
 		*endpointsPtr,
 		*endpointsFilePtr,
 		*extensionsPtr,

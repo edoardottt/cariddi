@@ -28,6 +28,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
@@ -68,25 +69,26 @@ func main() {
 	// Setup the config according to the flags that were
 	// passed via the CLI
 	config := &crawler.Scan{
-		Delay:         flags.Delay,
-		Concurrency:   flags.Concurrency,
-		Ignore:        flags.Ignore,
-		IgnoreTxt:     flags.IgnoreTXT,
-		Cache:         flags.Cache,
-		JSON:          flags.JSON,
-		Timeout:       flags.Timeout,
-		Intensive:     flags.Intensive,
-		Rua:           flags.Rua,
-		Proxy:         flags.Proxy,
-		SecretsFlag:   flags.Secrets,
-		Plain:         flags.Plain,
-		EndpointsFlag: flags.Endpoints,
-		FileType:      flags.Extensions,
-		ErrorsFlag:    flags.Errors,
-		InfoFlag:      flags.Info,
-		Debug:         flags.Debug,
-		UserAgent:     flags.UserAgent,
-		StoreResp:     flags.StoreResp,
+		Delay:                 flags.Delay,
+		Concurrency:           flags.Concurrency,
+		Ignore:                flags.Ignore,
+		IgnoreTxt:             flags.IgnoreTXT,
+		Cache:                 flags.Cache,
+		JSON:                  flags.JSON,
+		Timeout:               flags.Timeout,
+		Intensive:             flags.Intensive,
+		Rua:                   flags.Rua,
+		Proxy:                 flags.Proxy,
+		SecretsFlag:           flags.Secrets,
+		SecretExtensionFilter: strings.Split(flags.SecretExtensionFilter, ","),
+		Plain:                 flags.Plain,
+		EndpointsFlag:         flags.Endpoints,
+		FileType:              flags.Extensions,
+		ErrorsFlag:            flags.Errors,
+		InfoFlag:              flags.Info,
+		Debug:                 flags.Debug,
+		UserAgent:             flags.UserAgent,
+		StoreResp:             flags.StoreResp,
 	}
 
 	// Read the targets from standard input.
