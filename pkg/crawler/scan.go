@@ -28,10 +28,17 @@ package crawler
 
 import (
 	"regexp"
+	"runtime"
 	"strings"
+	"sync"
+	"time"
 
 	urlUtils "github.com/edoardottt/cariddi/internal/url"
 	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/trufflesecurity/trufflehog/v3/pkg/context"
+	"github.com/trufflesecurity/trufflehog/v3/pkg/detectors"
+	"github.com/trufflesecurity/trufflehog/v3/pkg/engine"
+	"golang.org/x/sync/semaphore"
 )
 
 // huntSecrets hunts for secrets.
@@ -45,29 +52,53 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 	var secrets []scanner.SecretMatched
 
 	if len(*secretsFile) == 0 {
-		for _, secret := range scanner.GetSecretRegexes() {
-			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
-				re := regexp.MustCompile(secret.Regex)
-				matches := re.FindAllStringSubmatch(body, -1)
+		ctx, _ := context.WithTimeout(context.Background(), time.Hour*2)
+		sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
+		var wgScanners sync.WaitGroup
 
-				// Avoiding false positives
-				var isFalsePositive = false
+		// Buffered channel to control the number of goroutines
+		guard := make(chan struct{}, int64(runtime.NumCPU()))
 
-				for _, match := range matches {
-					for _, falsePositive := range secret.FalsePositives {
-						if strings.Contains(strings.ToLower(match[0]), falsePositive) {
-							isFalsePositive = true
-							break
+		for _, trufflehogScanner := range engine.DefaultDetectors() {
+			wgScanners.Add(1)
+
+			// Acquire a slot from the channel
+			guard <- struct{}{}
+
+			go func(s detectors.Detector) {
+				defer func() {
+					// Release the slot back to the channel
+					<-guard
+					wgScanners.Done()
+				}()
+
+				res, err := s.FromData(ctx, false, []byte(body))
+				if err != nil {
+					return
+				}
+
+				if len(res) > 0 {
+					for _, resSecret := range res {
+						sec := scanner.Secret{
+							Name:           resSecret.DetectorType.String(),
+							Description:    resSecret.DetectorType.String(),
+							Regex:          "",
+							FalsePositives: []string{},
+							Poc:            "",
 						}
-					}
+						secretFound := scanner.SecretMatched{Secret: sec, URL: url, Match: string(resSecret.Raw)}
 
-					if !isFalsePositive {
-						secretFound := scanner.SecretMatched{Secret: secret, URL: url, Match: match[0]}
+						// prevent concurent write
+						sem.Acquire(ctx, 1)
 						secrets = append(secrets, secretFound)
+						sem.Release(1)
 					}
 				}
-			}
+			}(trufflehogScanner)
+
 		}
+
+		wgScanners.Wait()
 	} else {
 		for _, secret := range *secretsFile {
 			if matched, err := regexp.Match(secret, []byte(body)); err == nil && matched {
