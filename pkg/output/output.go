@@ -71,7 +71,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	if flags.Secrets {
 		SecretFilename := fileUtils.CreateOutputFile(flags.TXTout, "secrets", "txt")
 		for _, elem := range finalSecret {
-			AppendOutputToTxt(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, SecretFilename)
+			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Secret.Name, elem.Match, elem.URL), SecretFilename)
 		}
 	}
 
@@ -89,7 +89,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 					}
 				}
 
-				AppendOutputToTxt(finalString+" in "+elem.URL, EndpointFilename)
+				AppendOutputToTxt(fmt.Sprintf("%s in %s", finalString, elem.URL), EndpointFilename)
 			}
 		}
 	}
@@ -98,7 +98,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
 		ExtensionsFilename := fileUtils.CreateOutputFile(flags.TXTout, "extensions", "txt")
 		for _, elem := range finalExtensions {
-			AppendOutputToTxt(elem.Filetype.Extension+" in "+elem.URL, ExtensionsFilename)
+			AppendOutputToTxt(fmt.Sprintf("%s in %s", elem.Filetype.Extension, elem.URL), ExtensionsFilename)
 		}
 	}
 
@@ -106,7 +106,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	if flags.Errors {
 		ErrorsFilename := fileUtils.CreateOutputFile(flags.TXTout, "errors", "txt")
 		for _, elem := range finalErrors {
-			AppendOutputToTxt(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, ErrorsFilename)
+			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Error.ErrorName, elem.Match, elem.URL), ErrorsFilename)
 		}
 	}
 
@@ -114,7 +114,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	if flags.Info {
 		InfosFilename := fileUtils.CreateOutputFile(flags.TXTout, "info", "txt")
 		for _, elem := range finalInfos {
-			AppendOutputToTxt(elem.Info.Name+" - "+elem.Match+" in "+elem.URL, InfosFilename)
+			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Info.Name, elem.Match, elem.URL), InfosFilename)
 		}
 	}
 }
@@ -148,7 +148,7 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 		HeaderHTML("Secrets found", resultFilename)
 
 		for _, elem := range finalSecret {
-			AppendOutputToHTML(elem.Secret.Name+" - "+elem.Match+" in "+elem.URL, "", resultFilename, false)
+			AppendOutputToHTML(fmt.Sprintf("%s - %s in %s", elem.Secret.Name, elem.Match, elem.URL), "", resultFilename, false)
 		}
 
 		FooterHTML(resultFilename)
@@ -168,7 +168,7 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 					}
 				}
 
-				AppendOutputToHTML(finalString+" in "+elem.URL, "", resultFilename, false)
+				AppendOutputToHTML(fmt.Sprintf("%s in %s", finalString, elem.URL), "", resultFilename, false)
 			}
 		}
 
@@ -180,7 +180,7 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 		HeaderHTML("Extensions found", resultFilename)
 
 		for _, elem := range finalExtensions {
-			AppendOutputToHTML(elem.Filetype.Extension+" in "+elem.URL, "", resultFilename, false)
+			AppendOutputToHTML(fmt.Sprintf("%s in %s", elem.Filetype.Extension, elem.URL), "", resultFilename, false)
 		}
 
 		FooterHTML(resultFilename)
@@ -191,7 +191,8 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 		HeaderHTML("Errors found", resultFilename)
 
 		for _, elem := range finalErrors {
-			AppendOutputToHTML(elem.Error.ErrorName+" - "+elem.Match+" in "+elem.URL, "", resultFilename, false)
+			output := fmt.Sprintf("%s - %s in %s", elem.Error.ErrorName, elem.Match, elem.URL)
+			AppendOutputToHTML(output, "", resultFilename, false)
 		}
 
 		FooterHTML(resultFilename)
