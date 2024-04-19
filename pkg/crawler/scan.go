@@ -59,6 +59,7 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 		// Buffered channel to control the number of goroutines
 		guard := make(chan struct{}, int64(runtime.NumCPU()))
 
+		// import trufflehog default scanner list
 		for _, trufflehogScanner := range engine.DefaultDetectors() {
 			wgScanners.Add(1)
 
@@ -72,6 +73,7 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 					wgScanners.Done()
 				}()
 
+				// Check secrets from the scanner against the body of the request
 				res, err := s.FromData(ctx, true, []byte(body))
 				if err != nil {
 					return
@@ -99,6 +101,31 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 		}
 
 		wgScanners.Wait()
+
+		// keep legacy code, the original list contains secrets that are not present in trufflehog like s3 buckets.
+		for _, secret := range scanner.GetSecretRegexes() {
+			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
+				re := regexp.MustCompile(secret.Regex)
+				matches := re.FindAllStringSubmatch(body, -1)
+
+				// Avoiding false positives
+				var isFalsePositive = false
+
+				for _, match := range matches {
+					for _, falsePositive := range secret.FalsePositives {
+						if strings.Contains(strings.ToLower(match[0]), falsePositive) {
+							isFalsePositive = true
+							break
+						}
+					}
+
+					if !isFalsePositive {
+						secretFound := scanner.SecretMatched{Secret: secret, URL: url, Match: match[0]}
+						secrets = append(secrets, secretFound)
+					}
+				}
+			}
+		}
 	} else {
 		for _, secret := range *secretsFile {
 			if matched, err := regexp.Match(secret, []byte(body)); err == nil && matched {
