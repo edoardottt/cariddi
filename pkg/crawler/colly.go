@@ -62,7 +62,7 @@ func New(scan *Scan) *Results {
 	// if there isn't a scheme use http.
 	if !urlUtils.HasProtocol(scan.Target) {
 		protocolTemp = "http"
-		targetTemp = urlUtils.GetHost(protocolTemp + "://" + scan.Target)
+		targetTemp = urlUtils.GetHost(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
 	} else {
 		protocolTemp = urlUtils.GetProtocol(scan.Target)
 		targetTemp = urlUtils.GetHost(scan.Target)
@@ -70,7 +70,7 @@ func New(scan *Scan) *Results {
 
 	if scan.Intensive {
 		var err error
-		targetTemp, err = urlUtils.GetRootHost(protocolTemp + "://" + targetTemp)
+		targetTemp, err = urlUtils.GetRootHost(fmt.Sprintf("%s://%s", protocolTemp, targetTemp))
 
 		if err != nil {
 			fmt.Println(err.Error())
@@ -205,7 +205,7 @@ func New(scan *Scan) *Results {
 	})
 
 	// Start scraping on target
-	path, err := urlUtils.GetPath(protocolTemp + "://" + scan.Target)
+	path, err := urlUtils.GetPath(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
 	if err == nil {
 		var (
 			addPath     string
@@ -217,7 +217,7 @@ func New(scan *Scan) *Results {
 		}
 
 		if path == "" || path == "/" {
-			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "robots.txt"
+			absoluteURL = fmt.Sprintf("%s://%s%srobots.txt", protocolTemp, scan.Target, addPath)
 			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
 				err = c.Visit(absoluteURL)
 				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
@@ -235,7 +235,7 @@ func New(scan *Scan) *Results {
 		}
 	}
 
-	err = c.Visit(protocolTemp + "://" + scan.Target)
+	err = c.Visit(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
 	if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
 		log.Println(err)
 	}
