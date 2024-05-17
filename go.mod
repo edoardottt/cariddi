@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.2
 
 require (
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/gocolly/colly v1.2.0
 	github.com/trufflesecurity/trufflehog/v3 v3.73.0
 )

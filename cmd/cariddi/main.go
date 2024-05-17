@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -180,7 +181,7 @@ func main() {
 	// If needed print secrets.
 	if !flags.JSON && !flags.Plain && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
-			output.EncapsulateCustomGreen(elem.Secret.Name, elem.Match+" in "+elem.URL)
+			output.EncapsulateCustomGreen(elem.Secret.Name, fmt.Sprintf("%s in %s", elem.Match, elem.URL))
 		}
 	}
 
@@ -196,7 +197,7 @@ func main() {
 					}
 				}
 
-				output.EncapsulateCustomGreen(finalString, " in "+elem.URL)
+				output.EncapsulateCustomGreen(finalString, fmt.Sprintf(" in %s", elem.URL))
 			}
 		}
 	}
@@ -204,21 +205,21 @@ func main() {
 	// If needed print extensions.
 	if !flags.JSON && !flags.Plain && len(finalExtensions) != 0 {
 		for _, elem := range finalExtensions {
-			output.EncapsulateCustomGreen(elem.Filetype.Extension, elem.URL+" matched!")
+			output.EncapsulateCustomGreen(elem.Filetype.Extension, fmt.Sprintf("%s matched!", elem.URL))
 		}
 	}
 
 	// If needed print errors.
 	if !flags.JSON && !flags.Plain && len(finalErrors) != 0 {
 		for _, elem := range finalErrors {
-			output.EncapsulateCustomGreen(elem.Error.ErrorName, elem.Match+" in "+elem.URL)
+			output.EncapsulateCustomGreen(elem.Error.ErrorName, fmt.Sprintf("%s in %s", elem.Match, elem.URL))
 		}
 	}
 
 	// If needed print infos.
 	if !flags.JSON && !flags.Plain && len(finalInfos) != 0 {
 		for _, elem := range finalInfos {
-			output.EncapsulateCustomGreen(elem.Info.Name, elem.Match+" in "+elem.URL)
+			output.EncapsulateCustomGreen(elem.Info.Name, fmt.Sprintf("%s in %s", elem.Match, elem.URL))
 		}
 	}
 }
