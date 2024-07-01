@@ -333,7 +333,8 @@ func GetSecretRegexes() []Secret {
 			"S3 Bucket",
 			`(?:[a-zA-Z0-9_-]+s3\.amazonaws\.com|[a-zA-Z0-9_.-]+amazonaws\.com|` +
 				`[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com|s3\:\/\/[a-zA-Z0-9-\.\_]+|` +
-				`s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+)`,
+				`s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+|` +
+				`oss\:\/\/[a-zA-Z0-9-\.\_]+)`,
 			[]string{},
 			"?",
 		},
@@ -369,6 +370,14 @@ func GetSecretRegexes() []Secret {
 			"Microsoft Teams Webhook",
 			"Microsoft Teams Webhook",
 			`https\:\/\/outlook\.office\.com\/webhook\/[A-Za-z0-9\-@]+\/IncomingWebhook\/[A-Za-z0-9\-]+\/[A-Za-z0-9\-]+`,
+			[]string{},
+			"?",
+		},
+		{
+			"Alibaba OSS Bucket",
+			"Alibaba OSS Bucket",
+			`(?:[a-zA-Z0-9-\.\_]+\.oss-[a-zA-Z0-9-\.\_]+\.aliyuncs\.com|` +
+				`oss-[a-zA-Z0-9-\.\_]+\.aliyuncs\.com/[a-zA-Z0-9-\.\_]+)`,
 			[]string{},
 			"?",
 		},
