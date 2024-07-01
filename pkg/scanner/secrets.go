@@ -326,6 +326,15 @@ func GetSecretRegexes() []Secret {
 			"?",
 		},
 		{
+			"DropBox API Token",
+			"DropBox API Token",
+			`(?i)(?:dropbox)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{15})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
 			"Facebook Secret Key",
 			"Facebook Secret Key",
 			`(?i)(facebook|fb)(.{0,20})?(?-i)['\"][0-9a-f]{32}['\"]`,
@@ -336,6 +345,15 @@ func GetSecretRegexes() []Secret {
 			"Facebook Client ID",
 			"Facebook Client ID",
 			`(?i)(facebook|fb)(.{0,20})?['\"][0-9]{13,17}['\"]`,
+			[]string{"facebook.com", "facebook.svg"},
+			"?",
+		},
+		{
+			"Fastly API Token",
+			"Fastly API Token",
+			`(?i)(?:fastly)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9=_\-]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
 			[]string{"facebook.com", "facebook.svg"},
 			"?",
 		},
