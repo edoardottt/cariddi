@@ -244,6 +244,88 @@ func GetSecretRegexes() []Secret {
 			"?",
 		},
 		{
+			"Confluent Access Token",
+			"Confluent Access Token",
+			`(?i)(?:confluent)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{16})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Confluent Secret Key",
+			"Confluent Secret Key",
+			`(?i)(?:confluent)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Databricks API Token",
+			"Databricks API Token",
+			`(?i)\b(dapi[a-h0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DataDog Access Token",
+			"DataDog Access Token",
+			`(?i)(?:datadog)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{40})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DigitalOcean Access Token",
+			"DigitalOcean Access Token",
+			`(?i)\b(doo_v1_[a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DigitalOcean Personal Access Token",
+			"DigitalOcean Personal Access Token",
+			`(?i)\b(dop_v1_[a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DigitalOcean Refresh Token",
+			"DigitalOcean Refresh Token",
+			`(?i)\b(dor_v1_[a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Discord API Token",
+			"Discord API Token",
+			`(?i)(?:discord)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Discord Client ID",
+			"Discord Client ID",
+			`(?i)(?:discord)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([0-9]{18})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Discord Client Secret",
+			"Discord Client Secret",
+			`(?i)(?:discord)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9=_\-]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
 			"Facebook Secret Key",
 			"Facebook Secret Key",
 			`(?i)(facebook|fb)(.{0,20})?(?-i)['\"][0-9a-f]{32}['\"]`,
