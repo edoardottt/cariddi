@@ -55,6 +55,97 @@ type SecretMatched struct {
 func GetSecretRegexes() []Secret {
 	var regexes = []Secret{
 		{
+			"Adafruit API Key",
+			"Adafruit API Key",
+			`(?i)(?:adafruit)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}([a-z0-9_-]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Adobe Client ID",
+			"Adobe Client ID",
+			`(?i)(?:adobe)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:{1,3}` +
+				`=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}([a-f0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Adobe Client Secret",
+			"Adobe Client Secret",
+			`(?i)\b((p8e-)(?i)[a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Age Secret Key",
+			"Age Secret Key",
+			`(?i)AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{58}`,
+			[]string{},
+			"?",
+		},
+		{
+			"Airtable API Key",
+			"Airtable API Key",
+			`(?i)(?:airtable)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{17})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Algolia API Key",
+			"Algolia API Key",
+			`(?i)(?:algolia)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Alibaba Access Key ID",
+			"Alibaba Access Key ID",
+			`(?i)\b((LTAI)(?i)[a-z0-9]{20})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Alibaba Secret Key",
+			"Alibaba Secret Key",
+			`(?i)(?:alibaba)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{30})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Asana Client ID",
+			"Asana Client ID",
+			`(?i)(?:asana)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([0-9]{16})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Asana Client Secret",
+			"Asana Client Secret",
+			`(?i)(?:asana)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Atlassian API Token",
+			"Atlassian API Token",
+			`(?i)(?:atlassian|confluence|jira)(?:[0-9a-z\-_\t .]{0,20})` +
+				`(?:[\s|']|[\s|"]){0,3}(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{24})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
 			"AWS Access Key",
 			"AWS Access Key",
 			"(A3T[A-Z0-9]|AKIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA|ASCA|APKA)[A-Z0-9]{16}",
