@@ -51,6 +51,11 @@ func TestRemoveDuplicateValues(t *testing.T) {
 			want:  []string{},
 		},
 		{
+			name:  "one element",
+			slice: []string{"a"},
+			want:  []string{"a"},
+		},
+		{
 			name:  "withous duplicates",
 			slice: []string{"a", "b", "c"},
 			want:  []string{"a", "b", "c"},
@@ -133,7 +138,7 @@ func TestCheckCookies(t *testing.T) {
 			},
 		},
 		{
-			name:  "several paris",
+			name:  "several pairs",
 			input: "name1:some_value@1;name_2:some$%_value@",
 			want: []*http.Cookie{
 				{
@@ -143,6 +148,24 @@ func TestCheckCookies(t *testing.T) {
 				{
 					Name:  "name_2",
 					Value: "some$%_value@",
+				},
+			},
+		},
+		{
+			name:  "several pairs 2",
+			input: "name1:some_value@1;name_2:some$%_value@;name_3:somevalueeeeee",
+			want: []*http.Cookie{
+				{
+					Name:  "name1",
+					Value: "some_value@1",
+				},
+				{
+					Name:  "name_2",
+					Value: "some$%_value@",
+				},
+				{
+					Name:  "name_3",
+					Value: "somevalueeeeee",
 				},
 			},
 		},

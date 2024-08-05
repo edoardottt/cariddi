@@ -38,6 +38,7 @@ Installation 📡
 ----------
 
 ### Homebrew
+
 ```
 brew install cariddi
 ```
@@ -180,7 +181,44 @@ Examples 💡
   - use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
   - or just `cat urls | cariddi.exe` using PowerShell
 
-- To integrate cariddi with Burpsuite [follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration).
+- To integrate cariddi with Burpsuite [follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration) or click the button below:
+
+<details>
+  <summary>Integrate cariddi with Burpsuite</summary>
+
+   Normally you use Burpsuite within your browser, so you just have to trust the burpsuite's certificate in the browser and you're done.  
+   In order to use cariddi with the BurpSuite proxy you should do some steps further.  
+
+   If you try to use cariddi with the option `-proxy http://127.0.0.1:8080` you will find this error in the burpsuite error log section:  
+
+   ```bash
+   Received fatal alert: bad_certificate (or something similar related to the certificate).
+   ```
+
+   To make cariddi working fine with Burpsuite you have also to trust the certificate within your entire pc, not just only the browser. These are the steps you have to follow:
+
+   Go to Proxy tab in Bupsuite, then Options. Click on the CA Certificate button and export Certificate in DER format  
+
+   ```bash
+   openssl x509 -in burp.der -inform DER -out burp.pem -outform PEM
+   sudo chown root:root burp.pem
+   sudo chmod 644 burp.pem
+   sudo cp burp.pem /usr/local/share/ca-certificates/
+   sudo c_rehash
+   cd /etc/ssl/certs/
+   sudo ln -s /usr/local/share/ca-certificates/burp.pem
+   sudo c_rehash .
+   ```
+
+   Source: Trust Burp Proxy certificate in Debian/Ubuntu  
+
+   After these steps, in order to use cariddi with Burpsuite you have to:  
+
+   1. Open Burpsuite, making sure that the proxy is listening.  
+   2. Use cariddi with the flag `-proxy http://127.0.0.1:8080`.  
+   3. You will see that requests and responses will be logged in Burpsuite.
+
+</details>
 
 Changelog 📌
 -------
@@ -202,7 +240,7 @@ If there aren't errors, go ahead :)
 
 **Help me building this!**
 
-Special thanks to: [go-colly](http://go-colly.org/), [ocervell](https://github.com/ocervell), [zricethezav](https://github.com/zricethezav/gitleaks/blob/master/config/default.go), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/wiki/Contributors).
+Special thanks to: [go-colly](http://go-colly.org/), [ocervell](https://github.com/ocervell), [zricethezav](https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/wiki/Contributors).
 
 License 📝
 -------

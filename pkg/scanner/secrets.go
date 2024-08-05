@@ -55,6 +55,97 @@ type SecretMatched struct {
 func GetSecretRegexes() []Secret {
 	var regexes = []Secret{
 		{
+			"Adafruit API Key",
+			"Adafruit API Key",
+			`(?i)(?:adafruit)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}([a-z0-9_-]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Adobe Client ID",
+			"Adobe Client ID",
+			`(?i)(?:adobe)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}(?:=|>|:{1,3}` +
+				`=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}([a-f0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Adobe Client Secret",
+			"Adobe Client Secret",
+			`(?i)\b((p8e-)(?i)[a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Age Secret Key",
+			"Age Secret Key",
+			`(?i)AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{58}`,
+			[]string{},
+			"?",
+		},
+		{
+			"Airtable API Key",
+			"Airtable API Key",
+			`(?i)(?:airtable)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{17})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Algolia API Key",
+			"Algolia API Key",
+			`(?i)(?:algolia)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Alibaba Access Key ID",
+			"Alibaba Access Key ID",
+			`(?i)\b((LTAI)(?i)[a-z0-9]{20})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Alibaba Secret Key",
+			"Alibaba Secret Key",
+			`(?i)(?:alibaba)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{30})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Asana Client ID",
+			"Asana Client ID",
+			`(?i)(?:asana)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([0-9]{16})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Asana Client Secret",
+			"Asana Client Secret",
+			`(?i)(?:asana)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Atlassian API Token",
+			"Atlassian API Token",
+			`(?i)(?:atlassian|confluence|jira)(?:[0-9a-z\-_\t .]{0,20})` +
+				`(?:[\s|']|[\s|"]){0,3}(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{24})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
 			"AWS Access Key",
 			"AWS Access Key",
 			"(A3T[A-Z0-9]|AKIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA|ASCA|APKA)[A-Z0-9]{16}",
@@ -83,6 +174,167 @@ func GetSecretRegexes() []Secret {
 			"?",
 		},
 		{
+			"Beamer API Token",
+			"Beamer API Token",
+			`(?i)(?:beamer)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`(b_[a-z0-9=_\-]{44})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"BitBucket Client ID",
+			"BitBucket Client ID",
+			`(?i)(?:bitbucket)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"BitBucket Client Secret",
+			"BitBucket Client Secret",
+			`(?i)(?:bitbucket)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9=_\-]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Cloudflare API Key",
+			"Cloudflare API Key",
+			`(?i)(?:cloudflare)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9_-]{40})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Cloudflare Global API Key",
+			"Cloudflare Global API Key",
+			`(?i)(?:cloudflare)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-f0-9]{37})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Cloudflare Origin CA Key",
+			"Cloudflare Origin CA Key",
+			`\b(v1\.0-[a-f0-9]{24}-[a-f0-9]{146})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"CodeCov Access Token",
+			"CodeCov Access Token",
+			`(?i)(?:codecov)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"CoinBase Access Token",
+			"CoinBase Access Token",
+			`(?i)(?:coinbase)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9_-]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Confluent Access Token",
+			"Confluent Access Token",
+			`(?i)(?:confluent)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{16})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Confluent Secret Key",
+			"Confluent Secret Key",
+			`(?i)(?:confluent)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Databricks API Token",
+			"Databricks API Token",
+			`(?i)\b(dapi[a-h0-9]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DataDog Access Token",
+			"DataDog Access Token",
+			`(?i)(?:datadog)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{40})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DigitalOcean Access Token",
+			"DigitalOcean Access Token",
+			`(?i)\b(doo_v1_[a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DigitalOcean Personal Access Token",
+			"DigitalOcean Personal Access Token",
+			`(?i)\b(dop_v1_[a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DigitalOcean Refresh Token",
+			"DigitalOcean Refresh Token",
+			`(?i)\b(dor_v1_[a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Discord API Token",
+			"Discord API Token",
+			`(?i)(?:discord)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-f0-9]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Discord Client ID",
+			"Discord Client ID",
+			`(?i)(?:discord)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([0-9]{18})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Discord Client Secret",
+			"Discord Client Secret",
+			`(?i)(?:discord)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9=_\-]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
+			"DropBox API Token",
+			"DropBox API Token",
+			`(?i)(?:dropbox)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{15})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
+			[]string{},
+			"?",
+		},
+		{
 			"Facebook Secret Key",
 			"Facebook Secret Key",
 			`(?i)(facebook|fb)(.{0,20})?(?-i)['\"][0-9a-f]{32}['\"]`,
@@ -93,6 +345,15 @@ func GetSecretRegexes() []Secret {
 			"Facebook Client ID",
 			"Facebook Client ID",
 			`(?i)(facebook|fb)(.{0,20})?['\"][0-9]{13,17}['\"]`,
+			[]string{"facebook.com", "facebook.svg"},
+			"?",
+		},
+		{
+			"Fastly API Token",
+			"Fastly API Token",
+			`(?i)(?:fastly)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9=_\-]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
 			[]string{"facebook.com", "facebook.svg"},
 			"?",
 		},
@@ -378,6 +639,15 @@ func GetSecretRegexes() []Secret {
 			"Alibaba OSS Bucket",
 			`(?:[a-zA-Z0-9-\.\_]+\.oss-[a-zA-Z0-9-\.\_]+\.aliyuncs\.com|` +
 				`oss-[a-zA-Z0-9-\.\_]+\.aliyuncs\.com/[a-zA-Z0-9-\.\_]+)`,
+			[]string{},
+			"?",
+		},
+		{
+			"Zendesk Secret Key",
+			"Zendesk Secret Key",
+			`(?i)(?:zendesk)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
+				`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
+				`([a-z0-9]{40})(?:['|\"|\n|\r|\s|\x60|;]|$)`,
 			[]string{},
 			"?",
 		},
