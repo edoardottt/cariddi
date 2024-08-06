@@ -61,6 +61,13 @@ func GetInfoRegexes() []Info {
 			"IPv4 address",
 			`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`,
 		},
+		{
+			"S3 Bucket",
+			`(?:[a-zA-Z0-9_-]+s3\.amazonaws\.com|[a-zA-Z0-9_.-]+amazonaws\.com|` +
+				`[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com|s3\:\/\/[a-zA-Z0-9-\.\_]+|` +
+				`s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+|` +
+				`oss\:\/\/[a-zA-Z0-9-\.\_]+)`,
+		},
 		/*
 			TOO MANY FALSE POSITIVES
 			{
