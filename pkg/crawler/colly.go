@@ -154,7 +154,18 @@ func New(scan *Scan) *Results {
 			(1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
 			// HERE SCAN FOR SECRETS
 			if scan.SecretsFlag && lengthOk {
-				secretsSlice := huntSecrets(r.Request.URL.String(), string(r.Body), &scan.SecretsSlice)
+				var secretsSlice []scanner.SecretMatched
+
+				// check the URL extension against the extension filter list
+				ext, _ := GetFileExtensionFromUrl(r.Request.URL.String())
+				if ext != "" {
+					if !Contains(scan.SecretExtensionFilter, ext) {
+						secretsSlice = huntSecrets(r.Request.URL.String(), string(r.Body), &scan.SecretsSlice)
+					}
+				} else {
+					// run the hunt if there is no extension
+					secretsSlice = huntSecrets(r.Request.URL.String(), string(r.Body), &scan.SecretsSlice)
+				}
 				results.Secrets = append(results.Secrets, secretsSlice...)
 				secrets = append(secrets, secretsSlice...)
 			}
