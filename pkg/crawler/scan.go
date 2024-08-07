@@ -81,19 +81,21 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 
 				if len(res) > 0 {
 					for _, resSecret := range res {
-						sec := scanner.Secret{
-							Name:           resSecret.DetectorType.String(),
-							Description:    resSecret.DetectorType.String(),
-							Regex:          "",
-							FalsePositives: []string{},
-							Poc:            "",
-						}
-						secretFound := scanner.SecretMatched{Secret: sec, URL: url, Match: string(resSecret.Raw)}
+						if resSecret.Verified {
+							sec := scanner.Secret{
+								Name:           resSecret.DetectorType.String(),
+								Description:    resSecret.DetectorType.String(),
+								Regex:          "",
+								FalsePositives: []string{},
+								Poc:            "",
+							}
+							secretFound := scanner.SecretMatched{Secret: sec, URL: url, Match: string(resSecret.Raw)}
 
-						// prevent concurent write
-						sem.Acquire(ctx, 1)
-						secrets = append(secrets, secretFound)
-						sem.Release(1)
+							// prevent concurent write
+							sem.Acquire(ctx, 1)
+							secrets = append(secrets, secretFound)
+							sem.Release(1)
+						}
 					}
 				}
 			}(trufflehogScanner)
