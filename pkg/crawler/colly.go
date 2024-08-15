@@ -134,8 +134,17 @@ func New(scan *Scan) *Results {
 			fmt.Println(r.Request.URL)
 		}
 
-		if scan.StoreResp {
-			err := output.StoreHTTPResponse(r)
+		var outputPath string
+
+		if scan.StoreResp || len(scan.StoredRespPath) > 0 {
+			outputDir := scan.StoredRespPath
+
+			if outputDir == "" {
+				outputDir = output.CariddiOutputFolder
+			}
+
+			var err error
+			outputPath, err = output.StoreHTTPResponse(r, outputDir)
 			if err != nil {
 				log.Println(err)
 			}
@@ -193,7 +202,7 @@ func New(scan *Scan) *Results {
 
 		if scan.JSON {
 			jsonOutput, err := output.GetJSONString(
-				r, secrets, parameters, filetype, errors, infos,
+				r, secrets, parameters, filetype, errors, infos, outputPath,
 			)
 
 			if err == nil {

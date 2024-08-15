@@ -69,25 +69,26 @@ func main() {
 	// Setup the config according to the flags that were
 	// passed via the CLI
 	config := &crawler.Scan{
-		Delay:         flags.Delay,
-		Concurrency:   flags.Concurrency,
-		Ignore:        flags.Ignore,
-		IgnoreTxt:     flags.IgnoreTXT,
-		Cache:         flags.Cache,
-		JSON:          flags.JSON,
-		Timeout:       flags.Timeout,
-		Intensive:     flags.Intensive,
-		Rua:           flags.Rua,
-		Proxy:         flags.Proxy,
-		SecretsFlag:   flags.Secrets,
-		Plain:         flags.Plain,
-		EndpointsFlag: flags.Endpoints,
-		FileType:      flags.Extensions,
-		ErrorsFlag:    flags.Errors,
-		InfoFlag:      flags.Info,
-		Debug:         flags.Debug,
-		UserAgent:     flags.UserAgent,
-		StoreResp:     flags.StoreResp,
+		Delay:          flags.Delay,
+		Concurrency:    flags.Concurrency,
+		Ignore:         flags.Ignore,
+		IgnoreTxt:      flags.IgnoreTXT,
+		Cache:          flags.Cache,
+		JSON:           flags.JSON,
+		Timeout:        flags.Timeout,
+		Intensive:      flags.Intensive,
+		Rua:            flags.Rua,
+		Proxy:          flags.Proxy,
+		SecretsFlag:    flags.Secrets,
+		Plain:          flags.Plain,
+		EndpointsFlag:  flags.Endpoints,
+		FileType:       flags.Extensions,
+		ErrorsFlag:     flags.Errors,
+		InfoFlag:       flags.Info,
+		Debug:          flags.Debug,
+		UserAgent:      flags.UserAgent,
+		StoreResp:      flags.StoreResp,
+		StoredRespPath: flags.StoredRespDir,
 	}
 
 	// Read the targets from standard input.
@@ -118,18 +119,18 @@ func main() {
 	// Create output files if needed (txt / html).
 	config.Txt = ""
 	if flags.TXTout != "" {
-		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
+		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt", config.StoredRespPath)
 	}
 
 	var ResultHTML = ""
 	if flags.HTMLout != "" {
-		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
+		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html", config.StoredRespPath)
 		output.BannerHTML(ResultHTML)
 		output.HeaderHTML("Results", ResultHTML)
 	}
 
 	if config.StoreResp {
-		fileUtils.CreateIndexOutputFile("index.responses.txt")
+		fileUtils.CreateIndexOutputFile("index.responses.txt", config.StoredRespPath)
 	}
 
 	// Read headers if needed

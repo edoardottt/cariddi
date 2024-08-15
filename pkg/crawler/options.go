@@ -39,26 +39,27 @@ type Results struct {
 
 type Scan struct {
 	// Flags
-	Cache         bool
-	Debug         bool
-	EndpointsFlag bool
-	ErrorsFlag    bool
-	InfoFlag      bool
-	Intensive     bool
-	Plain         bool
-	Rua           bool
-	SecretsFlag   bool
-	Ignore        string
-	IgnoreTxt     string
-	JSON          bool
-	HTML          string
-	Proxy         string
-	Target        string
-	Txt           string
-	UserAgent     string
-	FileType      int
-	Headers       map[string]string
-	StoreResp     bool
+	Cache          bool
+	Debug          bool
+	EndpointsFlag  bool
+	ErrorsFlag     bool
+	InfoFlag       bool
+	Intensive      bool
+	Plain          bool
+	Rua            bool
+	SecretsFlag    bool
+	Ignore         string
+	IgnoreTxt      string
+	JSON           bool
+	HTML           string
+	Proxy          string
+	Target         string
+	Txt            string
+	UserAgent      string
+	FileType       int
+	Headers        map[string]string
+	StoreResp      bool
+	StoredRespPath string
 
 	// Settings
 	Concurrency int

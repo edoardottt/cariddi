@@ -36,6 +36,7 @@ import (
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
+// constant defined in file.go as well, for circular dependency
 const (
 	CariddiOutputFolder = "output-cariddi"
 )
@@ -52,24 +53,30 @@ func PrintSimpleOutput(out []string) {
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-	exists, err := fileUtils.ElementExists(CariddiOutputFolder)
+
+	outputDir := CariddiOutputFolder
+	if flags.StoredRespDir != "" {
+		outputDir = flags.StoredRespDir
+	}
+
+	exists, err := fileUtils.ElementExists(outputDir)
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
 		os.Exit(1)
 	}
 
 	if !exists {
-		fileUtils.CreateOutputFolder()
+		fileUtils.CreateOutputFolder(outputDir)
 	}
 
-	ResultFilename := fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
+	ResultFilename := fileUtils.CreateOutputFile(flags.TXTout, "results", "txt", outputDir)
 	for _, elem := range finalResults {
 		AppendOutputToTxt(elem, ResultFilename)
 	}
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets {
-		SecretFilename := fileUtils.CreateOutputFile(flags.TXTout, "secrets", "txt")
+		SecretFilename := fileUtils.CreateOutputFile(flags.TXTout, "secrets", "txt", outputDir)
 		for _, elem := range finalSecret {
 			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Secret.Name, elem.Match, elem.URL), SecretFilename)
 		}
@@ -77,7 +84,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints {
-		EndpointFilename := fileUtils.CreateOutputFile(flags.TXTout, "endpoints", "txt")
+		EndpointFilename := fileUtils.CreateOutputFile(flags.TXTout, "endpoints", "txt", outputDir)
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
@@ -96,7 +103,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if extensions flag enabled save also secrets
 	if 1 <= flags.Extensions && flags.Extensions <= 7 {
-		ExtensionsFilename := fileUtils.CreateOutputFile(flags.TXTout, "extensions", "txt")
+		ExtensionsFilename := fileUtils.CreateOutputFile(flags.TXTout, "extensions", "txt", outputDir)
 		for _, elem := range finalExtensions {
 			AppendOutputToTxt(fmt.Sprintf("%s in %s", elem.Filetype.Extension, elem.URL), ExtensionsFilename)
 		}
@@ -104,7 +111,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if errors flag enabled save also errors
 	if flags.Errors {
-		ErrorsFilename := fileUtils.CreateOutputFile(flags.TXTout, "errors", "txt")
+		ErrorsFilename := fileUtils.CreateOutputFile(flags.TXTout, "errors", "txt", outputDir)
 		for _, elem := range finalErrors {
 			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Error.ErrorName, elem.Match, elem.URL), ErrorsFilename)
 		}
@@ -112,7 +119,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 	// if info flag enabled save also infos
 	if flags.Info {
-		InfosFilename := fileUtils.CreateOutputFile(flags.TXTout, "info", "txt")
+		InfosFilename := fileUtils.CreateOutputFile(flags.TXTout, "info", "txt", outputDir)
 		for _, elem := range finalInfos {
 			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Info.Name, elem.Match, elem.URL), InfosFilename)
 		}
@@ -124,7 +131,13 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 func HTMLOutput(flags input.Input, resultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-	exists, err := fileUtils.ElementExists(CariddiOutputFolder)
+
+	outputDir := CariddiOutputFolder
+	if flags.StoredRespDir != "" {
+		outputDir = flags.StoredRespDir
+	}
+
+	exists, err := fileUtils.ElementExists(outputDir)
 
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
@@ -132,7 +145,7 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 	}
 
 	if !exists {
-		fileUtils.CreateOutputFolder()
+		fileUtils.CreateOutputFolder(outputDir)
 	}
 
 	HeaderHTML("Results found", resultFilename)

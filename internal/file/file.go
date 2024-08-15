@@ -42,11 +42,16 @@ const (
 	Permission0644 = 0644
 )
 
+// constant defined in output.go as well, for circular dependency
+const (
+	CariddiOutputFolder = "output-cariddi"
+)
+
 // CreateOutputFolder creates the output folder
 // If it fails exits with an error message.
-func CreateOutputFolder() {
+func CreateOutputFolder(outputDir string) {
 	// Create a folder/directory at a full qualified path
-	err := os.Mkdir("output-cariddi", Permission0755)
+	err := os.MkdirAll(outputDir, Permission0755)
 	if err != nil {
 		fmt.Println("Can't create output folder.")
 		os.Exit(1)
@@ -56,9 +61,9 @@ func CreateOutputFolder() {
 // CreateHostOutputFolder creates the host output folder
 // for the HTTP responses.
 // If it fails exits with an error message.
-func CreateHostOutputFolder(host string) {
+func CreateHostOutputFolder(host string, outputDir string) {
 	// Create a folder/directory at a full qualified path
-	err := os.MkdirAll(filepath.Join("output-cariddi", host), Permission0755)
+	err := os.MkdirAll(filepath.Join(outputDir, host), Permission0755)
 	if err != nil {
 		fmt.Println("Can't create host output folder.")
 		os.Exit(1)
@@ -71,21 +76,25 @@ func CreateHostOutputFolder(host string) {
 // already exists, if yes asks the user if cariddi has to overwrite it;
 // if no cariddi creates it.
 // Whenever an instruction fails, it exits with an error message.
-func CreateOutputFile(target string, subcommand string, format string) string {
+func CreateOutputFile(target string, subcommand string, format string, outputDir string) string {
+	if outputDir == "" {
+		outputDir = CariddiOutputFolder
+	}
+
 	target = ReplaceBadCharacterOutput(target)
 
 	var filename string
 	if subcommand != "" {
-		filename = filepath.Join("output-cariddi", target+"."+subcommand+"."+format)
+		filename = filepath.Join(outputDir, target+"."+subcommand+"."+format)
 	} else {
-		filename = filepath.Join("output-cariddi", target+"."+format)
+		filename = filepath.Join(outputDir, target+"."+format)
 	}
 
 	_, err := os.Stat(filename)
 
 	if os.IsNotExist(err) {
-		if _, err := os.Stat("output-cariddi/"); os.IsNotExist(err) {
-			CreateOutputFolder()
+		if _, err := os.Stat(outputDir + "/"); os.IsNotExist(err) {
+			CreateOutputFolder(outputDir)
 		}
 		// If the file doesn't exist, create it.
 		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
@@ -119,15 +128,19 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 // It creates the output folder if needed, then checks if the index output file
 // already exists, if no cariddi creates it.
 // Whenever an instruction fails, it exits with an error message.
-func CreateIndexOutputFile(filename string) {
+func CreateIndexOutputFile(filename string, outputDir string) {
+	if outputDir == "" {
+		outputDir = CariddiOutputFolder
+	}
+
 	_, err := os.Stat(filename)
 
 	if os.IsNotExist(err) {
-		if _, err := os.Stat("output-cariddi/"); os.IsNotExist(err) {
-			CreateOutputFolder()
+		if _, err := os.Stat(outputDir + "/"); os.IsNotExist(err) {
+			CreateOutputFolder(outputDir)
 		}
 		// If the file doesn't exist, create it.
-		filename = filepath.Join("output-cariddi", filename)
+		filename = filepath.Join(outputDir, filename)
 
 		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
 		if err != nil {
