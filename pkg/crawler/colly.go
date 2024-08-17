@@ -136,15 +136,9 @@ func New(scan *Scan) *Results {
 
 		var outputPath string
 
-		if scan.StoreResp || len(scan.StoredRespPath) > 0 {
-			outputDir := scan.StoredRespPath
-
-			if outputDir == "" {
-				outputDir = output.CariddiOutputFolder
-			}
-
+		if scan.StoreResp {
 			var err error
-			outputPath, err = output.StoreHTTPResponse(r, outputDir)
+			outputPath, err = output.StoreHTTPResponse(r, scan.OutputDir)
 			if err != nil {
 				log.Println(err)
 			}

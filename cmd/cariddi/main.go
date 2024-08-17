@@ -69,26 +69,31 @@ func main() {
 	// Setup the config according to the flags that were
 	// passed via the CLI
 	config := &crawler.Scan{
-		Delay:          flags.Delay,
-		Concurrency:    flags.Concurrency,
-		Ignore:         flags.Ignore,
-		IgnoreTxt:      flags.IgnoreTXT,
-		Cache:          flags.Cache,
-		JSON:           flags.JSON,
-		Timeout:        flags.Timeout,
-		Intensive:      flags.Intensive,
-		Rua:            flags.Rua,
-		Proxy:          flags.Proxy,
-		SecretsFlag:    flags.Secrets,
-		Plain:          flags.Plain,
-		EndpointsFlag:  flags.Endpoints,
-		FileType:       flags.Extensions,
-		ErrorsFlag:     flags.Errors,
-		InfoFlag:       flags.Info,
-		Debug:          flags.Debug,
-		UserAgent:      flags.UserAgent,
-		StoreResp:      flags.StoreResp,
-		StoredRespPath: flags.StoredRespDir,
+		Delay:         flags.Delay,
+		Concurrency:   flags.Concurrency,
+		Ignore:        flags.Ignore,
+		IgnoreTxt:     flags.IgnoreTXT,
+		Cache:         flags.Cache,
+		JSON:          flags.JSON,
+		Timeout:       flags.Timeout,
+		Intensive:     flags.Intensive,
+		Rua:           flags.Rua,
+		Proxy:         flags.Proxy,
+		SecretsFlag:   flags.Secrets,
+		Plain:         flags.Plain,
+		EndpointsFlag: flags.Endpoints,
+		FileType:      flags.Extensions,
+		ErrorsFlag:    flags.Errors,
+		InfoFlag:      flags.Info,
+		Debug:         flags.Debug,
+		UserAgent:     flags.UserAgent,
+		StoreResp:     flags.StoreResp,
+	}
+
+	config.OutputDir = output.CariddiOutputFolder
+	if flags.StoredRespDir != "" {
+		config.OutputDir = flags.StoredRespDir
+		config.StoreResp = true
 	}
 
 	// Read the targets from standard input.
@@ -119,18 +124,18 @@ func main() {
 	// Create output files if needed (txt / html).
 	config.Txt = ""
 	if flags.TXTout != "" {
-		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt", config.StoredRespPath)
+		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt", config.OutputDir)
 	}
 
 	var ResultHTML = ""
 	if flags.HTMLout != "" {
-		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html", config.StoredRespPath)
+		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html", config.OutputDir)
 		output.BannerHTML(ResultHTML)
 		output.HeaderHTML("Results", ResultHTML)
 	}
 
 	if config.StoreResp {
-		fileUtils.CreateIndexOutputFile("index.responses.txt", config.StoredRespPath)
+		fileUtils.CreateIndexOutputFile("index.responses.txt", config.OutputDir)
 	}
 
 	// Read headers if needed
@@ -168,13 +173,13 @@ func main() {
 	// IF TXT OUTPUT >
 	if flags.TXTout != "" {
 		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints,
-			finalExtensions, finalErrors, finalInfos)
+			finalExtensions, finalErrors, finalInfos, config.OutputDir)
 	}
 
 	// IF HTML OUTPUT >
 	if flags.HTMLout != "" {
 		output.HTMLOutput(flags, ResultHTML, finalResults, finalSecret,
-			finalEndpoints, finalExtensions, finalErrors, finalInfos)
+			finalEndpoints, finalExtensions, finalErrors, finalInfos, config.OutputDir)
 	}
 
 	// If needed print secrets.

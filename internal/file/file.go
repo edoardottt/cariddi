@@ -42,11 +42,6 @@ const (
 	Permission0644 = 0644
 )
 
-// constant defined in output.go as well, for circular dependency
-const (
-	CariddiOutputFolder = "output-cariddi"
-)
-
 // CreateOutputFolder creates the output folder
 // If it fails exits with an error message.
 func CreateOutputFolder(outputDir string) {
@@ -77,10 +72,6 @@ func CreateHostOutputFolder(host string, outputDir string) {
 // if no cariddi creates it.
 // Whenever an instruction fails, it exits with an error message.
 func CreateOutputFile(target string, subcommand string, format string, outputDir string) string {
-	if outputDir == "" {
-		outputDir = CariddiOutputFolder
-	}
-
 	target = ReplaceBadCharacterOutput(target)
 
 	var filename string
@@ -129,10 +120,6 @@ func CreateOutputFile(target string, subcommand string, format string, outputDir
 // already exists, if no cariddi creates it.
 // Whenever an instruction fails, it exits with an error message.
 func CreateIndexOutputFile(filename string, outputDir string) {
-	if outputDir == "" {
-		outputDir = CariddiOutputFolder
-	}
-
 	_, err := os.Stat(filename)
 
 	if os.IsNotExist(err) {

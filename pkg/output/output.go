@@ -52,12 +52,7 @@ func PrintSimpleOutput(out []string) {
 // Actually it manages everything related to TXT output.
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
-	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-
-	outputDir := CariddiOutputFolder
-	if flags.StoredRespDir != "" {
-		outputDir = flags.StoredRespDir
-	}
+	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched, outputDir string) {
 
 	exists, err := fileUtils.ElementExists(outputDir)
 	if err != nil {
@@ -130,12 +125,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 // Actually it manages everything related to HTML output.
 func HTMLOutput(flags input.Input, resultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
-	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
-
-	outputDir := CariddiOutputFolder
-	if flags.StoredRespDir != "" {
-		outputDir = flags.StoredRespDir
-	}
+	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched, outputDir string) {
 
 	exists, err := fileUtils.ElementExists(outputDir)
 
