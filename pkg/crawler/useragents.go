@@ -151,7 +151,8 @@ func GenerateRandomUserAgent() string {
 	source := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(source)
 
-	decision := rng.Intn(100)
+	const maxRandomValue = 100
+	decision := rng.Intn(maxRandomValue)
 
 	var ua string
 	if decision%2 == 0 {

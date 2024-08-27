@@ -36,7 +36,7 @@ import (
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
-// constant defined in file.go as well, for circular dependency
+// constant defined in file.go as well, redefining here for circular dependency.
 const (
 	CariddiOutputFolder = "output-cariddi"
 )
@@ -53,7 +53,6 @@ func PrintSimpleOutput(out []string) {
 func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched, outputDir string) {
-
 	exists, err := fileUtils.ElementExists(outputDir)
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
@@ -126,7 +125,6 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 func HTMLOutput(flags input.Input, resultFilename string, finalResults []string, finalSecret []scanner.SecretMatched,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched, outputDir string) {
-
 	exists, err := fileUtils.ElementExists(outputDir)
 
 	if err != nil {

@@ -161,6 +161,7 @@ func ReadFile(inputFile string) []string {
 	for scanner.Scan() {
 		text = append(text, scanner.Text())
 	}
+
 	file.Close()
 
 	return text

@@ -139,6 +139,7 @@ func New(scan *Scan) *Results {
 		if scan.StoreResp {
 			var err error
 			outputPath, err = output.StoreHTTPResponse(r, scan.OutputDir)
+
 			if err != nil {
 				log.Println(err)
 			}

@@ -123,7 +123,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype:   filetype,
 			errors:     errors,
 			infos:      infos,
-			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`, //nolint:lll
+			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]},"output_path":"C:\\testDir1\\testDir2"}`, //nolint:lll
 			outputPath: "C:\\testDir1\\testDir2",
 		},
 		{
@@ -134,7 +134,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype:   filetype,
 			errors:     errors,
 			infos:      infos,
-			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`, //nolint:lll
+			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"matches":{"filetype":{"extension":"pdf","severity":7},"parameters":[{"name":"id","attacks":[]}],"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}],"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}],"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]},"output_path":"C:\\testDir1\\testDir2"}`, //nolint:lll
 			outputPath: "C:\\testDir1\\testDir2",
 		},
 		{
@@ -145,7 +145,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype:   &scanner.FileType{},
 			errors:     []scanner.ErrorMatched{},
 			infos:      []scanner.InfoMatched{},
-			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128}`, //nolint: all
+			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"output_path":"C:\\testDir1\\testDir2"}`, //nolint: all
 			outputPath: "C:\\testDir1\\testDir2",
 		},
 		{
@@ -156,7 +156,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype:   &scanner.FileType{},
 			errors:     []scanner.ErrorMatched{},
 			infos:      []scanner.InfoMatched{},
-			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]}}`, //nolint:lll
+			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"secrets":[{"name":"mysecret","match":"it's a random day for my secret regex to be found"}]},"output_path":"C:\\testDir1\\testDir2"}`, //nolint:lll
 			outputPath: "C:\\testDir1\\testDir2",
 		},
 		{
@@ -167,7 +167,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype:   &scanner.FileType{},
 			errors:     []scanner.ErrorMatched{},
 			infos:      []scanner.InfoMatched{},
-			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"parameters":[{"name":"id","attacks":[]}]}}`, //nolint:lll
+			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"parameters":[{"name":"id","attacks":[]}]},"output_path":"C:\\testDir1\\testDir2"}`, //nolint:lll
 			outputPath: "C:\\testDir1\\testDir2",
 		},
 		{
@@ -178,7 +178,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype:   &scanner.FileType{},
 			errors:     errors,
 			infos:      []scanner.InfoMatched{},
-			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}]}}`, //nolint:lll
+			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"errors":[{"name":"MySQL error","match":"it is a MySQL error happening"}]},"output_path":"C:\\testDir1\\testDir2"}`, //nolint:lll
 			outputPath: "C:\\testDir1\\testDir2",
 		},
 		{
@@ -189,7 +189,7 @@ func TestJSONOutput(t *testing.T) {
 			filetype:   &scanner.FileType{},
 			errors:     []scanner.ErrorMatched{},
 			infos:      infos,
-			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}]}}`, //nolint:lll
+			want:       `{"url":"http://test.com.pdf?id=5","method":"GET","status_code":200,"words":1,"lines":1,"content_type":"application/pdf","content_length":128,"matches":{"infos":[{"name":"info1","match":"its my pleasure to inform you on this great day"}]},"output_path":"C:\\testDir1\\testDir2"}`, //nolint:lll
 			outputPath: "C:\\testDir1\\testDir2",
 		},
 		{
