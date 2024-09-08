@@ -84,7 +84,7 @@ func CreateOutputFile(target string, subcommand string, format string, outputDir
 	_, err := os.Stat(filename)
 
 	if os.IsNotExist(err) {
-		if _, err := os.Stat(outputDir + "/"); os.IsNotExist(err) {
+		if _, err := os.Stat(fmt.Sprintf("%s/", outputDir)); os.IsNotExist(err) {
 			CreateOutputFolder(outputDir)
 		}
 		// If the file doesn't exist, create it.
@@ -123,7 +123,7 @@ func CreateIndexOutputFile(filename string, outputDir string) {
 	_, err := os.Stat(filename)
 
 	if os.IsNotExist(err) {
-		if _, err := os.Stat(outputDir + "/"); os.IsNotExist(err) {
+		if _, err := os.Stat(fmt.Sprintf("%s/", outputDir)); os.IsNotExist(err) {
 			CreateOutputFolder(outputDir)
 		}
 		// If the file doesn't exist, create it.

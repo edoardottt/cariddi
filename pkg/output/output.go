@@ -36,7 +36,6 @@ import (
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
-// constant defined in file.go as well, redefining here for circular dependency.
 const (
 	CariddiOutputFolder = "output-cariddi"
 )
