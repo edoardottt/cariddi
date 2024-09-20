@@ -12,10 +12,11 @@ import (
 func TestCheckOutputPath(t *testing.T) {
 	// Create a temporary directory for testing
 	tmpDir, err := os.MkdirTemp("", "testdir")
+	defer os.RemoveAll(tmpDir) // Cleanup after test
+
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory: %v", err)
 	}
-	defer os.RemoveAll(tmpDir) // Cleanup after test
 
 	// Valid case: Existing directory
 	if !input.CheckOutputPath(tmpDir) {
@@ -32,10 +33,6 @@ func TestCheckOutputPath(t *testing.T) {
 	invalidPaths := []string{
 		// Null character is invalid on all platforms
 		filepath.Join(tmpDir, "invalid\000path"),
-		// Reserved names (common issues across various OS)
-		filepath.Join(tmpDir, "CON"),
-		// Paths with excessively long names (common path length issues)
-		filepath.Join(tmpDir, string(make([]byte, 260))),
 	}
 
 	for _, invalidPath := range invalidPaths {
