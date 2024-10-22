@@ -63,7 +63,7 @@ pacman -Syu cariddi
 
 ### Building from source
 
-You need [Go](https://golang.org/).
+You need [Go](https://go.dev/) (>=1.18)
 
 - **Linux**
 
