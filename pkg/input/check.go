@@ -29,6 +29,7 @@ package input
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
@@ -43,6 +44,33 @@ func CheckOutputFile(input string) bool {
 			return false
 		}
 	}
+
+	return true
+}
+
+// IsValidOutputPath checks if the directory is valid and, if created, cleans it up.
+func CheckOutputPath(outputPath string) bool {
+	// Convert to absolute path if necessary
+	absPath, err := filepath.Abs(outputPath)
+	if err != nil {
+		return false
+	}
+
+	// Check if the directory already exists
+	_, err = os.Stat(absPath)
+	if err == nil {
+		// Directory exists, so it's valid, no need to delete
+		return true
+	}
+
+	// If the directory does not exist, try to create it
+	err = os.MkdirAll(absPath, os.ModePerm)
+	if err != nil {
+		return false
+	}
+
+	// Since we created the directory, clean it up
+	defer os.RemoveAll(absPath)
 
 	return true
 }
@@ -126,5 +154,12 @@ func CheckFlags(flags Input) {
 		fmt.Println("	- cat urls | cariddi -headers \"Cookie: auth=yes;;Client: type=2\"")
 		fmt.Println("	- cat urls | cariddi -headersfile headers.txt")
 		os.Exit(1)
+	}
+
+	if flags.StoredRespDir != "" {
+		if !CheckOutputPath(flags.StoredRespDir) {
+			fmt.Println("Validation failed for srd flag; there may be errors creating the output directory.")
+			os.Exit(1)
+		}
 	}
 }

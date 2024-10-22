@@ -134,8 +134,12 @@ func New(scan *Scan) *Results {
 			fmt.Println(r.Request.URL)
 		}
 
+		var outputPath string
+
 		if scan.StoreResp {
-			err := output.StoreHTTPResponse(r)
+			var err error
+			outputPath, err = output.StoreHTTPResponse(r, scan.OutputDir)
+
 			if err != nil {
 				log.Println(err)
 			}
@@ -193,7 +197,7 @@ func New(scan *Scan) *Results {
 
 		if scan.JSON {
 			jsonOutput, err := output.GetJSONString(
-				r, secrets, parameters, filetype, errors, infos,
+				r, secrets, parameters, filetype, errors, infos, outputPath,
 			)
 
 			if err == nil {
