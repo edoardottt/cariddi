@@ -28,10 +28,17 @@ package crawler
 
 import (
 	"regexp"
+	"runtime"
 	"strings"
+	"sync"
+	"time"
 
 	urlUtils "github.com/edoardottt/cariddi/internal/url"
 	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/trufflesecurity/trufflehog/v3/pkg/context"
+	"github.com/trufflesecurity/trufflehog/v3/pkg/detectors"
+	"github.com/trufflesecurity/trufflehog/v3/pkg/engine"
+	"golang.org/x/sync/semaphore"
 )
 
 // huntSecrets hunts for secrets.
@@ -45,6 +52,59 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 	var secrets []scanner.SecretMatched
 
 	if len(*secretsFile) == 0 {
+		ctx, _ := context.WithTimeout(context.Background(), time.Hour*2)
+		sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
+		var wgScanners sync.WaitGroup
+
+		// Buffered channel to control the number of goroutines
+		guard := make(chan struct{}, int64(runtime.NumCPU()))
+
+		// import trufflehog default scanner list
+		for _, trufflehogScanner := range engine.DefaultDetectors() {
+			wgScanners.Add(1)
+
+			// Acquire a slot from the channel
+			guard <- struct{}{}
+
+			go func(s detectors.Detector) {
+				defer func() {
+					// Release the slot back to the channel
+					<-guard
+					wgScanners.Done()
+				}()
+
+				// Check secrets from the scanner against the body of the request
+				res, err := s.FromData(ctx, true, []byte(body))
+				if err != nil {
+					return
+				}
+
+				if len(res) > 0 {
+					for _, resSecret := range res {
+						if resSecret.Verified {
+							sec := scanner.Secret{
+								Name:           resSecret.DetectorType.String(),
+								Description:    resSecret.DetectorType.String(),
+								Regex:          "",
+								FalsePositives: []string{},
+								Poc:            "",
+							}
+							secretFound := scanner.SecretMatched{Secret: sec, URL: url, Match: string(resSecret.Raw)}
+
+							// prevent concurent write
+							sem.Acquire(ctx, 1)
+							secrets = append(secrets, secretFound)
+							sem.Release(1)
+						}
+					}
+				}
+			}(trufflehogScanner)
+
+		}
+
+		wgScanners.Wait()
+
+		// keep legacy code, the original list contains secrets that are not present in trufflehog like s3 buckets.
 		for _, secret := range scanner.GetSecretRegexes() {
 			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
 				re := regexp.MustCompile(secret.Regex)

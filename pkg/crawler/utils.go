@@ -27,7 +27,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 
 	urlUtils "github.com/edoardottt/cariddi/internal/url"
@@ -68,4 +70,26 @@ func intensiveOk(target string, urlInput string, debug bool) bool {
 	}
 
 	return root == target
+}
+
+// Return the extension of an URL
+func GetFileExtensionFromUrl(rawUrl string) (string, error) {
+	u, err := url.Parse(rawUrl)
+	if err != nil {
+		return "", err
+	}
+	pos := strings.LastIndex(u.Path, ".")
+	if pos == -1 {
+		return "", errors.New("couldn't find a period to indicate a file extension")
+	}
+	return u.Path[pos+1 : len(u.Path)], nil
+}
+
+func Contains(slice []string, target string) bool {
+	for _, s := range slice {
+		if s == target {
+			return true
+		}
+	}
+	return false
 }
