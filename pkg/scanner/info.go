@@ -15,7 +15,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 	@Repository:  https://github.com/edoardottt/cariddi
 
-	@Author:      edoardottt, https://www.edoardoottavianelli.it
+	@Author:      edoardottt, https://www.edoardottt.com
 
 	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
 
