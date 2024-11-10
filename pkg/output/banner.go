@@ -46,7 +46,7 @@ const (
 
 // Banner prints the banner + version.
 func Banner() {
-	links := " > github.com/edoardottt/cariddi\n > edoardoottavianelli.it\n"
+	links := " > github.com/edoardottt/cariddi\n > https://edoardottt.com/\n"
 	sepLine := "========================================\n"
 
 	bannerPart1 := banner + version + "\n\n"
