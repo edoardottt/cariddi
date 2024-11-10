@@ -18,7 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 	@Repository:  https://github.com/edoardottt/cariddi
 
-	@Author:      edoardottt, https://www.edoardoottavianelli.it
+	@Author:      edoardottt, https://www.edoardottt.com
 
 	@License: https://github.com/edoardottt/cariddi/blob/main/LICENSE
 
@@ -43,7 +43,7 @@ func BannerHTML(filename string) {
 
 	_, err = file.WriteString(`<html><body><div style='background-color:#4adeff;color:white'><h1>Cariddi</h1>
 	<ul><li><a href='https://github.com/edoardottt/cariddi'>github.com/edoardottt/cariddi</a></li>
-	<li>edoardottt, <a href='https://www.edoardoottavianelli.it'>edoardoottavianelli.it</a></li>
+	<li>edoardottt, <a href='https://www.edoardottt.com'>edoardottt.com</a></li>
 	<li>Released under <a href='http://www.gnu.org/licenses/gpl-3.0.html'>GPLv3 License</a></li></ul></div>`)
 	if err != nil {
 		log.Fatal(err)
