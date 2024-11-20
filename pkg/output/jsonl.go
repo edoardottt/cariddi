@@ -44,6 +44,7 @@ type JSONData struct {
 	ContentType   string          `json:"content_type,omitempty"`
 	ContentLength int             `json:"content_length,omitempty"`
 	Matches       *MatcherResults `json:"matches,omitempty"`
+	OutputPath    string          `json:"output_path,omitempty"`
 	// Host          string `json:"host"` # TODO: Available in Colly 2.x
 }
 
@@ -67,6 +68,7 @@ func GetJSONString(
 	filetype *scanner.FileType,
 	errors []scanner.ErrorMatched,
 	infos []scanner.InfoMatched,
+	outputPath string,
 ) ([]byte, error) {
 	// Parse response headers
 	headers := r.Headers
@@ -136,6 +138,7 @@ func GetJSONString(
 		ContentType:   contentType,
 		ContentLength: contentLength,
 		Matches:       matcherResults,
+		OutputPath:    outputPath,
 		// Host:          "", // TODO
 	}
 
