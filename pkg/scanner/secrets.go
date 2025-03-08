@@ -335,6 +335,13 @@ func GetSecretRegexes() []Secret {
 			"?",
 		},
 		{
+			"Facebook Access Token",
+			"Facebook Access Token",
+			`EAACEdEose0cBA[0-9A-Za-z]+`,
+			[]string{},
+			"?",
+		},
+		{
 			"Facebook Secret Key",
 			"Facebook Secret Key",
 			`(?i)(facebook|fb)(.{0,20})?(?-i)['\"][0-9a-f]{32}['\"]`,
