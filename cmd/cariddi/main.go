@@ -90,6 +90,12 @@ func main() {
 		StoreResp:     flags.StoreResp,
 	}
 
+	config.OutputDir = output.CariddiOutputFolder
+	if flags.StoredRespDir != "" {
+		config.OutputDir = flags.StoredRespDir
+		config.StoreResp = true
+	}
+
 	// Read the targets from standard input.
 	targets := input.ScanTargets()
 
@@ -118,18 +124,18 @@ func main() {
 	// Create output files if needed (txt / html).
 	config.Txt = ""
 	if flags.TXTout != "" {
-		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
+		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt", config.OutputDir)
 	}
 
 	var ResultHTML = ""
 	if flags.HTMLout != "" {
-		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
+		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html", config.OutputDir)
 		output.BannerHTML(ResultHTML)
 		output.HeaderHTML("Results", ResultHTML)
 	}
 
 	if config.StoreResp {
-		fileUtils.CreateIndexOutputFile("index.responses.txt")
+		fileUtils.CreateIndexOutputFile("index.responses.txt", config.OutputDir)
 	}
 
 	// Read headers if needed
@@ -167,13 +173,13 @@ func main() {
 	// IF TXT OUTPUT >
 	if flags.TXTout != "" {
 		output.TxtOutput(flags, finalResults, finalSecret, finalEndpoints,
-			finalExtensions, finalErrors, finalInfos)
+			finalExtensions, finalErrors, finalInfos, config.OutputDir)
 	}
 
 	// IF HTML OUTPUT >
 	if flags.HTMLout != "" {
 		output.HTMLOutput(flags, ResultHTML, finalResults, finalSecret,
-			finalEndpoints, finalExtensions, finalErrors, finalInfos)
+			finalEndpoints, finalExtensions, finalErrors, finalInfos, config.OutputDir)
 	}
 
 	// If needed print secrets.
