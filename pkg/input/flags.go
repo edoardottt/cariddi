@@ -94,6 +94,8 @@ type Input struct {
 	UserAgent string
 	// StoreResp stores HTTP responses.
 	StoreResp bool
+	// StoredRespDir stores HTTP responses to the directory provided.
+	StoredRespDir string
 }
 
 // ScanFlag defines all the options taken
@@ -142,6 +144,8 @@ func ScanFlag() Input {
 
 	storeRespPtr := flag.Bool("sr", false, "Store HTTP responses.")
 
+	storedRespDirPtr := flag.String("srd", "", "Stores HTTP responses to the directory provided.")
+
 	flag.Parse()
 
 	result := Input{
@@ -173,6 +177,7 @@ func ScanFlag() Input {
 		*debugPtr,
 		*userAgentPtr,
 		*storeRespPtr,
+		*storedRespDirPtr,
 	}
 
 	return result

@@ -118,8 +118,8 @@ func getResponseFileName(folder, url string) string {
 // UpdateIndex updates the index file with the
 // correct information linking to HTTP responses files.
 // If it fails returns an error.
-func UpdateIndex(resp *colly.Response) error {
-	index, err := os.OpenFile(filepath.Join(CariddiOutputFolder, index),
+func UpdateIndex(resp *colly.Response, outputDir string) error {
+	index, err := os.OpenFile(filepath.Join(outputDir, index),
 		os.O_APPEND|os.O_WRONLY,
 		fileUtils.Permission0644)
 	if err != nil {
@@ -130,7 +130,7 @@ func UpdateIndex(resp *colly.Response) error {
 
 	builder := &bytes.Buffer{}
 
-	builder.WriteString(getResponseFileName(filepath.Join(CariddiOutputFolder, resp.Request.URL.Host),
+	builder.WriteString(getResponseFileName(filepath.Join(outputDir, resp.Request.URL.Host),
 		resp.Request.URL.String()))
 	builder.WriteRune(' ')
 	builder.WriteString(resp.Request.URL.String())
@@ -148,27 +148,27 @@ func UpdateIndex(resp *colly.Response) error {
 // WriteHTTPResponse creates an HTTP response output file and
 // writes the HTTP response inside it.
 // If it fails returns an error.
-func WriteHTTPResponse(inputURL *url.URL, response []byte) error {
-	file := getResponseFileName(filepath.Join(CariddiOutputFolder, inputURL.Host), inputURL.String())
+func WriteHTTPResponse(inputURL *url.URL, response []byte, outputDir string) (string, error) {
+	file := getResponseFileName(filepath.Join(outputDir, inputURL.Host), inputURL.String())
 
 	outFile, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY, fileUtils.Permission0644)
 	if err != nil {
-		return err
+		return file, err
 	}
 
 	if _, writeErr := outFile.Write(response); writeErr != nil {
-		return ErrHTTPResp
+		return file, ErrHTTPResp
 	}
 
-	return nil
+	return file, nil
 }
 
 // StoreHTTPResponse stores an HTTP response in a file.
 // If it fails returns an error.
-func StoreHTTPResponse(r *colly.Response) error {
-	fileUtils.CreateHostOutputFolder(r.Request.URL.Host)
+func StoreHTTPResponse(r *colly.Response, outputDir string) (string, error) {
+	fileUtils.CreateHostOutputFolder(r.Request.URL.Host, outputDir)
 
-	err := UpdateIndex(r)
+	err := UpdateIndex(r, outputDir)
 	if err != nil {
 		log.Println(err)
 	}
@@ -178,10 +178,10 @@ func StoreHTTPResponse(r *colly.Response) error {
 		log.Println(err)
 	}
 
-	err = WriteHTTPResponse(r.Request.URL, response)
+	outputPath, err := WriteHTTPResponse(r.Request.URL, response, outputDir)
 	if err != nil {
 		log.Println(err)
 	}
 
-	return nil
+	return outputPath, nil
 }
