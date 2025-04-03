@@ -509,7 +509,8 @@ func GetSecretRegexes() []Secret {
 		{
 			"Slack Webhook",
 			"Slack Webhook",
-			*regexp.MustCompile(`https\:\/\/hooks\.slack\.com/services/T[0-9A-Za-z\-_]{8}/B[0-9A-Za-z\-_]{8}/[0-9A-Za-z\-_]{24}`),
+			*regexp.MustCompile(`https\:\/\/hooks\.slack\.com/services/` +
+				`T[0-9A-Za-z\-_]{8}/B[0-9A-Za-z\-_]{8}/[0-9A-Za-z\-_]{24}`),
 			[]string{},
 			"?",
 		},
@@ -618,7 +619,8 @@ func GetSecretRegexes() []Secret {
 		{
 			"Google Calendar URI",
 			"Google Calendar URI",
-			*regexp.MustCompile(`https\:\/\/(.*)calendar\.google\.com\/calendar\/[0-9a-z\/]+\/embed\?src=[A-Za-z0-9%@&;=\-_\.\/]+`),
+			*regexp.MustCompile(`https\:\/\/(.*)calendar\.google\.com` +
+				`\/calendar\/[0-9a-z\/]+\/embed\?src=[A-Za-z0-9%@&;=\-_\.\/]+`),
 			[]string{},
 			"?",
 		},
@@ -639,7 +641,8 @@ func GetSecretRegexes() []Secret {
 		{
 			"Microsoft Teams Webhook",
 			"Microsoft Teams Webhook",
-			*regexp.MustCompile(`https\:\/\/outlook\.office\.com\/webhook\/[A-Za-z0-9\-@]+\/IncomingWebhook\/[A-Za-z0-9\-]+\/[A-Za-z0-9\-]+`),
+			*regexp.MustCompile(`https\:\/\/outlook\.office\.com\/webhook` +
+				`\/[A-Za-z0-9\-@]+\/IncomingWebhook\/[A-Za-z0-9\-]+\/[A-Za-z0-9\-]+`),
 			[]string{},
 			"?",
 		},

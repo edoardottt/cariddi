@@ -72,7 +72,10 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 				matches := re.FindAllStringSubmatch(body, -1)
 
 				for _, match := range matches {
-					secretScanned := scanner.Secret{Name: "CustomFromFile", Description: "", Regex: *regexp.MustCompile(secret), Poc: ""}
+					secretScanned := scanner.Secret{Name: "CustomFromFile",
+						Description: "",
+						Regex:       *regexp.MustCompile(secret),
+						Poc:         ""}
 					secretFound := scanner.SecretMatched{Secret: secretScanned, URL: url, Match: match[0]}
 					secrets = append(secrets, secretFound)
 				}
@@ -156,7 +159,6 @@ func ErrorsMatch(url, body string) []scanner.ErrorMatched {
 			errorFound := scanner.ErrorMatched{Error: errorItem, URL: url, Match: match[0]}
 			errors = append(errors, errorFound)
 		}
-
 	}
 
 	return scanner.RemoveDuplicateErrors(errors)
