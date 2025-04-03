@@ -30,6 +30,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"regexp"
 	"testing"
 
 	"github.com/edoardottt/cariddi/pkg/output"
@@ -47,7 +48,7 @@ func TestJSONOutput(t *testing.T) {
 			Secret: scanner.Secret{
 				Name:           "mysecret",
 				Description:    "My Secret",
-				Regex:          "random.*regex",
+				Regex:          *regexp.MustCompile("random.*regex"),
 				FalsePositives: []string{},
 				Poc:            "POC",
 			},
@@ -69,7 +70,7 @@ func TestJSONOutput(t *testing.T) {
 		{
 			Error: scanner.Error{
 				ErrorName: "MySQL error",
-				Regex:     []string{"MySQL.*error"},
+				Regex:     *regexp.MustCompile("MySQL.*error"),
 			},
 			URL:   "http://test.com?id=5",
 			Match: "it is a MySQL error happening",
@@ -79,7 +80,7 @@ func TestJSONOutput(t *testing.T) {
 		{
 			Info: scanner.Info{
 				Name:  "info1",
-				Regex: `my.*great`,
+				Regex: *regexp.MustCompile(`my.*great`),
 			},
 			URL:   "http://test.com?id=5",
 			Match: "its my pleasure to inform you on this great day",

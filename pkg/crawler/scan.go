@@ -46,25 +46,22 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 
 	if len(*secretsFile) == 0 {
 		for _, secret := range scanner.GetSecretRegexes() {
-			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
-				re := regexp.MustCompile(secret.Regex)
-				matches := re.FindAllStringSubmatch(body, -1)
+			matches := secret.Regex.FindAllStringSubmatch(body, -1)
 
-				// Avoiding false positives
-				var isFalsePositive = false
+			// Avoiding false positives
+			var isFalsePositive = false
 
-				for _, match := range matches {
-					for _, falsePositive := range secret.FalsePositives {
-						if strings.Contains(strings.ToLower(match[0]), falsePositive) {
-							isFalsePositive = true
-							break
-						}
+			for _, match := range matches {
+				for _, falsePositive := range secret.FalsePositives {
+					if strings.Contains(strings.ToLower(match[0]), falsePositive) {
+						isFalsePositive = true
+						break
 					}
+				}
 
-					if !isFalsePositive {
-						secretFound := scanner.SecretMatched{Secret: secret, URL: url, Match: match[0]}
-						secrets = append(secrets, secretFound)
-					}
+				if !isFalsePositive {
+					secretFound := scanner.SecretMatched{Secret: secret, URL: url, Match: match[0]}
+					secrets = append(secrets, secretFound)
 				}
 			}
 		}
@@ -75,7 +72,7 @@ func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatch
 				matches := re.FindAllStringSubmatch(body, -1)
 
 				for _, match := range matches {
-					secretScanned := scanner.Secret{Name: "CustomFromFile", Description: "", Regex: secret, Poc: ""}
+					secretScanned := scanner.Secret{Name: "CustomFromFile", Description: "", Regex: *regexp.MustCompile(secret), Poc: ""}
 					secretFound := scanner.SecretMatched{Secret: secretScanned, URL: url, Match: match[0]}
 					secrets = append(secrets, secretFound)
 				}
@@ -153,17 +150,13 @@ func ErrorsMatch(url, body string) []scanner.ErrorMatched {
 	errors := []scanner.ErrorMatched{}
 
 	for _, errorItem := range scanner.GetErrorRegexes() {
-		for _, errorRegex := range errorItem.Regex {
-			if matched, err := regexp.Match(errorRegex, []byte(body)); err == nil && matched {
-				re := regexp.MustCompile(errorRegex)
-				matches := re.FindAllStringSubmatch(body, -1)
+		matches := errorItem.Regex.FindAllStringSubmatch(body, -1)
 
-				for _, match := range matches {
-					errorFound := scanner.ErrorMatched{Error: errorItem, URL: url, Match: match[0]}
-					errors = append(errors, errorFound)
-				}
-			}
+		for _, match := range matches {
+			errorFound := scanner.ErrorMatched{Error: errorItem, URL: url, Match: match[0]}
+			errors = append(errors, errorFound)
 		}
+
 	}
 
 	return scanner.RemoveDuplicateErrors(errors)
@@ -180,14 +173,11 @@ func InfoMatch(url, body string) []scanner.InfoMatched {
 	infos := []scanner.InfoMatched{}
 
 	for _, infoItem := range scanner.GetInfoRegexes() {
-		if matched, err := regexp.Match(infoItem.Regex, []byte(body)); err == nil && matched {
-			re := regexp.MustCompile(infoItem.Regex)
-			matches := re.FindAllStringSubmatch(body, -1)
+		matches := infoItem.Regex.FindAllStringSubmatch(body, -1)
 
-			for _, match := range matches {
-				infoFound := scanner.InfoMatched{Info: infoItem, URL: url, Match: match[0]}
-				infos = append(infos, infoFound)
-			}
+		for _, match := range matches {
+			infoFound := scanner.InfoMatched{Info: infoItem, URL: url, Match: match[0]}
+			infos = append(infos, infoFound)
 		}
 	}
 

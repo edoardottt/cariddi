@@ -23,12 +23,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
+import "regexp"
+
 // Info struct.
 // Name = the name that identifies the information.
 // Regex = The regular expression to be matched.
 type Info struct {
 	Name  string
-	Regex string
+	Regex regexp.Regexp
 }
 
 // InfoMatched struct.
@@ -46,20 +48,20 @@ func GetInfoRegexes() []Info {
 	var regexes = []Info{
 		{
 			"Email address",
-			`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`,
+			*regexp.MustCompile(`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`),
 		},
 		{
 			"HTML comment",
-			`(?i)(\<![\s]*--[\-!@#$%^&*:;ºª.,"'(){}\w\s\/\\[\]]*--[\s]*\>)`,
+			*regexp.MustCompile(`(?i)(\<![\s]*--[\-!@#$%^&*:;ºª.,"'(){}\w\s\/\\[\]]*--[\s]*\>)`),
 		},
 		{
 			"Internal IP address",
-			`((172\.\d{1,3}\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|` +
-				`(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|([fF][eE][89aAbBcCdDeEfF]::))`,
+			*regexp.MustCompile(`((172\.\d{1,3}\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|` +
+				`(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|([fF][eE][89aAbBcCdDeEfF]::))`),
 		},
 		{
 			"IPv4 address",
-			`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`,
+			*regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`),
 		},
 		/*
 			TOO MANY FALSE POSITIVES
