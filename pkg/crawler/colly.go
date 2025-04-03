@@ -118,20 +118,20 @@ func New(scan *Scan) *Results {
 	registerHTMLEvents(c, event)
 	registerXMLEvents(c, event)
 
-	// Add headers (if needed) on each request
-	if (len(scan.Headers)) > 0 {
-		c.OnRequest(func(r *colly.Request) {
+	c.OnRequest(func(r *colly.Request) {
+		// Add headers (if needed) on each request
+		if (len(scan.Headers)) > 0 {
 			for header, value := range scan.Headers {
 				r.Headers.Set(header, value)
 			}
-		})
-	}
-
-	c.OnResponse(func(r *colly.Response) {
-		if !scan.JSON {
-			fmt.Println(r.Request.URL)
 		}
 
+		results.URLs = append(results.URLs, r.URL.String())
+
+		fmt.Println(r.URL.String())
+	})
+
+	c.OnResponse(func(r *colly.Response) {
 		if scan.StoreResp {
 			err := output.StoreHTTPResponse(r)
 			if err != nil {
@@ -205,31 +205,25 @@ func New(scan *Scan) *Results {
 	// Start scraping on target
 	path, err := urlUtils.GetPath(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
 	if err == nil {
-		var (
-			addPath     string
-			absoluteURL string
-		)
+		var addPath string
 
 		if path == "" {
 			addPath = "/"
 		}
 
-		if path == "" || path == "/" {
-			absoluteURL = fmt.Sprintf("%s://%s%srobots.txt", protocolTemp, scan.Target, addPath)
+		visitURL := func(filePath string) {
+			absoluteURL := fmt.Sprintf("%s://%s%s%s", protocolTemp, scan.Target, addPath, filePath)
 			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
-				err = c.Visit(absoluteURL)
+				err := c.Visit(absoluteURL)
 				if err != nil && scan.Debug {
 					log.Println(err)
 				}
 			}
+		}
 
-			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "sitemap.xml"
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
-				err = c.Visit(absoluteURL)
-				if err != nil && scan.Debug {
-					log.Println(err)
-				}
-			}
+		if path == "" || path == "/" {
+			visitURL("robots.txt")
+			visitURL("sitemap.xml")
 		}
 	}
 
