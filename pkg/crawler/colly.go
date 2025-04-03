@@ -31,7 +31,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
@@ -246,7 +245,6 @@ func New(scan *Scan) *Results {
 	cCount := 0
 
 	signal.Notify(chanC, os.Interrupt)
-	rand.Seed(time.Now().UnixNano())
 
 	go func() {
 		for range chanC {

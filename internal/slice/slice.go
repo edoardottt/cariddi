@@ -30,6 +30,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 )
 
 // RemoveDuplicateValues removes duplicates from a slice
@@ -97,11 +98,14 @@ func CheckCookies(input string) []*http.Cookie {
 
 // RandSeq produces a random sequence of letters.
 func RandSeq(n int) string {
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+
 	b := make([]rune, n)
 	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = letters[rng.Intn(len(letters))]
 	}
 
 	return string(b)
