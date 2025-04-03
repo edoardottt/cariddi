@@ -39,7 +39,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 )

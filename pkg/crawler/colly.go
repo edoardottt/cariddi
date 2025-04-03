@@ -28,7 +28,6 @@ package crawler
 
 import (
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -44,8 +43,8 @@ import (
 	"github.com/edoardottt/cariddi/pkg/input"
 	"github.com/edoardottt/cariddi/pkg/output"
 	"github.com/edoardottt/cariddi/pkg/scanner"
-	"github.com/gocolly/colly"
-	"github.com/gocolly/colly/extensions"
+	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2/extensions"
 )
 
 // New it's the actual crawler engine.
@@ -219,7 +218,7 @@ func New(scan *Scan) *Results {
 			absoluteURL = fmt.Sprintf("%s://%s%srobots.txt", protocolTemp, scan.Target, addPath)
 			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
 				err = c.Visit(absoluteURL)
-				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+				if err != nil && scan.Debug {
 					log.Println(err)
 				}
 			}
@@ -227,7 +226,7 @@ func New(scan *Scan) *Results {
 			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "sitemap.xml"
 			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
 				err = c.Visit(absoluteURL)
-				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+				if err != nil && scan.Debug {
 					log.Println(err)
 				}
 			}
@@ -235,7 +234,7 @@ func New(scan *Scan) *Results {
 	}
 
 	err = c.Visit(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
-	if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+	if err != nil && scan.Debug {
 		log.Println(err)
 	}
 
@@ -435,12 +434,9 @@ func visitLink(event *Event, c *colly.Collector, absoluteURL string) {
 		(event.Intensive && intensiveOk(event.TargetTemp, absoluteURL, event.Debug)) {
 		if !event.Ignore || (event.Ignore && !IgnoreMatch(absoluteURL, &event.IgnoreSlice)) {
 			err := c.Visit(absoluteURL)
-			if !errors.Is(err, colly.ErrAlreadyVisited) {
-				*event.URLs = append(*event.URLs, absoluteURL)
 
-				if err != nil && event.Debug {
-					log.Println(err)
-				}
+			if err != nil && event.Debug {
+				log.Println(err)
 			}
 		}
 	}

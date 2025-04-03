@@ -35,7 +35,7 @@ import (
 
 	"github.com/edoardottt/cariddi/pkg/output"
 	"github.com/edoardottt/cariddi/pkg/scanner"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 )
 
 func TestJSONOutput(t *testing.T) {

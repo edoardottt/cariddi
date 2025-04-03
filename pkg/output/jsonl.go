@@ -32,7 +32,7 @@ import (
 	"strings"
 
 	"github.com/edoardottt/cariddi/pkg/scanner"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 )
 
 type JSONData struct {
