@@ -52,10 +52,12 @@ func PrintHelp() {
 	-h	Print the help.
 	-headers string
 		Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
-  	-headersfile string
-	  	Read from an external file custom headers (same format of headers flag).
+	-headersfile string
+		Read from an external file custom headers (same format of headers flag).
 	-json
 		Print the output as JSON in stdout.
+	-md int
+		Maximum level the crawler will follow from the initial target URL.
 	-i string
 		Ignore the URL containing at least one of the elements of this array.
 	-info

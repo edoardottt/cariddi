@@ -100,8 +100,9 @@ func New(scan *Scan) *Results {
 	}
 
 	// crawler creation
-	c := CreateColly(scan.Delay, scan.Concurrency, scan.Cache, scan.Timeout,
-		scan.Intensive, scan.Rua, scan.Proxy, scan.UserAgent, scan.Target)
+	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout, scan.MaxDepth,
+		scan.Cache, scan.Intensive, scan.Rua,
+		scan.Proxy, scan.UserAgent, scan.Target)
 
 	event := &Event{
 		ProtocolTemp: protocolTemp,
@@ -139,8 +140,10 @@ func New(scan *Scan) *Results {
 			}
 		}
 
+		bodyStr := string(r.Body)
+
 		minBodyLentgh := 10
-		lengthOk := len(string(r.Body)) > minBodyLentgh
+		lengthOk := len(bodyStr) > minBodyLentgh
 		secrets := []scanner.SecretMatched{}
 		parameters := []scanner.Parameter{}
 		errors := []scanner.ErrorMatched{}
@@ -152,7 +155,7 @@ func New(scan *Scan) *Results {
 			(1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
 			// HERE SCAN FOR SECRETS
 			if scan.SecretsFlag && lengthOk {
-				secretsSlice := huntSecrets(r.Request.URL.String(), string(r.Body), &scan.SecretsSlice)
+				secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, &scan.SecretsSlice)
 				results.Secrets = append(results.Secrets, secretsSlice...)
 				secrets = append(secrets, secretsSlice...)
 			}
@@ -176,14 +179,14 @@ func New(scan *Scan) *Results {
 			}
 			// HERE SCAN FOR ERRORS
 			if scan.ErrorsFlag {
-				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
+				errorsSlice := huntErrors(r.Request.URL.String(), bodyStr)
 				results.Errors = append(results.Errors, errorsSlice...)
 				errors = append(errors, errorsSlice...)
 			}
 
 			// HERE SCAN FOR INFOS
 			if scan.InfoFlag {
-				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
+				infosSlice := huntInfos(r.Request.URL.String(), bodyStr)
 				results.Infos = append(results.Infos, infosSlice...)
 				infos = append(infos, infosSlice...)
 			}
@@ -232,28 +235,21 @@ func New(scan *Scan) *Results {
 		log.Println(err)
 	}
 
-	// Setup graceful exit
+	// Setup graceful exit (immediate exit on CTRL+C)
 	chanC := make(chan os.Signal, 1)
-	lettersNum := 23
-	cCount := 0
-
 	signal.Notify(chanC, os.Interrupt)
 
 	go func() {
-		for range chanC {
-			if cCount > 0 {
-				os.Exit(1)
-			}
-
-			if !scan.Plain {
-				fmt.Fprint(os.Stdout, "\r")
-				fmt.Println("CTRL+C pressed: Exiting")
-
-				cCount++
-			}
-
-			c.AllowedDomains = []string{sliceUtils.RandSeq(lettersNum)}
+		<-chanC
+		if scan.Debug {
+			fmt.Fprint(os.Stdout, "\r")
+			fmt.Println("CTRL+C pressed: Exiting immediately")
 		}
+
+		// CLEANUP LOGIC
+		// return *results?
+
+		os.Exit(1)
 	}()
 
 	c.Wait()
@@ -267,8 +263,9 @@ func New(scan *Scan) *Results {
 
 // CreateColly takes as input all the settings needed to instantiate
 // a new Colly Collector object and it returns this object.
-func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
-	intensive bool, rua bool, proxy string, userAgent string, target string) *colly.Collector {
+func CreateColly(delayTime, concurrency, timeout, maxDepth int,
+	cache, intensive, rua bool,
+	proxy string, userAgent string, target string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
@@ -326,6 +323,10 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 		c.WithTransport(&http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		})
+	}
+
+	if maxDepth != 0 {
+		c.MaxDepth = maxDepth
 	}
 
 	return c

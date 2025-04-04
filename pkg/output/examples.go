@@ -86,5 +86,7 @@ func PrintExamples() {
 	
 	cat urls | cariddi -json (Print the output as JSON)
 	
-	cat urls | cariddi -sr (Store HTTP responses)`)
+	cat urls | cariddi -sr (Store HTTP responses)
+	
+	cat urls | cariddi -md 3 (Max 3 levels)`)
 }

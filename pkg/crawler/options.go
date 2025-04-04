@@ -59,6 +59,7 @@ type Scan struct {
 	FileType      int
 	Headers       map[string]string
 	StoreResp     bool
+	MaxDepth      int
 
 	// Settings
 	Concurrency int

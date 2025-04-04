@@ -94,6 +94,8 @@ type Input struct {
 	UserAgent string
 	// StoreResp stores HTTP responses.
 	StoreResp bool
+	// MaxDepth specifies the maximum level the crawler will follow from the initial target URL
+	MaxDepth int
 }
 
 // ScanFlag defines all the options taken
@@ -142,6 +144,8 @@ func ScanFlag() Input {
 
 	storeRespPtr := flag.Bool("sr", false, "Store HTTP responses.")
 
+	maxDepth := flag.Int("md", 0, "Maximum level the crawler will follow from the initial target URL.")
+
 	flag.Parse()
 
 	result := Input{
@@ -173,6 +177,7 @@ func ScanFlag() Input {
 		*debugPtr,
 		*userAgentPtr,
 		*storeRespPtr,
+		*maxDepth,
 	}
 
 	return result

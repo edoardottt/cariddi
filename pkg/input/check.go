@@ -127,4 +127,9 @@ func CheckFlags(flags Input) {
 		fmt.Println("	- cat urls | cariddi -headersfile headers.txt")
 		os.Exit(1)
 	}
+
+	if flags.MaxDepth < 0 {
+		fmt.Println("MaxDepth cannot be less than 0.")
+		os.Exit(1)
+	}
 }

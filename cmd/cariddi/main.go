@@ -88,6 +88,7 @@ func main() {
 		Debug:         flags.Debug,
 		UserAgent:     flags.UserAgent,
 		StoreResp:     flags.StoreResp,
+		MaxDepth:      flags.MaxDepth,
 	}
 
 	// Read the targets from standard input.
