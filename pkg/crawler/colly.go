@@ -241,6 +241,7 @@ func New(scan *Scan) *Results {
 
 	go func() {
 		<-chanC
+
 		if scan.Debug {
 			fmt.Fprint(os.Stdout, "\r")
 			fmt.Println("CTRL+C pressed: Exiting immediately")
