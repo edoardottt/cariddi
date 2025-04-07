@@ -66,7 +66,7 @@ func CreateHostOutputFolder(host string) {
 }
 
 // CreateOutputFile takes as input a target (of the attack), a subcommand
-// (PORT-DNS-DIR-SUBDOMAIN-REPORT) and a format (json-html-txt).
+// and a format (json-html-txt).
 // It creates the output folder if needed, then checks if the output file
 // already exists, if yes asks the user if cariddi has to overwrite it;
 // if no cariddi creates it.
