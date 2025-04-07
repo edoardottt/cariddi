@@ -8,7 +8,7 @@
   </a>
   <!-- workflows -->
   <a href="https://github.com/edoardottt/cariddi/actions">
-    <img src="https://github.com/edoardottt/cariddi/workflows/Go/badge.svg?branch=main" alt="workflows" />
+    <img src="https://github.com/edoardottt/cariddi/actions/workflows/go.yml/badge.svg?branch=main" alt="workflows" />
   </a>
   <br>
   <sub>
