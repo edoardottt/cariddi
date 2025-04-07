@@ -157,23 +157,19 @@ func EndpointsMatch(target string, endpointsFile *[]string) []scanner.EndpointMa
 
 // huntExtensions hunts for extensions.
 func huntExtensions(target string, severity int) scanner.FileTypeMatched {
-	extension := scanner.FileTypeMatched{}
-	copyTarget := target
+	originalTarget := target
+
+	if idx := strings.Index(target, "?"); idx != -1 {
+		target = target[:idx]
+	}
 
 	for _, ext := range scanner.GetExtensions() {
-		if ext.Severity <= severity {
-			firstIndex := strings.Index(target, "?")
-			if firstIndex > -1 {
-				target = target[:firstIndex]
-			}
-
-			if strings.ToLower(target[len(target)-len("."+ext.Extension):]) == "."+ext.Extension {
-				extension = scanner.FileTypeMatched{Filetype: ext, URL: copyTarget}
-			}
+		if ext.Severity <= severity && strings.HasSuffix(strings.ToLower(target), "."+ext.Extension) {
+			return scanner.FileTypeMatched{Filetype: ext, URL: originalTarget}
 		}
 	}
 
-	return extension
+	return scanner.FileTypeMatched{}
 }
 
 // huntErrors hunts for errors.
@@ -222,10 +218,9 @@ func huntInfos(target, body string) []scanner.InfoMatched {
 	var (
 		infosSlice []scanner.InfoMatched
 		wg         sync.WaitGroup
-		mu         sync.Mutex // Mutex to protect shared resource
+		mu         sync.Mutex
 	)
 
-	// Iterate over each pattern in a goroutine
 	for _, infoItem := range scanner.GetInfoRegexes() {
 		wg.Add(1)
 
@@ -234,9 +229,7 @@ func huntInfos(target, body string) []scanner.InfoMatched {
 
 			matches := infoItem.Regex.FindAllStringSubmatch(body, -1)
 
-			// Process the matches
 			for _, match := range matches {
-				// Lock the shared resource before modifying it
 				mu.Lock()
 				infosSlice = append(infosSlice, scanner.InfoMatched{Info: infoItem, URL: target, Match: match[0]})
 				mu.Unlock()
@@ -244,9 +237,7 @@ func huntInfos(target, body string) []scanner.InfoMatched {
 		}(infoItem)
 	}
 
-	// Wait for all goroutines to complete
 	wg.Wait()
 
-	// Remove duplicate infos
 	return scanner.RemoveDuplicateInfos(infosSlice)
 }
