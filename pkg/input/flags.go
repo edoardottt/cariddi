@@ -144,7 +144,7 @@ func ScanFlag() Input {
 
 	storeRespPtr := flag.Bool("sr", false, "Store HTTP responses.")
 
-	maxDepth := flag.Int("md", 0, "Maximum level the crawler will follow from the initial target URL.")
+	maxDepth := flag.Int("md", 0, "Maximum depth level the crawler will follow from the initial target URL.")
 
 	flag.Parse()
 

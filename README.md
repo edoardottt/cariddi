@@ -115,7 +115,7 @@ Usage of cariddi:
   -json
      Print the output as JSON in stdout.
   -md
-     Maximum level the crawler will follow from the initial target URL.
+     Maximum depth level the crawler will follow from the initial target URL.
   -i string
      Ignore the URL containing at least one of the elements of this array.
   -info
@@ -178,7 +178,7 @@ Examples 💡
 - `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
 - `cat urls | cariddi -json` (Print the output as JSON in stdout)
 - `cat urls | cariddi -sr` (Store HTTP responses)
-- `cat urls | cariddi -md 3` (Max 3 levels)
+- `cat urls | cariddi -md 3` (Max 3 depth levels)
 
 - For Windows:
   - use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
