@@ -68,23 +68,29 @@ You need [Go](https://go.dev/) (>=1.23)
 <details>
   <summary>Building from source for Linux and Windows</summary>
 
-- **Linux**
+#### Linux
 
-  - `git clone https://github.com/edoardottt/cariddi.git`
-  - `cd cariddi`
-  - `go get ./...`
-  - `make linux` (to install)
-  - `make unlinux` (to uninstall)
+```console
+git clone https://github.com/edoardottt/cariddi.git
+cd cariddi
+go get ./...
+make linux # (to install)
+make unlinux # (to uninstall)
+```
 
-  Or in one line: `git clone https://github.com/edoardottt/cariddi.git; cd cariddi; go get; make linux`
+One-liner: `git clone https://github.com/edoardottt/cariddi.git && cd cariddi && go get ./... && make linux`
 
-- **Windows** (executable works only in cariddi folder.)
+#### Windows 
 
-  - `git clone https://github.com/edoardottt/cariddi.git`
-  - `cd cariddi`
-  - `go get ./...`
-  - `.\make.bat windows` (to install)
-  - `.\make.bat unwindows` (to uninstall)
+Note that the executable works only in cariddi folder.
+
+```console
+git clone https://github.com/edoardottt/cariddi.git
+cd cariddi
+go get ./...
+.\make.bat windows # (to install)
+.\make.bat unwindows # (to uninstall)
+```
 
 </details>
 
@@ -246,13 +252,13 @@ Just open an [issue](https://github.com/edoardottt/cariddi/issues)/[pull request
 
 Before opening a pull request, download [golangci-lint](https://golangci-lint.run/usage/install/) and run
 
-```bash
+```console
 golangci-lint run
 ```
 
 If there aren't errors, go ahead :)
 
-**Help me building this!**
+**Help me build this!**
 
 Special thanks to: [go-colly](http://go-colly.org/), [ocervell](https://github.com/ocervell), [zricethezav](https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/graphs/contributors).
 
