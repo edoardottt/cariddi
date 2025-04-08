@@ -53,8 +53,3 @@ linters-settings:
       - '2'
     ignored-files:
       - 'crawler/useragents.go'
-
-issues:
-  exclude-rules:
-    - path: pkg/output/banner.go
-      text: "should be written without leading space as"

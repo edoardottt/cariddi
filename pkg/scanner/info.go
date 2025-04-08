@@ -23,7 +23,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package scanner
 
-import "regexp"
+import (
+	"regexp"
+	"sync"
+)
 
 // Info struct.
 // Name = the name that identifies the information.
@@ -43,43 +46,50 @@ type InfoMatched struct {
 	Match string
 }
 
+var (
+	infos     []Info    //nolint: gochecknoglobals
+	onceInfos sync.Once //nolint: gochecknoglobals
+)
+
 // GetInfoRegexes returns all the info structs.
 func GetInfoRegexes() []Info {
-	var regexes = []Info{
-		{
-			"Email address",
-			*regexp.MustCompile(`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`),
-		},
-		{
-			"HTML comment",
-			*regexp.MustCompile(`(?i)(\<![\s]*--[\-!@#$%^&*:;ºª.,"'(){}\w\s\/\\[\]]*--[\s]*\>)`),
-		},
-		{
-			"Internal IP address",
-			*regexp.MustCompile(`((172\.\d{1,3}\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|` +
-				`(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|([fF][eE][89aAbBcCdDeEfF]::))`),
-		},
-		{
-			"IPv4 address",
-			*regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`),
-		},
-		/*
-			TOO MANY FALSE POSITIVES
+	onceInfos.Do(func() {
+		infos = []Info{
 			{
-				"BTC address",
-				`([13]|bc1)[A-HJ-NP-Za-km-z1-9]{27,34}`,
+				"Email address",
+				*regexp.MustCompile(`(?i)([a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9-]*\.[a-zA-Z0-9-.]*[a-zA-Z0-9]{2,})`),
 			},
-		*/
-		/*
-			HOW TO AVOID VERY VERY LONG BASE64 IMAGES ???
 			{
-				"Base64-encoded JSON",
-				`ey(A|B)[A-Za-z0-9+\/]{20,}(={0,2})`,
+				"HTML comment",
+				*regexp.MustCompile(`(?i)(\<![\s]*--[\-!@#$%^&*:;ºª.,"'(){}\w\s\/\\[\]]*--[\s]*\>)`),
 			},
-		*/
-	}
+			{
+				"Internal IP address",
+				*regexp.MustCompile(`((172\.\d{1,3}\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|` +
+					`(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|([fF][eE][89aAbBcCdDeEfF]::))`),
+			},
+			{
+				"IPv4 address",
+				*regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`),
+			},
+			/*
+				TOO MANY FALSE POSITIVES
+				{
+					"BTC address",
+					`([13]|bc1)[A-HJ-NP-Za-km-z1-9]{27,34}`,
+				},
+			*/
+			/*
+				HOW TO AVOID VERY VERY LONG BASE64 IMAGES ???
+				{
+					"Base64-encoded JSON",
+					`ey(A|B)[A-Za-z0-9+\/]{20,}(={0,2})`,
+				},
+			*/
+		}
+	})
 
-	return regexes
+	return infos
 }
 
 // RemoveDuplicateInfos removes duplicates from Infos found.

@@ -33,7 +33,6 @@ import (
 	"github.com/fatih/color"
 )
 
-// nolint: checknoglobals
 const (
 	version = "v1.3.6"
 	banner  = `                 _     _     _ _ 
