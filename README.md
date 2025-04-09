@@ -21,7 +21,7 @@
 </p>
 <p align="center">
   <a href="#installation-">Install</a> •
-  <a href="#examples-">Examples</a> •
+  <a href="#usage-">Usage</a> •
   <a href="#get-started-">Get Started</a> •
   <a href="#changelog-">Changelog</a> •
   <a href="#contributing-">Contributing</a> •
@@ -94,7 +94,7 @@ go get ./...
 
 </details>
 
-Examples 💡
+Usage 💡
 ----------
 
 If you want to scan only a single target you can use
@@ -103,88 +103,68 @@ If you want to scan only a single target you can use
 echo https://edoardottt.com/ | cariddi
 ```
 
+With multiple targets you can use a file instead, e.g. urls.txt containing:
+
+```console
+https://edoardottt.com/
+http://testphp.vulnweb.com/
+```
+
+For Windows:
+
+- use `powershell.exe -Command "cat urls.txt | .\cariddi.exe"` inside the Command prompt
+- or just `cat urls.txt | cariddi.exe` using PowerShell
+
+### Basics
+
 - `cariddi -version` (Print the version)
 - `cariddi -h` (Print the help)
 - `cariddi -examples` (Print the examples)
-- `cat urls | cariddi -s` (Hunt for secrets)
-- `cat urls | cariddi -err` (Hunt for errors in websites)
-- `cat urls | cariddi -e` (Hunt for juicy endpoints)
-- `cat urls | cariddi -info` (Hunt for useful informations in websites)
-- `cat urls | cariddi -ext 2` (Hunt for juicy (level 2 out of 7) files)
-- `cat urls | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
-- `cat urls | cariddi -s -sf secrets_file` (Hunt for custom secrets)
-- `cat urls | cariddi -d 2` (2 seconds between a page crawled and another)
-- `cat urls | cariddi -c 200` (Set the concurrency level to 200)
-- `cat urls | cariddi -plain` (Print only results)
-- `cat urls | cariddi -ot target_name` (Results in txt file)
-- `cat urls | cariddi -oh target_name` (Results in html file)
-- `cat urls | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
-- `cat urls | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
-- `cat urls | cariddi -cache` (Use the .cariddi_cache folder as cache)
-- `cat urls | cariddi -t 5` (Set the timeout for the requests)
-- `cat urls | cariddi -intensive` (Crawl searching also subdomains, same as `*.target.com`)
-- `cat urls | cariddi -rua` (Use a random browser user agent on every request)
-- `cat urls | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
-- `cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
-- `cat urls | cariddi -headersfile headers.txt` (Read from an external file custom headers)
-- `cat urls | cariddi -debug` (Print debug information while crawling)
-- `cat urls | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
-- `cat urls | cariddi -json` (Print the output as JSON in stdout)
-- `cat urls | cariddi -sr` (Store HTTP responses)
-- `cat urls | cariddi -md 3` (Max 3 depth levels)
-- `cat urls | cariddi -ie pdf,png,jpg` (Ignore these extensions while scanning)
+
+### Scan options
+
+- `cat urls.txt | cariddi -intensive` (Crawl searching also subdomains, same as `*.target.com`)
+- `cat urls.txt | cariddi -s` (Hunt for secrets)
+- `cat urls.txt | cariddi -err` (Hunt for errors in websites)
+- `cat urls.txt | cariddi -e` (Hunt for juicy endpoints)
+- `cat urls.txt | cariddi -info` (Hunt for useful informations in websites)
+- `cat urls.txt | cariddi -ext 2` (Hunt for juicy (level 2 out of 7) files)
+- `cat urls.txt | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
+- `cat urls.txt | cariddi -s -sf secrets_file` (Hunt for custom secrets)
+- `cat urls.txt | cariddi -ie pdf,png,jpg` (Ignore these extensions while scanning)
 
 Default: png, jpg, jpeg, gif, webp, woff, woff2, tiff, tif are ignored by default while scanning for secrets, info and errors.
 
-- For Windows:
-  - use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
-  - or just `cat urls | cariddi.exe` using PowerShell
+### Configuration
 
-- To integrate cariddi with Burpsuite [follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration) or click the button below:
+- `cat urls.txt | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
+- `cat urls.txt | cariddi -d 2` (2 seconds between a page crawled and another)
+- `cat urls.txt | cariddi -c 200` (Set the concurrency level to 200)
+- `cat urls.txt | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
+- `cat urls.txt | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
+- `cat urls.txt | cariddi -cache` (Use the .cariddi_cache folder as cache)
+- `cat urls.txt | cariddi -t 5` (Set the timeout for the requests)
+- `cat urls.txt | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
+- `cat urls.txt | cariddi -headersfile headers.txt` (Read from an external file custom headers)
+- `cat urls.txt | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
+- `cat urls.txt | cariddi -rua` (Use a random browser user agent on every request)
 
-<details>
-  <summary>Integrate cariddi with Burpsuite</summary>
+### Output
 
-   Normally you use Burpsuite within your browser, so you just have to trust the burpsuite's certificate in the browser and you're done.  
-   In order to use cariddi with the BurpSuite proxy you should do some steps further.  
-
-   If you try to use cariddi with the option `-proxy http://127.0.0.1:8080` you will find this error in the burpsuite error log section:  
-
-   ```bash
-   Received fatal alert: bad_certificate (or something similar related to the certificate).
-   ```
-
-   To make cariddi working fine with Burpsuite you have also to trust the certificate within your entire pc, not just only the browser. These are the steps you have to follow:
-
-   Go to Proxy tab in Bupsuite, then Options. Click on the CA Certificate button and export Certificate in DER format  
-
-   ```bash
-   openssl x509 -in burp.der -inform DER -out burp.pem -outform PEM
-   sudo chown root:root burp.pem
-   sudo chmod 644 burp.pem
-   sudo cp burp.pem /usr/local/share/ca-certificates/
-   sudo c_rehash
-   cd /etc/ssl/certs/
-   sudo ln -s /usr/local/share/ca-certificates/burp.pem
-   sudo c_rehash .
-   ```
-
-   Source: Trust Burp Proxy certificate in Debian/Ubuntu  
-
-   After these steps, in order to use cariddi with Burpsuite you have to:  
-
-   1. Open Burpsuite, making sure that the proxy is listening.  
-   2. Use cariddi with the flag `-proxy http://127.0.0.1:8080`.  
-   3. You will see that requests and responses will be logged in Burpsuite.
-
-</details>
+- `cat urls.txt | cariddi -plain` (Print only results)
+- `cat urls.txt | cariddi -ot target_name` (Results in txt file)
+- `cat urls.txt | cariddi -oh target_name` (Results in html file)
+- `cat urls.txt | cariddi -json` (Print the output as JSON in stdout)
+- `cat urls.txt | cariddi -sr` (Store HTTP responses)
+- `cat urls.txt | cariddi -debug` (Print debug information while crawling)
+- `cat urls.txt | cariddi -md 3` (Max 3 depth levels)
 
 Get Started 🎉
 ----------
 
 `cariddi -h` prints the help.
 
-```txt
+```console
 Usage of cariddi:
   -c int
      Concurrency level. (default 20)
@@ -244,6 +224,45 @@ Usage of cariddi:
   -version
      Print the version.
 ```
+
+**To integrate cariddi with Burpsuite** [follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration) or click the button below:
+
+<details>
+  <summary>Integrate cariddi with Burpsuite</summary>
+
+   Normally you use Burpsuite within your browser, so you just have to trust the burpsuite's certificate in the browser and you're done.  
+   In order to use cariddi with the BurpSuite proxy you should do some steps further.  
+
+   If you try to use cariddi with the option `-proxy http://127.0.0.1:8080` you will find this error in the burpsuite error log section:  
+
+   ```bash
+   Received fatal alert: bad_certificate (or something similar related to the certificate).
+   ```
+
+   To make cariddi working fine with Burpsuite you have also to trust the certificate within your entire pc, not just only the browser. These are the steps you have to follow:
+
+   Go to Proxy tab in Bupsuite, then Options. Click on the CA Certificate button and export Certificate in DER format  
+
+   ```bash
+   openssl x509 -in burp.der -inform DER -out burp.pem -outform PEM
+   sudo chown root:root burp.pem
+   sudo chmod 644 burp.pem
+   sudo cp burp.pem /usr/local/share/ca-certificates/
+   sudo c_rehash
+   cd /etc/ssl/certs/
+   sudo ln -s /usr/local/share/ca-certificates/burp.pem
+   sudo c_rehash .
+   ```
+
+   Source: Trust Burp Proxy certificate in Debian/Ubuntu  
+
+   After these steps, in order to use cariddi with Burpsuite you have to:  
+
+   1. Open Burpsuite, making sure that the proxy is listening.  
+   2. Use cariddi with the flag `-proxy http://127.0.0.1:8080`.  
+   3. You will see that requests and responses will be logged in Burpsuite.
+
+</details>
 
 Changelog 📌
 -------
