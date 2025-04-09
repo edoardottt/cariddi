@@ -126,6 +126,9 @@ Examples 💡
 - `cat urls | cariddi -json` (Print the output as JSON in stdout)
 - `cat urls | cariddi -sr` (Store HTTP responses)
 - `cat urls | cariddi -md 3` (Max 3 depth levels)
+- `cat urls | cariddi -ie pdf,png,jpg` (Ignore these extensions while scanning)
+
+Default: png,jpg,jpeg,gif,webp,woff,woff2,tiff,tif are ignored by default while scanning for secrets, info and errors.
 
 Obviously if you have only a single target you can use
 

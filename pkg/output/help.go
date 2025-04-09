@@ -60,6 +60,8 @@ func PrintHelp() {
 		Maximum level the crawler will follow from the initial target URL.
 	-i string
 		Ignore the URL containing at least one of the elements of this array.
+	-ie value
+		Comma-separated list of extensions to ignore while scanning.
 	-info
 		Hunt for useful information in websites.
 	-intensive
