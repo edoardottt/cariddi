@@ -33,11 +33,17 @@ import (
 	"strings"
 
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
+	pdutils "github.com/projectdiscovery/utils/file"
 )
 
 // ScanTargets return the array of elements
 // taken as input on stdin.
 func ScanTargets() []string {
+	if !pdutils.HasStdin() {
+		fmt.Println("No input provided.")
+		os.Exit(1)
+	}
+
 	var result []string
 
 	// accept domains on stdin

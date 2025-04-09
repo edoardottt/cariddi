@@ -38,7 +38,6 @@ import (
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
-// main function.
 func main() {
 	// Scan flags.
 	flags := input.ScanFlag()

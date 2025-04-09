@@ -21,7 +21,6 @@ func (s *StringSlice) Set(value string) error {
 	}
 
 	*s = sliceUtils.RemoveDuplicateValues(*s)
-	fmt.Println(s)
 
 	return nil
 }
