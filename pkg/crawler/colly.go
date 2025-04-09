@@ -150,46 +150,47 @@ func New(scan *Scan) *Results {
 		infos := []scanner.InfoMatched{}
 		filetype := &scanner.FileType{}
 
-		// if endpoints or secrets or filetype: scan
-		if scan.EndpointsFlag || scan.SecretsFlag ||
-			(1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
-			// HERE SCAN FOR SECRETS
-			if scan.SecretsFlag && lengthOk {
-				secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, &scan.SecretsSlice)
-				results.Secrets = append(results.Secrets, secretsSlice...)
-				secrets = append(secrets, secretsSlice...)
-			}
-			// HERE SCAN FOR ENDPOINTS
-			if scan.EndpointsFlag {
-				endpointsSlice := huntEndpoints(r.Request.URL.String(), &scan.EndpointsSlice)
-				for _, elem := range endpointsSlice {
-					if len(elem.Parameters) != 0 {
-						results.Endpoints = append(results.Endpoints, elem)
-						parameters = append(parameters, elem.Parameters...)
-					}
-				}
-			}
-			// HERE SCAN FOR EXTENSIONS
-			if 1 <= scan.FileType && scan.FileType <= 7 {
-				extension := huntExtensions(r.Request.URL.String(), scan.FileType)
-				if extension.URL != "" {
-					results.Extensions = append(results.Extensions, extension)
-					filetype = &extension.Filetype
-				}
-			}
-			// HERE SCAN FOR ERRORS
-			if scan.ErrorsFlag {
-				errorsSlice := huntErrors(r.Request.URL.String(), bodyStr)
-				results.Errors = append(results.Errors, errorsSlice...)
-				errors = append(errors, errorsSlice...)
-			}
+		// Skip if no scanning is enabled
+		if !(scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag) {
+			return
+		}
 
-			// HERE SCAN FOR INFOS
-			if scan.InfoFlag {
-				infosSlice := huntInfos(r.Request.URL.String(), bodyStr)
-				results.Infos = append(results.Infos, infosSlice...)
-				infos = append(infos, infosSlice...)
+		// HERE SCAN FOR SECRETS
+		if scan.SecretsFlag && lengthOk && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
+			secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, &scan.SecretsSlice)
+			results.Secrets = append(results.Secrets, secretsSlice...)
+			secrets = append(secrets, secretsSlice...)
+		}
+		// HERE SCAN FOR ENDPOINTS
+		if scan.EndpointsFlag {
+			endpointsSlice := huntEndpoints(r.Request.URL.String(), &scan.EndpointsSlice)
+			for _, elem := range endpointsSlice {
+				if len(elem.Parameters) != 0 {
+					results.Endpoints = append(results.Endpoints, elem)
+					parameters = append(parameters, elem.Parameters...)
+				}
 			}
+		}
+		// HERE SCAN FOR EXTENSIONS
+		if 1 <= scan.FileType && scan.FileType <= 7 {
+			extension := huntExtensions(r.Request.URL.String(), scan.FileType)
+			if extension.URL != "" {
+				results.Extensions = append(results.Extensions, extension)
+				filetype = &extension.Filetype
+			}
+		}
+		// HERE SCAN FOR ERRORS
+		if scan.ErrorsFlag && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
+			errorsSlice := huntErrors(r.Request.URL.String(), bodyStr)
+			results.Errors = append(results.Errors, errorsSlice...)
+			errors = append(errors, errorsSlice...)
+		}
+
+		// HERE SCAN FOR INFOS
+		if scan.InfoFlag && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
+			infosSlice := huntInfos(r.Request.URL.String(), bodyStr)
+			results.Infos = append(results.Infos, infosSlice...)
+			infos = append(infos, infosSlice...)
 		}
 
 		if scan.JSON {

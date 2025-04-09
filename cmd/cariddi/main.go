@@ -69,26 +69,27 @@ func main() {
 	// Setup the config according to the flags that were
 	// passed via the CLI
 	config := &crawler.Scan{
-		Delay:         flags.Delay,
-		Concurrency:   flags.Concurrency,
-		Ignore:        flags.Ignore,
-		IgnoreTxt:     flags.IgnoreTXT,
-		Cache:         flags.Cache,
-		JSON:          flags.JSON,
-		Timeout:       flags.Timeout,
-		Intensive:     flags.Intensive,
-		Rua:           flags.Rua,
-		Proxy:         flags.Proxy,
-		SecretsFlag:   flags.Secrets,
-		Plain:         flags.Plain,
-		EndpointsFlag: flags.Endpoints,
-		FileType:      flags.Extensions,
-		ErrorsFlag:    flags.Errors,
-		InfoFlag:      flags.Info,
-		Debug:         flags.Debug,
-		UserAgent:     flags.UserAgent,
-		StoreResp:     flags.StoreResp,
-		MaxDepth:      flags.MaxDepth,
+		Delay:            flags.Delay,
+		Concurrency:      flags.Concurrency,
+		Ignore:           flags.Ignore,
+		IgnoreTxt:        flags.IgnoreTXT,
+		Cache:            flags.Cache,
+		JSON:             flags.JSON,
+		Timeout:          flags.Timeout,
+		Intensive:        flags.Intensive,
+		Rua:              flags.Rua,
+		Proxy:            flags.Proxy,
+		SecretsFlag:      flags.Secrets,
+		Plain:            flags.Plain,
+		EndpointsFlag:    flags.Endpoints,
+		FileType:         flags.Extensions,
+		ErrorsFlag:       flags.Errors,
+		InfoFlag:         flags.Info,
+		Debug:            flags.Debug,
+		UserAgent:        flags.UserAgent,
+		StoreResp:        flags.StoreResp,
+		MaxDepth:         flags.MaxDepth,
+		IgnoreExtensions: flags.IgnoreExtensions,
 	}
 
 	// Read the targets from standard input.
@@ -126,7 +127,6 @@ func main() {
 	if flags.HTMLout != "" {
 		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
 		output.BannerHTML(ResultHTML)
-		output.HeaderHTML("Results", ResultHTML)
 	}
 
 	if config.StoreResp {
@@ -173,6 +173,8 @@ func main() {
 
 	// IF HTML OUTPUT >
 	if flags.HTMLout != "" {
+		output.WriteSummaryCard(ResultHTML, len(finalResults), len(finalSecret), len(finalEndpoints),
+			len(finalExtensions), len(finalErrors), len(finalInfos))
 		output.HTMLOutput(flags, ResultHTML, finalResults, finalSecret,
 			finalEndpoints, finalExtensions, finalErrors, finalInfos)
 	}
