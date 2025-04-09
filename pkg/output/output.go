@@ -30,6 +30,7 @@ import (
 	"fmt"
 	"html"
 	"os"
+	"strings"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	"github.com/edoardottt/cariddi/pkg/input"
@@ -73,9 +74,7 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	}
 
 	ResultFilename := fileUtils.CreateOutputFile(flags.TXTout, ResultFile, "txt")
-	for _, elem := range finalResults {
-		AppendOutputToTxt(elem, ResultFilename)
-	}
+	WriteAllTxt(finalResults, ResultFilename)
 
 	// if secrets flag enabled save also secrets
 	if flags.Secrets && len(finalSecret) > 0 {
@@ -91,15 +90,17 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
-				finalString := "" + parameter.Parameter
-				if len(parameter.Attacks) != 0 {
-					finalString += " -"
+				var sb strings.Builder
+				sb.WriteString(parameter.Parameter)
+				if len(parameter.Attacks) > 0 {
+					sb.WriteString(" -")
 					for _, attack := range parameter.Attacks {
-						finalString += " " + attack
+						sb.WriteString(" ")
+						sb.WriteString(attack)
 					}
 				}
 
-				AppendOutputToTxt(fmt.Sprintf("%s in %s", finalString, elem.URL), EndpointFilename)
+				AppendOutputToTxt(fmt.Sprintf("%s in %s", sb.String(), elem.URL), EndpointFilename)
 			}
 		}
 	}

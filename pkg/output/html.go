@@ -27,9 +27,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package output
 
 import (
+	"fmt"
 	"html"
 	"log"
 	"os"
+	"time"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 )
@@ -120,6 +122,38 @@ func BannerHTML(filename string) {
 	file.Close()
 }
 
+// WriteSummaryCard adds a summary card.
+func WriteSummaryCard(filename string, results, secrets, endpoints, extensions, errors, infos int) {
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+
+	defer file.Close()
+
+	content := fmt.Sprintf(`<div class="summary-card">
+	<h2>Scan Summary</h2>
+	<p>Scan timestamp: %s</p>
+	<ul>
+		<li><strong>Results:</strong> %d</li>
+		<li><strong>Secrets:</strong> %d</li>
+		<li><strong>Endpoints:</strong> %d</li>
+		<li><strong>Extensions:</strong> %d</li>
+		<li><strong>Errors:</strong> %d</li>
+		<li><strong>Info:</strong> %d</li>
+	</ul>
+</div>
+`, time.Now().Format("2006-01-02 15:04:05"), results, secrets, endpoints, extensions, errors, infos)
+
+	_, err = file.WriteString(content)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file.Close()
+}
+
 // AppendOutputToHTML appends the output to html file.
 func AppendOutputToHTML(output string, status string, filename string, isLink bool) {
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
@@ -144,11 +178,11 @@ func AppendOutputToHTML(output string, status string, filename string, isLink bo
 		if _, err := file.WriteString("<li><a target='_blank' href='" +
 			html.EscapeString(output) + "'>" +
 			html.EscapeString(output) +
-			"</a> " + html.EscapeString(statusColor) + "</li>"); err != nil {
+			"</a> " + html.EscapeString(statusColor) + "</li>\n"); err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		if _, err := file.WriteString("<li>" + html.EscapeString(output) + "</li>"); err != nil {
+		if _, err := file.WriteString("<li>" + html.EscapeString(output) + "</li>\n"); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -164,7 +198,7 @@ func HeaderHTML(header string, filename string) {
 		os.Exit(1)
 	}
 
-	if _, err := file.WriteString("<h3>" + html.EscapeString(header) + "</h3><ul>"); err != nil {
+	if _, err := file.WriteString("<h3>" + html.EscapeString(header) + "</h3><ul>\n"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -179,7 +213,7 @@ func FooterHTML(filename string) {
 		os.Exit(1)
 	}
 
-	if _, err := file.WriteString("</ul>"); err != nil {
+	if _, err := file.WriteString("</ul>\n"); err != nil {
 		log.Fatal(err)
 	}
 
