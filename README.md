@@ -97,6 +97,12 @@ go get ./...
 Examples 💡
 ----------
 
+If you want to scan only a single target you can use
+
+```console
+echo https://edoardottt.com/ | cariddi
+```
+
 - `cariddi -version` (Print the version)
 - `cariddi -h` (Print the help)
 - `cariddi -examples` (Print the examples)
@@ -128,13 +134,7 @@ Examples 💡
 - `cat urls | cariddi -md 3` (Max 3 depth levels)
 - `cat urls | cariddi -ie pdf,png,jpg` (Ignore these extensions while scanning)
 
-Default: png,jpg,jpeg,gif,webp,woff,woff2,tiff,tif are ignored by default while scanning for secrets, info and errors.
-
-Obviously if you have only a single target you can use
-
-```console
-echo https://edoardottt.com/ | cariddi
-```
+Default: png, jpg, jpeg, gif, webp, woff, woff2, tiff, tif are ignored by default while scanning for secrets, info and errors.
 
 - For Windows:
   - use `powershell.exe -Command "cat urls | .\cariddi.exe"` inside the Command prompt
