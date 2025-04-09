@@ -130,8 +130,6 @@ func WriteSummaryCard(filename string, results, secrets, endpoints, extensions, 
 		os.Exit(1)
 	}
 
-	defer file.Close()
-
 	content := fmt.Sprintf(`<div class="summary-card">
 	<h2>Scan Summary</h2>
 	<p>Scan timestamp: %s</p>
@@ -148,7 +146,9 @@ func WriteSummaryCard(filename string, results, secrets, endpoints, extensions, 
 
 	_, err = file.WriteString(content)
 	if err != nil {
-		log.Fatal(err)
+		file.Close()
+		log.Println(err)
+		os.Exit(1)
 	}
 
 	file.Close()

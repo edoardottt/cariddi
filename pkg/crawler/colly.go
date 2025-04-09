@@ -151,12 +151,14 @@ func New(scan *Scan) *Results {
 		filetype := &scanner.FileType{}
 
 		// Skip if no scanning is enabled
-		if !(scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag) {
+		if !(scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) ||
+			scan.ErrorsFlag || scan.InfoFlag) {
 			return
 		}
 
 		// HERE SCAN FOR SECRETS
-		if scan.SecretsFlag && lengthOk && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
+		if scan.SecretsFlag && lengthOk &&
+			!sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
 			secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, &scan.SecretsSlice)
 			results.Secrets = append(results.Secrets, secretsSlice...)
 			secrets = append(secrets, secretsSlice...)

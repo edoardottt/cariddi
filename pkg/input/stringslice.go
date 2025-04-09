@@ -7,7 +7,7 @@ import (
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
 )
 
-// StringSlice is a custom flag type for []string
+// StringSlice is a custom flag type for []string.
 type StringSlice []string
 
 func (s *StringSlice) String() string {

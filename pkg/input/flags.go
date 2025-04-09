@@ -97,7 +97,8 @@ type Input struct {
 	StoreResp bool
 	// MaxDepth specifies the maximum level the crawler will follow from the initial target URL
 	MaxDepth int
-	// IgnoreExtensions specifies which extensions must be ignored while scanning (Default: png,jpg,jpeg,gif,webp,woff,woff2,tiff,tif)
+	// IgnoreExtensions specifies which extensions must be ignored while scanning
+	// (Default: png,jpg,jpeg,gif,webp,woff,woff2,tiff,tif)
 	IgnoreExtensions StringSlice
 }
 
@@ -150,13 +151,14 @@ func ScanFlag() Input {
 	maxDepth := flag.Int("md", 0, "Maximum depth level the crawler will follow from the initial target URL.")
 
 	var ignoreExtensions StringSlice
+
 	flag.Var(&ignoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning")
 
 	flag.Parse()
 
 	// Default Extensions to filter
 	if ignoreExtensions == nil {
-		ignoreExtensions.Set(DefaultIgnoreExtensions)
+		_ = ignoreExtensions.Set(DefaultIgnoreExtensions)
 	}
 
 	result := Input{

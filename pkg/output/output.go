@@ -91,9 +91,12 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
 				var sb strings.Builder
+
 				sb.WriteString(parameter.Parameter)
+
 				if len(parameter.Attacks) > 0 {
 					sb.WriteString(" -")
+
 					for _, attack := range parameter.Attacks {
 						sb.WriteString(" ")
 						sb.WriteString(attack)
