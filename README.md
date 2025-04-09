@@ -225,10 +225,8 @@ Usage of cariddi:
      Print the version.
 ```
 
-**To integrate cariddi with Burpsuite** [follow these steps](https://github.com/edoardottt/cariddi/wiki/BurpSuite-Integration) or click the button below:
-
 <details>
-  <summary>Integrate cariddi with Burpsuite</summary>
+  <summary>Click to understand <strong>How to integrate cariddi with Burpsuite</strong></summary>
 
    Normally you use Burpsuite within your browser, so you just have to trust the burpsuite's certificate in the browser and you're done.  
    In order to use cariddi with the BurpSuite proxy you should do some steps further.  
