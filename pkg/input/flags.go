@@ -32,7 +32,7 @@ import (
 
 const (
 	DefaultConcurrency      = 20
-	DefaultIgnoreExtensions = "png,jpg,jpeg,gif,webp,woff,woff2,tiff,tif"
+	DefaultIgnoreExtensions = "png,svg,jpg,jpeg,gif,webp,woff,woff2,tiff,tif"
 	TimeoutRequest          = 10
 )
 
