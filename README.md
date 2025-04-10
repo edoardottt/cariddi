@@ -133,7 +133,7 @@ For Windows:
 - `cat urls.txt | cariddi -s -sf secrets_file` (Hunt for custom secrets)
 - `cat urls.txt | cariddi -ie pdf,png,jpg` (Ignore these extensions while scanning)
 
-Default: png, jpg, jpeg, gif, webp, woff, woff2, tiff, tif are ignored by default while scanning for secrets, info and errors.
+Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif are ignored while scanning for secrets, info and errors.
 
 ### Configuration
 

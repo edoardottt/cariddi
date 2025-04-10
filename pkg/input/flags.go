@@ -98,7 +98,7 @@ type Input struct {
 	// MaxDepth specifies the maximum level the crawler will follow from the initial target URL
 	MaxDepth int
 	// IgnoreExtensions specifies which extensions must be ignored while scanning
-	// (Default: png,jpg,jpeg,gif,webp,woff,woff2,tiff,tif)
+	// (Default: png,svg,jpg,jpeg,bmp,jfif,gif,webp,woff,woff2,ttf,tiff,tif)
 	IgnoreExtensions StringSlice
 }
 
