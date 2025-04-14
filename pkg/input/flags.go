@@ -31,8 +31,9 @@ import (
 )
 
 const (
-	DefaultConcurrency = 20
-	TimeoutRequest     = 10
+	DefaultConcurrency      = 20
+	DefaultIgnoreExtensions = "png,svg,jpg,jpeg,bmp,jfif,gif,webp,woff,woff2,ttf,tiff,tif"
+	TimeoutRequest          = 10
 )
 
 // Input struct.
@@ -94,6 +95,11 @@ type Input struct {
 	UserAgent string
 	// StoreResp stores HTTP responses.
 	StoreResp bool
+	// MaxDepth specifies the maximum level the crawler will follow from the initial target URL
+	MaxDepth int
+	// IgnoreExtensions specifies which extensions must be ignored while scanning
+	// (Default: png,svg,jpg,jpeg,bmp,jfif,gif,webp,woff,woff2,ttf,tiff,tif)
+	IgnoreExtensions StringSlice
 }
 
 // ScanFlag defines all the options taken
@@ -142,7 +148,18 @@ func ScanFlag() Input {
 
 	storeRespPtr := flag.Bool("sr", false, "Store HTTP responses.")
 
+	maxDepth := flag.Int("md", 0, "Maximum depth level the crawler will follow from the initial target URL.")
+
+	var ignoreExtensions StringSlice
+
+	flag.Var(&ignoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning")
+
 	flag.Parse()
+
+	// Default Extensions to filter
+	if ignoreExtensions == nil {
+		_ = ignoreExtensions.Set(DefaultIgnoreExtensions)
+	}
 
 	result := Input{
 		*versionPtr,
@@ -173,6 +190,8 @@ func ScanFlag() Input {
 		*debugPtr,
 		*userAgentPtr,
 		*storeRespPtr,
+		*maxDepth,
+		ignoreExtensions,
 	}
 
 	return result

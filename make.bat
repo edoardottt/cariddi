@@ -2,32 +2,32 @@
 
 SET ARG=%1
 
-IF "%ARG%"=="windows" (
+IF /I "%ARG%"=="windows" (
   CALL :Windows
   GOTO Done
 )
 
-IF "%ARG%"=="unwindows" (
+IF /I "%ARG%"=="unwindows" (
   CALL :Unwindows
   GOTO Done
 )
 
-IF "%ARG%"=="update" (
+IF /I "%ARG%"=="update" (
   CALL :Update
   GOTO Done
 )
 
-IF "%ARG%"=="tidy" (
+IF /I "%ARG%"=="tidy" (
   CALL :Tidy
   GOTO Done
 )
 
-IF "%ARG%"=="lint" (
+IF /I "%ARG%"=="lint" (
   CALL :Lint
   GOTO Done
 )
 
-IF "%ARG%"=="remod" (
+IF /I "%ARG%"=="remod" (
   del go.mod
   del go.sum
   go mod init github.com/edoardottt/cariddi
@@ -35,8 +35,13 @@ IF "%ARG%"=="remod" (
   GOTO Done
 )
 
-IF "%ARG%"=="test" (
+IF /I "%ARG%"=="test" (
   CALL :Test
+  GOTO Done
+)
+
+IF /I "%ARG%"=="help" (
+  CALL :Help
   GOTO Done
 )
 
@@ -46,12 +51,12 @@ GOTO Done
 set GO111MODULE=on
 set CGO_ENABLED=0
 echo Testing ...
-go test -v ./...
+go test -v "./..."
 echo Done
 EXIT /B 0
 
 :Tidy
-go get -u ./...
+go get -u "./..."
 go mod tidy -v
 echo Done.
 EXIT /B 0
@@ -63,7 +68,7 @@ EXIT /B 0
 :Update
 set GO111MODULE=on
 echo Updating ...
-go get -u ./...
+go get -u "./..."
 go mod tidy -v
 CALL :Unwindows
 git pull
@@ -83,6 +88,10 @@ EXIT /B 0
 :Unwindows
 del /f cariddi.exe
 echo Done.
+EXIT /B 0
+
+:Help
+echo Usage: make.bat [windows | unwindows | update | tidy | lint | remod | test]
 EXIT /B 0
 
 :Done

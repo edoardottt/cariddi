@@ -28,7 +28,6 @@ package crawler
 
 import (
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -44,8 +43,8 @@ import (
 	"github.com/edoardottt/cariddi/pkg/input"
 	"github.com/edoardottt/cariddi/pkg/output"
 	"github.com/edoardottt/cariddi/pkg/scanner"
-	"github.com/gocolly/colly"
-	"github.com/gocolly/colly/extensions"
+	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2/extensions"
 )
 
 // New it's the actual crawler engine.
@@ -101,8 +100,9 @@ func New(scan *Scan) *Results {
 	}
 
 	// crawler creation
-	c := CreateColly(scan.Delay, scan.Concurrency, scan.Cache, scan.Timeout,
-		scan.Intensive, scan.Rua, scan.Proxy, scan.UserAgent, scan.Target)
+	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout, scan.MaxDepth,
+		scan.Cache, scan.Intensive, scan.Rua,
+		scan.Proxy, scan.UserAgent, scan.Target)
 
 	event := &Event{
 		ProtocolTemp: protocolTemp,
@@ -119,20 +119,20 @@ func New(scan *Scan) *Results {
 	registerHTMLEvents(c, event)
 	registerXMLEvents(c, event)
 
-	// Add headers (if needed) on each request
-	if (len(scan.Headers)) > 0 {
-		c.OnRequest(func(r *colly.Request) {
+	c.OnRequest(func(r *colly.Request) {
+		// Add headers (if needed) on each request
+		if (len(scan.Headers)) > 0 {
 			for header, value := range scan.Headers {
 				r.Headers.Set(header, value)
 			}
-		})
-	}
-
-	c.OnResponse(func(r *colly.Response) {
-		if !scan.JSON {
-			fmt.Println(r.Request.URL)
 		}
 
+		results.URLs = append(results.URLs, r.URL.String())
+
+		fmt.Println(r.URL.String())
+	})
+
+	c.OnResponse(func(r *colly.Response) {
 		if scan.StoreResp {
 			err := output.StoreHTTPResponse(r)
 			if err != nil {
@@ -140,54 +140,59 @@ func New(scan *Scan) *Results {
 			}
 		}
 
+		bodyStr := string(r.Body)
+
 		minBodyLentgh := 10
-		lengthOk := len(string(r.Body)) > minBodyLentgh
+		lengthOk := len(bodyStr) > minBodyLentgh
 		secrets := []scanner.SecretMatched{}
 		parameters := []scanner.Parameter{}
 		errors := []scanner.ErrorMatched{}
 		infos := []scanner.InfoMatched{}
 		filetype := &scanner.FileType{}
 
-		// if endpoints or secrets or filetype: scan
-		if scan.EndpointsFlag || scan.SecretsFlag ||
-			(1 <= scan.FileType && scan.FileType <= 7) || scan.ErrorsFlag || scan.InfoFlag {
-			// HERE SCAN FOR SECRETS
-			if scan.SecretsFlag && lengthOk {
-				secretsSlice := huntSecrets(r.Request.URL.String(), string(r.Body), &scan.SecretsSlice)
-				results.Secrets = append(results.Secrets, secretsSlice...)
-				secrets = append(secrets, secretsSlice...)
-			}
-			// HERE SCAN FOR ENDPOINTS
-			if scan.EndpointsFlag {
-				endpointsSlice := huntEndpoints(r.Request.URL.String(), &scan.EndpointsSlice)
-				for _, elem := range endpointsSlice {
-					if len(elem.Parameters) != 0 {
-						results.Endpoints = append(results.Endpoints, elem)
-						parameters = append(parameters, elem.Parameters...)
-					}
-				}
-			}
-			// HERE SCAN FOR EXTENSIONS
-			if 1 <= scan.FileType && scan.FileType <= 7 {
-				extension := huntExtensions(r.Request.URL.String(), scan.FileType)
-				if extension.URL != "" {
-					results.Extensions = append(results.Extensions, extension)
-					filetype = &extension.Filetype
-				}
-			}
-			// HERE SCAN FOR ERRORS
-			if scan.ErrorsFlag {
-				errorsSlice := huntErrors(r.Request.URL.String(), string(r.Body))
-				results.Errors = append(results.Errors, errorsSlice...)
-				errors = append(errors, errorsSlice...)
-			}
+		// Skip if no scanning is enabled
+		if !(scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) ||
+			scan.ErrorsFlag || scan.InfoFlag) {
+			return
+		}
 
-			// HERE SCAN FOR INFOS
-			if scan.InfoFlag {
-				infosSlice := huntInfos(r.Request.URL.String(), string(r.Body))
-				results.Infos = append(results.Infos, infosSlice...)
-				infos = append(infos, infosSlice...)
+		// HERE SCAN FOR SECRETS
+		if scan.SecretsFlag && lengthOk &&
+			!sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
+			secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, &scan.SecretsSlice)
+			results.Secrets = append(results.Secrets, secretsSlice...)
+			secrets = append(secrets, secretsSlice...)
+		}
+		// HERE SCAN FOR ENDPOINTS
+		if scan.EndpointsFlag {
+			endpointsSlice := huntEndpoints(r.Request.URL.String(), &scan.EndpointsSlice)
+			for _, elem := range endpointsSlice {
+				if len(elem.Parameters) != 0 {
+					results.Endpoints = append(results.Endpoints, elem)
+					parameters = append(parameters, elem.Parameters...)
+				}
 			}
+		}
+		// HERE SCAN FOR EXTENSIONS
+		if 1 <= scan.FileType && scan.FileType <= 7 {
+			extension := huntExtensions(r.Request.URL.String(), scan.FileType)
+			if extension.URL != "" {
+				results.Extensions = append(results.Extensions, extension)
+				filetype = &extension.Filetype
+			}
+		}
+		// HERE SCAN FOR ERRORS
+		if scan.ErrorsFlag && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
+			errorsSlice := huntErrors(r.Request.URL.String(), bodyStr)
+			results.Errors = append(results.Errors, errorsSlice...)
+			errors = append(errors, errorsSlice...)
+		}
+
+		// HERE SCAN FOR INFOS
+		if scan.InfoFlag && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
+			infosSlice := huntInfos(r.Request.URL.String(), bodyStr)
+			results.Infos = append(results.Infos, infosSlice...)
+			infos = append(infos, infosSlice...)
 		}
 
 		if scan.JSON {
@@ -206,61 +211,49 @@ func New(scan *Scan) *Results {
 	// Start scraping on target
 	path, err := urlUtils.GetPath(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
 	if err == nil {
-		var (
-			addPath     string
-			absoluteURL string
-		)
+		var addPath string
 
 		if path == "" {
 			addPath = "/"
 		}
 
-		if path == "" || path == "/" {
-			absoluteURL = fmt.Sprintf("%s://%s%srobots.txt", protocolTemp, scan.Target, addPath)
+		visitURL := func(filePath string) {
+			absoluteURL := fmt.Sprintf("%s://%s%s%s", protocolTemp, scan.Target, addPath, filePath)
 			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
-				err = c.Visit(absoluteURL)
-				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+				err := c.Visit(absoluteURL)
+				if err != nil && scan.Debug {
 					log.Println(err)
 				}
 			}
+		}
 
-			absoluteURL = protocolTemp + "://" + scan.Target + addPath + "sitemap.xml"
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
-				err = c.Visit(absoluteURL)
-				if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
-					log.Println(err)
-				}
-			}
+		if path == "" || path == "/" {
+			visitURL("robots.txt")
+			visitURL("sitemap.xml")
 		}
 	}
 
 	err = c.Visit(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
-	if err != nil && scan.Debug && !errors.Is(err, colly.ErrAlreadyVisited) {
+	if err != nil && scan.Debug {
 		log.Println(err)
 	}
 
-	// Setup graceful exit
+	// Setup graceful exit (immediate exit on CTRL+C)
 	chanC := make(chan os.Signal, 1)
-	lettersNum := 23
-	cCount := 0
-
 	signal.Notify(chanC, os.Interrupt)
 
 	go func() {
-		for range chanC {
-			if cCount > 0 {
-				os.Exit(1)
-			}
+		<-chanC
 
-			if !scan.Plain {
-				fmt.Fprint(os.Stdout, "\r")
-				fmt.Println("CTRL+C pressed: Exiting")
-
-				cCount++
-			}
-
-			c.AllowedDomains = []string{sliceUtils.RandSeq(lettersNum)}
+		if scan.Debug {
+			fmt.Fprint(os.Stdout, "\r")
+			fmt.Println("CTRL+C pressed: Exiting immediately")
 		}
+
+		// CLEANUP LOGIC
+		// return *results?
+
+		os.Exit(1)
 	}()
 
 	c.Wait()
@@ -274,8 +267,9 @@ func New(scan *Scan) *Results {
 
 // CreateColly takes as input all the settings needed to instantiate
 // a new Colly Collector object and it returns this object.
-func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
-	intensive bool, rua bool, proxy string, userAgent string, target string) *colly.Collector {
+func CreateColly(delayTime, concurrency, timeout, maxDepth int,
+	cache, intensive, rua bool,
+	proxy string, userAgent string, target string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
@@ -335,48 +329,78 @@ func CreateColly(delayTime int, concurrency int, cache bool, timeout int,
 		})
 	}
 
+	if maxDepth != 0 {
+		c.MaxDepth = maxDepth
+	}
+
 	return c
 }
 
 // registerHTMLEvents registers the associated functions for each
 // HTML event triggering an action.
 func registerHTMLEvents(c *colly.Collector, event *Event) {
-	// On every a element which has href attribute call callback
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+	c.OnHTML("a[href], link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
 			visitHTMLLink(link, event, e, c)
 		}
 	})
 
-	// On every script element which has src attribute call callback
-	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
+	c.OnHTML("script[src], iframe[src], svg[src], img[src], video[src], embed[src]", func(e *colly.HTMLElement) {
 		visitHTMLLink(e.Attr("src"), event, e, c)
 	})
 
-	// On every link element which has href attribute call callback
-	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("href"), event, e, c)
-	})
-
-	// On every iframe element which has src attribute call callback
-	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e, c)
-	})
-
-	// On every svg element which has src attribute call callback
-	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e, c)
-	})
-
-	// On every img element which has src attribute call callback
-	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e, c)
-	})
-
-	// On every from element which has action attribute call callback
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		visitHTMLLink(e.Attr("action"), event, e, c)
+	})
+
+	c.OnHTML("[data-src]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data-src"), event, e, c)
+	})
+
+	c.OnHTML("[data-href]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data-href"), event, e, c)
+	})
+
+	c.OnHTML("[data-url]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data-url"), event, e, c)
+	})
+
+	c.OnHTML("img[srcset], source[srcset]", func(e *colly.HTMLElement) {
+		srcset := e.Attr("srcset")
+		entries := strings.Split(srcset, ",")
+
+		for _, entry := range entries {
+			parts := strings.Fields(strings.TrimSpace(entry))
+			if len(parts) > 0 {
+				link := parts[0]
+				visitHTMLLink(link, event, e, c)
+			}
+		}
+	})
+
+	c.OnHTML("meta[http-equiv='refresh']", func(e *colly.HTMLElement) {
+		content := e.Attr("content")
+		if len(content) > 0 {
+			// Assuming the format is like: "0; url=/redirect.html"
+			parts := strings.Split(content, ";")
+			for _, part := range parts {
+				trimmed := strings.TrimSpace(part)
+				if strings.HasPrefix(trimmed, "url=") {
+					// Correctly extract the URL by trimming the "url=" part
+					redirectURL := strings.TrimPrefix(trimmed, "url=")
+					visitHTMLLink(redirectURL, event, e, c)
+				}
+			}
+		}
+	})
+
+	c.OnHTML("object[data]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data"), event, e, c)
+	})
+
+	c.OnHTML("applet[code]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("code"), event, e, c)
 	})
 }
 
@@ -435,12 +459,9 @@ func visitLink(event *Event, c *colly.Collector, absoluteURL string) {
 		(event.Intensive && intensiveOk(event.TargetTemp, absoluteURL, event.Debug)) {
 		if !event.Ignore || (event.Ignore && !IgnoreMatch(absoluteURL, &event.IgnoreSlice)) {
 			err := c.Visit(absoluteURL)
-			if !errors.Is(err, colly.ErrAlreadyVisited) {
-				*event.URLs = append(*event.URLs, absoluteURL)
 
-				if err != nil && event.Debug {
-					log.Println(err)
-				}
+			if err != nil && event.Debug {
+				log.Println(err)
 			}
 		}
 	}

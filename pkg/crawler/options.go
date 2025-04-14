@@ -26,7 +26,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package crawler
 
-import "github.com/edoardottt/cariddi/pkg/scanner"
+import (
+	"github.com/edoardottt/cariddi/pkg/input"
+	"github.com/edoardottt/cariddi/pkg/scanner"
+)
 
 type Results struct {
 	URLs       []string
@@ -39,26 +42,28 @@ type Results struct {
 
 type Scan struct {
 	// Flags
-	Cache         bool
-	Debug         bool
-	EndpointsFlag bool
-	ErrorsFlag    bool
-	InfoFlag      bool
-	Intensive     bool
-	Plain         bool
-	Rua           bool
-	SecretsFlag   bool
-	Ignore        string
-	IgnoreTxt     string
-	JSON          bool
-	HTML          string
-	Proxy         string
-	Target        string
-	Txt           string
-	UserAgent     string
-	FileType      int
-	Headers       map[string]string
-	StoreResp     bool
+	Cache            bool
+	Debug            bool
+	EndpointsFlag    bool
+	ErrorsFlag       bool
+	InfoFlag         bool
+	Intensive        bool
+	Plain            bool
+	Rua              bool
+	SecretsFlag      bool
+	Ignore           string
+	IgnoreTxt        string
+	JSON             bool
+	HTML             string
+	Proxy            string
+	Target           string
+	Txt              string
+	UserAgent        string
+	FileType         int
+	Headers          map[string]string
+	StoreResp        bool
+	MaxDepth         int
+	IgnoreExtensions input.StringSlice
 
 	// Settings
 	Concurrency int

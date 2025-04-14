@@ -29,6 +29,7 @@ package output
 import (
 	"log"
 	"os"
+	"strings"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 )
@@ -46,4 +47,18 @@ func AppendOutputToTxt(output string, filename string) {
 	}
 
 	file.Close()
+}
+
+// WriteAllTxt opens the output file and append all the strings
+// taken as input in one-shot operation.
+func WriteAllTxt(output []string, filename string) {
+	var buf strings.Builder
+
+	for _, elem := range output {
+		buf.WriteString(elem + "\n")
+	}
+
+	if err := os.WriteFile(filename, []byte(buf.String()), fileUtils.Permission0644); err != nil {
+		log.Fatal(err)
+	}
 }

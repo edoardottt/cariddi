@@ -110,3 +110,14 @@ func RandSeq(n int) string {
 
 	return string(b)
 }
+
+// Contains checks if a string str is contained in the input slice.
+func Contains(slice []string, str string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+
+	return false
+}

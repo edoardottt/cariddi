@@ -29,6 +29,7 @@ package crawler
 import (
 	"regexp"
 	"strings"
+	"sync"
 
 	urlUtils "github.com/edoardottt/cariddi/internal/url"
 	"github.com/edoardottt/cariddi/pkg/scanner"
@@ -36,52 +37,85 @@ import (
 
 // huntSecrets hunts for secrets.
 func huntSecrets(target, body string, secretsFile *[]string) []scanner.SecretMatched {
-	secrets := SecretsMatch(target, body, secretsFile)
-	return secrets
-}
+	var (
+		secrets []scanner.SecretMatched
+		mu      sync.Mutex
+		wg      sync.WaitGroup
+	)
 
-// SecretsMatch checks if a body matches some secrets.
-func SecretsMatch(url, body string, secretsFile *[]string) []scanner.SecretMatched {
-	var secrets []scanner.SecretMatched
-
-	if len(*secretsFile) == 0 {
+	if len(*secretsFile) == 0 { // Predefined secret regexes
 		for _, secret := range scanner.GetSecretRegexes() {
-			if matched, err := regexp.Match(secret.Regex, []byte(body)); err == nil && matched {
-				re := regexp.MustCompile(secret.Regex)
-				matches := re.FindAllStringSubmatch(body, -1)
+			wg.Add(1)
 
-				// Avoiding false positives
-				var isFalsePositive = false
+			go func(secret scanner.Secret) {
+				defer wg.Done()
+
+				matches := secret.Regex.FindAllStringSubmatch(body, -1)
 
 				for _, match := range matches {
-					for _, falsePositive := range secret.FalsePositives {
-						if strings.Contains(strings.ToLower(match[0]), falsePositive) {
+					isFalsePositive := false
+
+					for _, fp := range secret.FalsePositives {
+						if strings.Contains(strings.ToLower(match[0]), fp) {
 							isFalsePositive = true
 							break
 						}
 					}
 
-					if !isFalsePositive {
-						secretFound := scanner.SecretMatched{Secret: secret, URL: url, Match: match[0]}
-						secrets = append(secrets, secretFound)
+					if isFalsePositive {
+						continue
 					}
+
+					secretMatch := scanner.SecretMatched{
+						Secret: secret,
+						URL:    target,
+						Match:  match[0],
+					}
+
+					mu.Lock()
+					secrets = append(secrets, secretMatch)
+					mu.Unlock()
 				}
-			}
+			}(secret)
 		}
-	} else {
-		for _, secret := range *secretsFile {
-			if matched, err := regexp.Match(secret, []byte(body)); err == nil && matched {
-				re := regexp.MustCompile(secret)
+	} else { // Custom regex from file
+		for _, rawRegex := range *secretsFile {
+			re, err := regexp.Compile(rawRegex)
+			if err != nil {
+				continue // skip invalid regex
+			}
+
+			wg.Add(1)
+
+			go func(re *regexp.Regexp) {
+				defer wg.Done()
+
 				matches := re.FindAllStringSubmatch(body, -1)
+				if matches == nil {
+					return
+				}
 
 				for _, match := range matches {
-					secretScanned := scanner.Secret{Name: "CustomFromFile", Description: "", Regex: secret, Poc: ""}
-					secretFound := scanner.SecretMatched{Secret: secretScanned, URL: url, Match: match[0]}
-					secrets = append(secrets, secretFound)
+					secretMatch := scanner.SecretMatched{
+						Secret: scanner.Secret{
+							Name:        "CustomFromFile",
+							Description: "",
+							Regex:       *re,
+							Poc:         "",
+						},
+						URL:   target,
+						Match: match[0],
+					}
+
+					mu.Lock()
+					secrets = append(secrets, secretMatch)
+					mu.Unlock()
 				}
-			}
+			}(re)
 		}
 	}
+
+	wg.Wait()
 
 	return scanner.RemoveDuplicateSecrets(secrets)
 }
@@ -123,73 +157,87 @@ func EndpointsMatch(target string, endpointsFile *[]string) []scanner.EndpointMa
 
 // huntExtensions hunts for extensions.
 func huntExtensions(target string, severity int) scanner.FileTypeMatched {
-	extension := scanner.FileTypeMatched{}
-	copyTarget := target
+	originalTarget := target
+
+	if idx := strings.Index(target, "?"); idx != -1 {
+		target = target[:idx]
+	}
 
 	for _, ext := range scanner.GetExtensions() {
-		if ext.Severity <= severity {
-			firstIndex := strings.Index(target, "?")
-			if firstIndex > -1 {
-				target = target[:firstIndex]
-			}
-
-			if strings.ToLower(target[len(target)-len("."+ext.Extension):]) == "."+ext.Extension {
-				extension = scanner.FileTypeMatched{Filetype: ext, URL: copyTarget}
-			}
+		if ext.Severity <= severity && strings.HasSuffix(strings.ToLower(target), "."+ext.Extension) {
+			return scanner.FileTypeMatched{Filetype: ext, URL: originalTarget}
 		}
 	}
 
-	return extension
+	return scanner.FileTypeMatched{}
 }
 
 // huntErrors hunts for errors.
 func huntErrors(target, body string) []scanner.ErrorMatched {
-	errorsSlice := ErrorsMatch(target, body)
-	return errorsSlice
-}
+	var (
+		results []scanner.ErrorMatched
+		wg      sync.WaitGroup
+		mutex   sync.Mutex
+	)
 
-// ErrorsMatch checks the patterns for errors.
-func ErrorsMatch(url, body string) []scanner.ErrorMatched {
-	errors := []scanner.ErrorMatched{}
+	errorRegexes := scanner.GetErrorRegexes()
 
-	for _, errorItem := range scanner.GetErrorRegexes() {
-		for _, errorRegex := range errorItem.Regex {
-			if matched, err := regexp.Match(errorRegex, []byte(body)); err == nil && matched {
-				re := regexp.MustCompile(errorRegex)
-				matches := re.FindAllStringSubmatch(body, -1)
+	for _, err := range errorRegexes {
+		wg.Add(1)
 
-				for _, match := range matches {
-					errorFound := scanner.ErrorMatched{Error: errorItem, URL: url, Match: match[0]}
-					errors = append(errors, errorFound)
-				}
+		go func(err scanner.Error) {
+			defer wg.Done()
+
+			matches := err.Regex.FindAllStringSubmatch(body, -1)
+			if matches == nil {
+				return
 			}
-		}
+
+			var localResults []scanner.ErrorMatched
+			for _, match := range matches {
+				localResults = append(localResults, scanner.ErrorMatched{
+					Error: err,
+					URL:   target,
+					Match: match[0],
+				})
+			}
+
+			mutex.Lock()
+			results = append(results, localResults...)
+			mutex.Unlock()
+		}(err)
 	}
 
-	return scanner.RemoveDuplicateErrors(errors)
+	wg.Wait()
+
+	return scanner.RemoveDuplicateErrors(results)
 }
 
 // huntInfos hunts for infos.
 func huntInfos(target, body string) []scanner.InfoMatched {
-	infosSlice := InfoMatch(target, body)
-	return infosSlice
-}
-
-// InfoMatch checks the patterns for infos.
-func InfoMatch(url, body string) []scanner.InfoMatched {
-	infos := []scanner.InfoMatched{}
+	var (
+		infosSlice []scanner.InfoMatched
+		wg         sync.WaitGroup
+		mu         sync.Mutex
+	)
 
 	for _, infoItem := range scanner.GetInfoRegexes() {
-		if matched, err := regexp.Match(infoItem.Regex, []byte(body)); err == nil && matched {
-			re := regexp.MustCompile(infoItem.Regex)
-			matches := re.FindAllStringSubmatch(body, -1)
+		wg.Add(1)
+
+		go func(infoItem scanner.Info) {
+			defer wg.Done()
+
+			matches := infoItem.Regex.FindAllStringSubmatch(body, -1)
 
 			for _, match := range matches {
-				infoFound := scanner.InfoMatched{Info: infoItem, URL: url, Match: match[0]}
-				infos = append(infos, infoFound)
+				mu.Lock()
+				infosSlice = append(infosSlice, scanner.InfoMatched{Info: infoItem, URL: target, Match: match[0]})
+				mu.Unlock()
 			}
-		}
+		}(infoItem)
 	}
 
-	return scanner.RemoveDuplicateInfos(infos)
+	wg.Wait()
+
+	return scanner.RemoveDuplicateInfos(infosSlice)
 }

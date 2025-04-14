@@ -29,6 +29,8 @@ package url
 import (
 	"fmt"
 	"net/url"
+	"path"
+	"path/filepath"
 	"strings"
 
 	errUtils "github.com/edoardottt/cariddi/internal/error"
@@ -191,4 +193,31 @@ func IsEmailURL(input string) (bool, string) {
 	}
 
 	return false, ""
+}
+
+// GetURLExtension extracts the file extension (without the dot) from a URL.
+// It decodes the URL path first and returns the extension in lowercase.
+// Returns "" if there's no extension.
+func GetURLExtension(u *url.URL) string {
+	if u == nil {
+		return ""
+	}
+
+	// Decode percent-encoded characters in the path
+	decodedPath, err := url.PathUnescape(u.Path)
+	if err != nil {
+		return ""
+	}
+
+	// Get the last part of the path (e.g. file name)
+	lastPart := path.Base(decodedPath)
+
+	// Get extension (includes the dot, e.g. ".pdf")
+	ext := filepath.Ext(lastPart)
+	if ext == "" {
+		return ""
+	}
+
+	// Remove the dot and return lowercase
+	return strings.ToLower(strings.TrimPrefix(ext, "."))
 }
