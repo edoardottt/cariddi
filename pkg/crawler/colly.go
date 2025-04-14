@@ -339,42 +339,68 @@ func CreateColly(delayTime, concurrency, timeout, maxDepth int,
 // registerHTMLEvents registers the associated functions for each
 // HTML event triggering an action.
 func registerHTMLEvents(c *colly.Collector, event *Event) {
-	// On every a element which has href attribute call callback
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+	c.OnHTML("a[href], link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
 			visitHTMLLink(link, event, e, c)
 		}
 	})
 
-	// On every script element which has src attribute call callback
-	c.OnHTML("script[src]", func(e *colly.HTMLElement) {
+	c.OnHTML("script[src], iframe[src], svg[src], img[src], video[src], embed[src]", func(e *colly.HTMLElement) {
 		visitHTMLLink(e.Attr("src"), event, e, c)
 	})
 
-	// On every link element which has href attribute call callback
-	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("href"), event, e, c)
-	})
-
-	// On every iframe element which has src attribute call callback
-	c.OnHTML("iframe[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e, c)
-	})
-
-	// On every svg element which has src attribute call callback
-	c.OnHTML("svg[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e, c)
-	})
-
-	// On every img element which has src attribute call callback
-	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e, c)
-	})
-
-	// On every from element which has action attribute call callback
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
 		visitHTMLLink(e.Attr("action"), event, e, c)
+	})
+
+	c.OnHTML("[data-src]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data-src"), event, e, c)
+	})
+
+	c.OnHTML("[data-href]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data-href"), event, e, c)
+	})
+
+	c.OnHTML("[data-url]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data-url"), event, e, c)
+	})
+
+	c.OnHTML("img[srcset], source[srcset]", func(e *colly.HTMLElement) {
+		srcset := e.Attr("srcset")
+		entries := strings.Split(srcset, ",")
+
+		for _, entry := range entries {
+			parts := strings.Fields(strings.TrimSpace(entry))
+			if len(parts) > 0 {
+				link := parts[0]
+				visitHTMLLink(link, event, e, c)
+			}
+		}
+	})
+
+	c.OnHTML("meta[http-equiv='refresh']", func(e *colly.HTMLElement) {
+		content := e.Attr("content")
+		if len(content) > 0 {
+			// Assuming the format is like: "0; url=/redirect.html"
+			parts := strings.Split(content, ";")
+			for _, part := range parts {
+				trimmed := strings.TrimSpace(part)
+				if strings.HasPrefix(trimmed, "url=") {
+					// Correctly extract the URL by trimming the "url=" part
+					redirectURL := strings.TrimPrefix(trimmed, "url=")
+					visitHTMLLink(redirectURL, event, e, c)
+				}
+			}
+		}
+	})
+
+	c.OnHTML("object[data]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("data"), event, e, c)
+	})
+
+	c.OnHTML("applet[code]", func(e *colly.HTMLElement) {
+		visitHTMLLink(e.Attr("code"), event, e, c)
 	})
 }
 
