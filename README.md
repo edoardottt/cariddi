@@ -280,6 +280,12 @@ golangci-lint run
 
 If there aren't errors, go ahead :)
 
+Test using [https://edoardottt.github.io/cariddi-test/](https://edoardottt.github.io/cariddi-test/)
+
+```console
+echo "https://edoardottt.github.io/cariddi-test/" | cariddi
+```
+
 **Help me build this!**
 
 Special thanks to: [go-colly](http://go-colly.org/), [ocervell](https://github.com/ocervell), [zricethezav](https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/graphs/contributors).
