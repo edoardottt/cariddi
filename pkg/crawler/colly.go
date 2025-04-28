@@ -129,7 +129,9 @@ func New(scan *Scan) *Results {
 
 		results.URLs = append(results.URLs, r.URL.String())
 
-		fmt.Println(r.URL.String())
+		if !scan.JSON {
+			fmt.Println(r.URL.String())
+		}
 	})
 
 	c.OnResponse(func(r *colly.Response) {
@@ -152,7 +154,7 @@ func New(scan *Scan) *Results {
 
 		// Skip if no scanning is enabled
 		if !(scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) ||
-			scan.ErrorsFlag || scan.InfoFlag) {
+			scan.ErrorsFlag || scan.InfoFlag || scan.JSON) {
 			return
 		}
 
