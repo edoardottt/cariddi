@@ -494,6 +494,13 @@ func GetSecretRegexes() []Secret {
 				"?",
 			},
 			{
+				"OpenAI API key",
+				"OpenAI API key",
+				*regexp.MustCompile(`sk-proj-[a-zA-Z0-9-_]{156}`),
+				[]string{},
+				"?",
+			},
+			{
 				"PayPal Braintree access token",
 				"PayPal Braintree access token",
 				*regexp.MustCompile(`access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}`),
