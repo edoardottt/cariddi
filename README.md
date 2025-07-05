@@ -61,6 +61,15 @@ go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
 pacman -Syu cariddi
 ```
 
+### NixOS
+
+For Nix or NixOS users is a package available. Keep in mind that the lastest releases might only
+be present in the ``unstable`` channel.
+
+```console
+nix-shell -p cariddi
+```
+
 ### Building from source
 
 You need [Go](https://go.dev/) (>=1.23)
