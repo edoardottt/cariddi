@@ -2,7 +2,7 @@ name: cariddi
 summary: Fast web crawler and scanner
 description: |
       Take a list of domains, crawl urls and scan for endpoints, secrets, api keys, file extensions, tokens and more
-version: 1.4.1
+version: 1.4.2
 grade: stable
 base: core20
 
