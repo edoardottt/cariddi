@@ -460,7 +460,6 @@ func visitLink(event *Event, c *colly.Collector, absoluteURL string) {
 		(event.Intensive && intensiveOk(event.TargetTemp, absoluteURL, event.Debug)) {
 		if !event.Ignore || (event.Ignore && !IgnoreMatch(absoluteURL, &event.IgnoreSlice)) {
 			err := c.Visit(absoluteURL)
-
 			if err != nil && event.Debug {
 				log.Println(err)
 			}
