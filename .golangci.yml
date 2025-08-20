@@ -1,7 +1,6 @@
+version: "2"
 linters:
-  # Enable all available linters.
-  # Default: false
-  disable-all: true
+  default: none
   enable:
     - asciicheck
     - bodyclose
@@ -20,10 +19,8 @@ linters:
     - goheader
     - gomodguard
     - goprintffuncname
-    - gosimple
     - govet
     - ineffassign
-    - lll
     - misspell
     - mnd
     - nakedret
@@ -32,24 +29,24 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - stylecheck
     - testpackage
-    - typecheck
     - unconvert
     - unparam
     - unused
     - whitespace
-    - wsl
-
-linters-settings:
-  wsl:
-    strict-append: false
-    enforce-err-cuddling: true
-
-  mnd:
-    # Values always ignored: "1", "1.0", "0" and "0.0"
-    # Default: []
-    ignored-numbers:
-      - '2'
-    ignored-files:
-      - 'crawler/useragents.go'
+    - wsl_v5
+  exclusions:
+    generated: lax
+    presets:
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

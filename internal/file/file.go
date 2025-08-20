@@ -192,8 +192,8 @@ func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 	defer f.Close()
 
 	buf := bufio.NewReader(f)
-	req, err := http.ReadRequest(buf)
 
+	req, err := http.ReadRequest(buf)
 	if err != nil {
 		fmt.Println("Cannot read request from input file.")
 		return req, err

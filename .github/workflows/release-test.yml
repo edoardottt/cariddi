@@ -12,17 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Check out code"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with: 
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.23.x
+          go-version: 1.24
       
       - name: release test
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v6
         with:
           args: "release --clean --snapshot"
           version: latest
+        env: 
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

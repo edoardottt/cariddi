@@ -36,6 +36,10 @@ import (
 	pdutils "github.com/projectdiscovery/utils/file"
 )
 
+const (
+	coupleSize = 2
+)
+
 // ScanTargets return the array of elements
 // taken as input on stdin.
 func ScanTargets() []string {
@@ -50,7 +54,7 @@ func ScanTargets() []string {
 	sc := bufio.NewScanner(os.Stdin)
 	for sc.Scan() {
 		domain := strings.ToLower(sc.Text())
-		if len(domain) > 2 {
+		if len(domain) > coupleSize {
 			result = append(result, domain)
 		}
 	}
@@ -74,7 +78,7 @@ func GetHeaders(input string) map[string]string {
 		for _, header := range headers {
 			var parts []string
 			if strings.Contains(header, ":") {
-				parts = strings.SplitN(header, ":", 2)
+				parts = strings.SplitN(header, ":", coupleSize)
 			} else {
 				continue
 			}

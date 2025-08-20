@@ -94,7 +94,7 @@ func FormatResponse(resp *colly.Response) ([]byte, error) {
 	builder.WriteString("\n\n")
 	builder.WriteString("HTTP/1.1")
 	builder.WriteString(" ")
-	builder.WriteString(fmt.Sprint(resp.StatusCode))
+	fmt.Fprint(builder, resp.StatusCode)
 	builder.WriteString("\n")
 
 	for k, v := range *resp.Headers {

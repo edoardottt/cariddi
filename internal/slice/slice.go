@@ -33,6 +33,10 @@ import (
 	"time"
 )
 
+const (
+	coupleSize = 2
+)
+
 // RemoveDuplicateValues removes duplicates from a slice
 // of strings.
 func RemoveDuplicateValues(strSlice []string) []string {
@@ -86,7 +90,7 @@ func CheckCookies(input string) []*http.Cookie {
 
 	for _, pair := range pairs {
 		couple := strings.Split(pair, ":")
-		if len(couple) != 2 {
+		if len(couple) != coupleSize {
 			continue
 		}
 
