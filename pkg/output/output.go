@@ -139,7 +139,6 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 	finalEndpoints []scanner.EndpointMatched, finalExtensions []scanner.FileTypeMatched,
 	finalErrors []scanner.ErrorMatched, finalInfos []scanner.InfoMatched) {
 	exists, err := fileUtils.ElementExists(CariddiOutputFolder)
-
 	if err != nil {
 		fmt.Println("Error while creating the output directory.")
 		os.Exit(1)

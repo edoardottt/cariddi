@@ -68,8 +68,8 @@ func New(scan *Scan) *Results {
 
 	if scan.Intensive {
 		var err error
-		targetTemp, err = urlUtils.GetRootHost(fmt.Sprintf("%s://%s", protocolTemp, targetTemp))
 
+		targetTemp, err = urlUtils.GetRootHost(fmt.Sprintf("%s://%s", protocolTemp, targetTemp))
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
@@ -153,8 +153,8 @@ func New(scan *Scan) *Results {
 		filetype := &scanner.FileType{}
 
 		// Skip if no scanning is enabled
-		if !(scan.EndpointsFlag || scan.SecretsFlag || (1 <= scan.FileType && scan.FileType <= 7) ||
-			scan.ErrorsFlag || scan.InfoFlag || scan.JSON) {
+		if !scan.EndpointsFlag && !scan.SecretsFlag && (scan.FileType < 1 || scan.FileType > 7) &&
+			!scan.ErrorsFlag && !scan.InfoFlag && !scan.JSON {
 			return
 		}
 
@@ -201,7 +201,6 @@ func New(scan *Scan) *Results {
 			jsonOutput, err := output.GetJSONString(
 				r, secrets, parameters, filetype, errors, infos,
 			)
-
 			if err == nil {
 				fmt.Println(string(jsonOutput))
 			} else {
@@ -461,7 +460,6 @@ func visitLink(event *Event, c *colly.Collector, absoluteURL string) {
 		(event.Intensive && intensiveOk(event.TargetTemp, absoluteURL, event.Debug)) {
 		if !event.Ignore || (event.Ignore && !IgnoreMatch(absoluteURL, &event.IgnoreSlice)) {
 			err := c.Visit(absoluteURL)
-
 			if err != nil && event.Debug {
 				log.Println(err)
 			}

@@ -73,7 +73,9 @@ func huntSecrets(target, body string, secretsFile *[]string) []scanner.SecretMat
 					}
 
 					mu.Lock()
+
 					secrets = append(secrets, secretMatch)
+
 					mu.Unlock()
 				}
 			}(secret)
@@ -108,7 +110,9 @@ func huntSecrets(target, body string, secretsFile *[]string) []scanner.SecretMat
 					}
 
 					mu.Lock()
+
 					secrets = append(secrets, secretMatch)
+
 					mu.Unlock()
 				}
 			}(re)
@@ -140,6 +144,7 @@ func EndpointsMatch(target string, endpointsFile *[]string) []scanner.EndpointMa
 				}
 			}
 		}
+
 		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 	} else {
 		for _, parameter := range *endpointsFile {
@@ -149,6 +154,7 @@ func EndpointsMatch(target string, endpointsFile *[]string) []scanner.EndpointMa
 				}
 			}
 		}
+
 		endpoints = append(endpoints, scanner.EndpointMatched{Parameters: matched, URL: target})
 	}
 
@@ -203,7 +209,9 @@ func huntErrors(target, body string) []scanner.ErrorMatched {
 			}
 
 			mutex.Lock()
+
 			results = append(results, localResults...)
+
 			mutex.Unlock()
 		}(err)
 	}
@@ -231,7 +239,9 @@ func huntInfos(target, body string) []scanner.InfoMatched {
 
 			for _, match := range matches {
 				mu.Lock()
+
 				infosSlice = append(infosSlice, scanner.InfoMatched{Info: infoItem, URL: target, Match: match[0]})
+
 				mu.Unlock()
 			}
 		}(infoItem)

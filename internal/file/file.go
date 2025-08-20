@@ -82,7 +82,6 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 	}
 
 	_, err := os.Stat(filename)
-
 	if os.IsNotExist(err) {
 		if _, err := os.Stat("output-cariddi/"); os.IsNotExist(err) {
 			CreateOutputFolder()
@@ -121,7 +120,6 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 // Whenever an instruction fails, it exits with an error message.
 func CreateIndexOutputFile(filename string) {
 	_, err := os.Stat(filename)
-
 	if os.IsNotExist(err) {
 		if _, err := os.Stat("output-cariddi/"); os.IsNotExist(err) {
 			CreateOutputFolder()
@@ -192,8 +190,8 @@ func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
 	defer f.Close()
 
 	buf := bufio.NewReader(f)
-	req, err := http.ReadRequest(buf)
 
+	req, err := http.ReadRequest(buf)
 	if err != nil {
 		fmt.Println("Cannot read request from input file.")
 		return req, err
