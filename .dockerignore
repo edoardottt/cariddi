@@ -1,0 +1,69 @@
+# Dockerignore file for cariddi
+# Ignore build artifacts
+cariddi
+cariddi.exe
+*.exe
+*.out
+*.test
+
+# Ignore version control
+.git/
+.gitignore
+
+# Ignore documentation and non-essential files
+README.md
+LICENSE
+*.md
+docs/
+
+# Ignore IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore test files
+*_test.go
+test/
+tests/
+
+# Ignore CI/CD files
+.github/
+.travis.yml
+.circleci/
+azure-pipelines.yml
+Jenkinsfile
+
+# Ignore Docker files (except Dockerfile)
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+tmp/
+temp/
+*.tmp
+*.log
+
+# Ignore build and dependency directories
+vendor/
+node_modules/
+dist/
+build/
+
+# Ignore Makefile and batch files (not needed in container)
+Makefile
+make.bat
+
+# Ignore snapcraft
+snapcraft.yaml
+
+# Ignore local configuration files
+.env
+.env.local
+config.local.*

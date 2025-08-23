@@ -34,8 +34,7 @@
   <img src="https://github.com/edoardottt/images/blob/main/cariddi/cariddi.gif">
 </p>
 
-Installation 📡
-----------
+## Installation 📡
 
 ### Homebrew
 
@@ -48,6 +47,62 @@ brew install cariddi
 ```console
 sudo snap install cariddi
 ```
+
+### Docker
+
+```console
+# Build the image
+docker build -t cariddi:latest .
+
+# Run with piped input
+echo "https://example.com" | docker run --rm -i cariddi:latest -intensive
+
+# Run with mounted volume for input/output files
+docker run --rm -v $(pwd):/data cariddi:latest -intensive -s /data/urls.txt -o /data/results.txt
+
+# Using docker-compose
+docker compose up cariddi
+```
+
+<details>
+  <summary>Advanced Docker Usage</summary>
+
+#### Build Scripts
+
+```console
+# Linux/macOS - Build with specific tag
+chmod +x build-docker.sh
+./build-docker.sh -t v1.0.0
+
+# Windows - Build with specific tag
+build-docker.bat -t v1.0.0
+```
+
+#### Advanced Examples
+
+```console
+# Scan with secrets hunting
+echo "https://example.com" | docker run --rm -i cariddi:latest -intensive -s
+
+# Scan with JSON output
+docker run --rm -v $(pwd):/data cariddi:latest -intensive -json -s /data/urls.txt
+
+# Scan with custom user agent and delay
+docker run --rm -i cariddi:latest -intensive -ua "Custom Agent" -d 2
+
+# Scan with proxy
+docker run --rm -i cariddi:latest -intensive -proxy http://127.0.0.1:8080
+```
+
+#### Testing
+
+```console
+# Test the Docker setup
+./test-docker.sh    # Linux/macOS
+test-docker.bat     # Windows
+```
+
+</details>
 
 ### Golang
 
@@ -80,7 +135,7 @@ make unlinux # (to uninstall)
 
 One-liner: `git clone https://github.com/edoardottt/cariddi.git && cd cariddi && go get ./... && make linux`
 
-#### Windows 
+#### Windows
 
 Note that the executable works only in cariddi folder.
 
@@ -94,8 +149,7 @@ go get ./...
 
 </details>
 
-Usage 💡
-----------
+## Usage 💡
 
 If you want to scan only a single target you can use
 
@@ -159,8 +213,7 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif 
 - `cat urls.txt | cariddi -debug` (Print debug information while crawling)
 - `cat urls.txt | cariddi -md 3` (Max 3 depth levels)
 
-Get Started 🎉
-----------
+## Get Started 🎉
 
 `cariddi -h` prints the help.
 
@@ -228,47 +281,45 @@ Usage of cariddi:
 <details>
   <summary>Click to understand <strong>How to integrate cariddi with Burpsuite</strong></summary>
 
-   Normally you use Burpsuite within your browser, so you just have to trust the burpsuite's certificate in the browser and you're done.  
-   In order to use cariddi with the BurpSuite proxy you should do some steps further.  
+Normally you use Burpsuite within your browser, so you just have to trust the burpsuite's certificate in the browser and you're done.  
+ In order to use cariddi with the BurpSuite proxy you should do some steps further.
 
-   If you try to use cariddi with the option `-proxy http://127.0.0.1:8080` you will find this error in the burpsuite error log section:  
+If you try to use cariddi with the option `-proxy http://127.0.0.1:8080` you will find this error in the burpsuite error log section:
 
-   ```bash
-   Received fatal alert: bad_certificate (or something similar related to the certificate).
-   ```
+```bash
+Received fatal alert: bad_certificate (or something similar related to the certificate).
+```
 
-   To make cariddi working fine with Burpsuite you have also to trust the certificate within your entire pc, not just only the browser. These are the steps you have to follow:
+To make cariddi working fine with Burpsuite you have also to trust the certificate within your entire pc, not just only the browser. These are the steps you have to follow:
 
-   Go to Proxy tab in Bupsuite, then Options. Click on the CA Certificate button and export Certificate in DER format  
+Go to Proxy tab in Bupsuite, then Options. Click on the CA Certificate button and export Certificate in DER format
 
-   ```bash
-   openssl x509 -in burp.der -inform DER -out burp.pem -outform PEM
-   sudo chown root:root burp.pem
-   sudo chmod 644 burp.pem
-   sudo cp burp.pem /usr/local/share/ca-certificates/
-   sudo c_rehash
-   cd /etc/ssl/certs/
-   sudo ln -s /usr/local/share/ca-certificates/burp.pem
-   sudo c_rehash .
-   ```
+```bash
+openssl x509 -in burp.der -inform DER -out burp.pem -outform PEM
+sudo chown root:root burp.pem
+sudo chmod 644 burp.pem
+sudo cp burp.pem /usr/local/share/ca-certificates/
+sudo c_rehash
+cd /etc/ssl/certs/
+sudo ln -s /usr/local/share/ca-certificates/burp.pem
+sudo c_rehash .
+```
 
-   Source: Trust Burp Proxy certificate in Debian/Ubuntu  
+Source: Trust Burp Proxy certificate in Debian/Ubuntu
 
-   After these steps, in order to use cariddi with Burpsuite you have to:  
+After these steps, in order to use cariddi with Burpsuite you have to:
 
-   1. Open Burpsuite, making sure that the proxy is listening.  
-   2. Use cariddi with the flag `-proxy http://127.0.0.1:8080`.  
-   3. You will see that requests and responses will be logged in Burpsuite.
+1.  Open Burpsuite, making sure that the proxy is listening.
+2.  Use cariddi with the flag `-proxy http://127.0.0.1:8080`.
+3.  You will see that requests and responses will be logged in Burpsuite.
 
 </details>
 
-Changelog 📌
--------
+## Changelog 📌
 
 Detailed changes for each release are documented in the [release notes](https://github.com/edoardottt/cariddi/releases).
 
-Contributing 🛠
--------
+## Contributing 🛠
 
 Just open an [issue](https://github.com/edoardottt/cariddi/issues)/[pull request](https://github.com/edoardottt/cariddi/pulls).
 
@@ -290,8 +341,7 @@ echo "https://edoardottt.github.io/cariddi-test/" | cariddi
 
 Special thanks to: [go-colly](http://go-colly.org/), [ocervell](https://github.com/ocervell), [zricethezav](https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml), [projectdiscovery](https://github.com/projectdiscovery/nuclei-templates/tree/master/file/keys), [tomnomnom](https://github.com/tomnomnom/gf/tree/master/examples), [RegexPassive](https://github.com/hahwul/RegexPassive) and [all the contributors](https://github.com/edoardottt/cariddi/graphs/contributors).
 
-License 📝
--------
+## License 📝
 
 This repository is under [GNU General Public License v3.0](https://github.com/edoardottt/cariddi/blob/main/LICENSE).  
 [edoardottt.com](https://edoardottt.com/) to contact me.

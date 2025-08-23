@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  cariddi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: latest
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        VCS_REF: ${VCS_REF:-$(git rev-parse --short HEAD)}
+    image: edoardottt/cariddi:latest
+    container_name: cariddi
+    volumes:
+      # Mount a directory for input files
+      - ./input:/app/input:ro
+      # Mount a directory for output files
+      - ./output:/app/output
+    # Remove the container after execution
+    restart: "no"
