@@ -5,7 +5,7 @@
 
 set -e
 
-IMAGE_NAME="edoardottt/cariddi:latest"
+IMAGE_NAME="cariddi:latest"
 TEST_URL="https://edoardottt.com/"
 
 echo "Testing cariddi Docker image: ${IMAGE_NAME}"

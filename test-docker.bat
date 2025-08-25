@@ -4,7 +4,7 @@ REM This script validates the Docker setup and functionality
 
 setlocal enabledelayedexpansion
 
-set IMAGE_NAME=edoardottt/cariddi:latest
+set IMAGE_NAME=cariddi:latest
 set TEST_URL=https://edoardottt.com/
 
 echo Testing cariddi Docker image: %IMAGE_NAME%

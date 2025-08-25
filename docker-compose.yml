@@ -9,7 +9,7 @@ services:
         VERSION: latest
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         VCS_REF: ${VCS_REF:-$(git rev-parse --short HEAD)}
-    image: edoardottt/cariddi:latest
+    image: cariddi:latest
     container_name: cariddi
     volumes:
       # Mount a directory for input files

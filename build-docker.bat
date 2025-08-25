@@ -5,7 +5,7 @@ REM This script builds the Docker image with proper metadata
 setlocal enabledelayedexpansion
 
 REM Default values
-set IMAGE_NAME=edoardottt/cariddi
+set IMAGE_NAME=cariddi
 set TAG=latest
 set PUSH=false
 set MULTI_ARCH=false

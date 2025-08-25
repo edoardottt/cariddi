@@ -6,7 +6,7 @@
 set -e
 
 # Default values
-IMAGE_NAME="edoardottt/cariddi"
+IMAGE_NAME="cariddi"
 TAG="latest"
 PUSH=false
 PLATFORMS="linux/amd64,linux/arm64"
