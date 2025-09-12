@@ -63,7 +63,7 @@ pacman -Syu cariddi
 
 ### Building from source
 
-You need [Go](https://go.dev/) (>=1.23)
+You need [Go](https://go.dev/) (>=1.24.0)
 
 <details>
   <summary>Building from source for Linux and Windows</summary>
