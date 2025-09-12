@@ -619,29 +619,30 @@ func GetSecretRegexes() []Secret {
 				"AWS S3 Bucket",
 				*regexp.MustCompile(`(?:[a-zA-Z0-9_-]+s3\.amazonaws\.com|[a-zA-Z0-9_.-]+amazonaws\.com|` +
 					`[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com|s3\:\/\/[a-zA-Z0-9-\.\_]+|` +
-					`s3\.amazonaws\.com/[a-zA-Z0-9-\.\_]+|` +
+					`s3\.amazonaws\.com\/[a-zA-Z0-9-\.\_]+|` +
 					`oss\:\/\/[a-zA-Z0-9-\.\_]+)`),
 				[]string{},
 				"?",
 			},
 			{
-				"Azure Blob Storage",
-				"Azure Blob Storage",
-				*regexp.MustCompile(`(?i)(?:https?:\/\/)?([a-z0-9]{3,24})\.blob\.core\.windows\.net`),
+				"Azure Blob/ADLS Storage",
+				"Azure Blob/ADLS Storage",
+				*regexp.MustCompile(`(?i)(?:https?:\/\/)?([a-z0-9]{3,24})\.(blob|dfs)\.core\.windows\.net`),
 				[]string{},
 				"?",
 			},
 			{
 				"Google Cloud Storage",
 				"Google Cloud Storage",
-				*regexp.MustCompile(`(?i)(?:https?:\/\/)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)?storage\.googleapis\.com`),
+				*regexp.MustCompile(`(?i)(?:https?:\/\/storage\.googleapis\.com\/[a-z0-9.\-_]{3,63}\/[^\s"'<>]*|` +
+					`https?:\/\/[a-z0-9.\-_]{3,63}\.storage\.googleapis\.com\/[^\s"'<>]*|gs:\/\/[a-z0-9.\-_]{3,63}\/[^\s"'<>]*)`),
 				[]string{},
 				"?",
 			},
 			{
 				"DigitalOcean Spaces",
 				"DigitalOcean Spaces",
-				*regexp.MustCompile(`(?i)https?://[a-z0-9.\-]{3,63}\.digitaloceanspaces\.com(?:/[^\s"'<>]*)?`),
+				*regexp.MustCompile(`(?i)https?:\/\/[a-z0-9.\-]{3,63}\.digitaloceanspaces\.com(?:\/[^\s"'<>]*)?`),
 				[]string{},
 				"?",
 			},
