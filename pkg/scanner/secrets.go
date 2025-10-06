@@ -158,7 +158,7 @@ func GetSecretRegexes() []Secret {
 			{
 				"AWS Access Key",
 				"AWS Access Key",
-				*regexp.MustCompile(`(A3T[A-Z0-9]|AKIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA|ASCA|APKA)[A-Z0-9]{16}`),
+				*regexp.MustCompile(`\b(A3T[A-Z0-9]|AKIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA|ASCA|APKA)[A-Z0-9]{16}\b`),
 				[]string{},
 				"?",
 			},
@@ -172,7 +172,7 @@ func GetSecretRegexes() []Secret {
 			{
 				"AWS MWS Key",
 				"AWS MWS Key",
-				*regexp.MustCompile(`amzn\.mws\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`),
+				*regexp.MustCompile(`\bamzn\.mws\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b`),
 				[]string{},
 				"?",
 			},
