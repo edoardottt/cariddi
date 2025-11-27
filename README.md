@@ -37,31 +37,37 @@
 Installation 📡
 ----------
 
-### Homebrew
+#### Homebrew
 
 ```console
 brew install cariddi
 ```
 
-### Snap
+#### Snap
 
 ```console
 sudo snap install cariddi
 ```
 
-### Golang
+#### Golang
 
 ```console
 go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
 ```
 
-### Pacman
+#### Pacman
 
 ```console
 pacman -Syu cariddi
 ```
 
-### Building from source
+#### NixOS
+
+```console
+nix-shell -p cariddi
+```
+
+#### Building from source
 
 You need [Go](https://go.dev/) (>=1.24.0)
 
