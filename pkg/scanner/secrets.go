@@ -88,18 +88,9 @@ func GetSecretRegexes() []Secret {
 				"?",
 			},
 			{
-				"Age Secret Key",
-				"Age Secret Key",
-				*regexp.MustCompile(`(?i)AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{58}`),
-				[]string{},
-				"?",
-			},
-			{
 				"Airtable API Key",
 				"Airtable API Key",
-				*regexp.MustCompile(`(?i)(?:airtable)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
-					`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
-					`([a-z0-9]{17})(?:['|\"|\n|\r|\s|\x60|;]|$)`),
+				*regexp.MustCompile(`(?i)\b(pat[a-zA-Z0-9]{14}\.[a-f0-9]{64})\b`),
 				[]string{},
 				"?",
 			},
@@ -115,7 +106,7 @@ func GetSecretRegexes() []Secret {
 			{
 				"Alibaba Access Key ID",
 				"Alibaba Access Key ID",
-				*regexp.MustCompile(`(?i)\b((LTAI)(?i)[a-z0-9]{20})(?:['|\"|\n|\r|\s|\x60|;]|$)`),
+				*regexp.MustCompile(`(?i)(LTAI[a-z0-9]{17,21})\b`),
 				[]string{},
 				"?",
 			},
@@ -129,16 +120,9 @@ func GetSecretRegexes() []Secret {
 				"?",
 			},
 			{
-				"Anthropic Admin Api Key",
-				"Anthropic Admin Api Key",
-				*regexp.MustCompile(`(?i)sk-ant-admin01-[a-zA-Z0-9_\-]{93}AA`),
-				[]string{},
-				"?",
-			},
-			{
 				"Anthropic Api Key",
 				"Anthropic Api Key",
-				*regexp.MustCompile(`(?i)sk-ant-api03-[a-zA-Z0-9_\-]{93}AA`),
+				*regexp.MustCompile(`(?i)\b(sk-ant-(admin|api)[0-9]{2}-[a-zA-Z0-9_-]{95})`),
 				[]string{},
 				"?",
 			},
@@ -170,9 +154,16 @@ func GetSecretRegexes() []Secret {
 				"?",
 			},
 			{
+				"Atlassian Cloud API Token",
+				"Atlassian API Token",
+				*regexp.MustCompile(`(?i)\b(ATATT3xFfGF0[a-zA-Z0-9_-]{20,200}=[0-9A-F]{8})\b`),
+				[]string{},
+				"?",
+			},
+			{
 				"AWS Access Key",
 				"AWS Access Key",
-				*regexp.MustCompile(`(A3T[A-Z0-9]|AKIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA|ASCA|APKA)[A-Z0-9]{16}`),
+				*regexp.MustCompile(`(?i)\b((A3T[A-Z0-9]|AKIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA|ASCA|APKA)[A-Z0-9]{16})\b`),
 				[]string{},
 				"?",
 			},
@@ -228,6 +219,13 @@ func GetSecretRegexes() []Secret {
 				*regexp.MustCompile(`(?i)(?:bitbucket)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
 					`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
 					`([a-z0-9=_\-]{64})(?:['|\"|\n|\r|\s|\x60|;]|$)`),
+				[]string{},
+				"?",
+			},
+			{
+				"CircleCI Personal Access Token",
+				"CircleCI Personal Access Token",
+				*regexp.MustCompile(`(?i)\b(CCIPAT_[_a-z0-9]{65})\b`),
 				[]string{},
 				"?",
 			},
@@ -798,13 +796,13 @@ func GetSecretRegexes() []Secret {
 			{
 				"Google OAuth Access Key",
 				"Google OAuth Access Key",
-				*regexp.MustCompile(`ya29\.[0-9A-Za-z\-_]+`),
+				*regexp.MustCompile(`(?i)\b(ya29\.[a-z0-9_-]{30,})\b`),
 				[]string{},
 				"?",
 			},
 			{
-				"Mapbox Token Disclosure",
-				"Mapbox Token Disclosure",
+				"Mapbox Token",
+				"Mapbox Token",
 				*regexp.MustCompile(`(pk|sk)\.eyJ1Ijoi\w+\.[\w-]*`),
 				[]string{},
 				"?",
