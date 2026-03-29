@@ -32,8 +32,11 @@ import (
 
 const (
 	DefaultConcurrency      = 20
-	DefaultIgnoreExtensions = "png,svg,jpg,jpeg,bmp,jfif,gif,webp,woff,woff2,ttf,tiff,tif"
-	TimeoutRequest          = 10
+	DefaultIgnoreExtensions = "png,svg,jpg,jpeg,bmp,jfif,gif,webp,woff,woff2,ttf,tiff,tif," +
+		"mp4,webm,mkv,avi,mov,flv,wmv," + // Video
+		"mp3,wav,flac,ogg,m4a,aac," + // Audio
+		"ico,cur,eot,otf" // More icons/fonts
+	TimeoutRequest = 10
 )
 
 // Input struct.
