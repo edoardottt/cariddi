@@ -154,6 +154,10 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 - `cat urls.txt | cariddi -headersfile headers.txt` (Read from an external file custom headers)
 - `cat urls.txt | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
 - `cat urls.txt | cariddi -rua` (Use a random browser user agent on every request)
+- `cat domains.txt | cariddi -scheme auto` (For targets without a scheme, try https then fall back to http, this is the default)
+- `cat domains.txt | cariddi -scheme https` (Force the https scheme for targets without one)
+
+Targets that already include a scheme (e.g. `https://example.com`) are always crawled as-is; the `-scheme` flag only affects scheme-less targets such as a plain list of FQDNs. A scheme-less target that does not resolve (no IP) or whose web port is closed (nothing on 443/80 for the chosen mode) is skipped instead of being crawled, and cariddi moves on to the next target.
 
 ### Output
 
@@ -219,6 +223,8 @@ Usage of cariddi:
   -rua
      Use a random browser user agent on every request.
   -s Hunt for secrets.
+  -scheme string
+     Scheme to use for targets without one: auto (https then http), https or http. (default "auto")
   -sf string
      Use an external file (txt, one per line) to use custom regexes for secrets hunting.
   -sr

@@ -57,13 +57,28 @@ func New(scan *Scan) *Results {
 
 	results := &Results{}
 
-	// if there isn't a scheme use http.
-	if !urlUtils.HasProtocol(scan.Target) {
-		protocolTemp = "http"
-		targetTemp = urlUtils.GetHost(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
-	} else {
+	// If the target already carries a scheme, honor it as-is. Otherwise pick the
+	// scheme according to scan.Scheme (auto tries https first, then http) and
+	// skip the target entirely when the host is unreachable (does not resolve or
+	// no suitable web port answers), moving on to the next one.
+	if urlUtils.HasProtocol(scan.Target) {
 		protocolTemp = urlUtils.GetProtocol(scan.Target)
 		targetTemp = urlUtils.GetHost(scan.Target)
+	} else {
+		targetTemp = urlUtils.GetHost(scan.Target)
+
+		proto, reachable := ResolveProtocol(scan.Scheme, func(scheme string) bool {
+			return isReachable(scheme, targetTemp, scan)
+		})
+		if !reachable {
+			if scan.Debug {
+				log.Printf("Skipping unreachable target (no DNS or no open web port): %s", scan.Target)
+			}
+
+			return results
+		}
+
+		protocolTemp = proto
 	}
 
 	if scan.Intensive {
@@ -334,6 +349,89 @@ func CreateColly(delayTime, concurrency, timeout, maxDepth int,
 	}
 
 	return c
+}
+
+// ResolveProtocol decides which scheme to use for a scheme-less target and
+// whether the target is reachable at all. It returns the chosen scheme
+// ("https" or "http") with ok=true, or ("", false) when the target must be
+// skipped because the host does not resolve or no suitable web port answers:
+//
+//   - input.SchemeHTTP  -> http if port 80 answers, otherwise skip.
+//   - input.SchemeHTTPS -> https if port 443 answers, otherwise skip.
+//   - input.SchemeAuto  -> https if it answers, else http if it answers, else skip.
+//
+// The reachable callback is injected so the decision can be unit-tested without
+// performing real network requests.
+func ResolveProtocol(mode string, reachable func(scheme string) bool) (string, bool) {
+	switch mode {
+	case input.SchemeHTTP:
+		if reachable(input.SchemeHTTP) {
+			return input.SchemeHTTP, true
+		}
+
+		return "", false
+	case input.SchemeHTTPS:
+		if reachable(input.SchemeHTTPS) {
+			return input.SchemeHTTPS, true
+		}
+
+		return "", false
+	default:
+		if reachable(input.SchemeHTTPS) {
+			return input.SchemeHTTPS, true
+		}
+
+		if reachable(input.SchemeHTTP) {
+			return input.SchemeHTTP, true
+		}
+
+		return "", false
+	}
+}
+
+// isReachable probes the host with the given scheme and reports whether it
+// answers. Any HTTP response (including 4xx/5xx) counts as reachable; DNS,
+// connection, TLS or timeout errors mean it is not. It mirrors the collector
+// TLS, proxy and user-agent configuration.
+func isReachable(scheme, host string, scan *Scan) bool {
+	transport := &http.Transport{
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+		DisableKeepAlives: true,
+	}
+
+	if scan.Proxy != "" {
+		if proxyParsed, err := url.Parse(scan.Proxy); err == nil {
+			transport.Proxy = http.ProxyURL(proxyParsed)
+		}
+	}
+
+	timeout := scan.Timeout
+	if timeout <= 0 {
+		timeout = input.TimeoutRequest
+	}
+
+	client := &http.Client{
+		Transport: transport,
+		Timeout:   time.Duration(timeout) * time.Second,
+	}
+
+	req, err := http.NewRequest(http.MethodGet, scheme+"://"+host, http.NoBody)
+	if err != nil {
+		return false
+	}
+
+	if scan.UserAgent != "" {
+		req.Header.Set("User-Agent", scan.UserAgent)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return false
+	}
+
+	defer resp.Body.Close()
+
+	return true
 }
 
 // registerHTMLEvents registers the associated functions for each

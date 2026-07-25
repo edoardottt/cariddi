@@ -90,5 +90,9 @@ func PrintExamples() {
 
 	cat urls | cariddi -md 3 (Max 3 levels)
 
-	cat urls | cariddi -ie pdf,png,jpg (Ignore these extensions while scanning)`)
+	cat urls | cariddi -ie pdf,png,jpg (Ignore these extensions while scanning)
+
+	cat domains | cariddi -scheme auto (For targets without a scheme, try https then fall back to http (default))
+
+	cat domains | cariddi -scheme https (Force the https scheme for targets without one)`)
 }

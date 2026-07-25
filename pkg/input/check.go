@@ -132,4 +132,9 @@ func CheckFlags(flags Input) {
 		fmt.Println("MaxDepth cannot be less than 0.")
 		os.Exit(1)
 	}
+
+	if flags.Scheme != SchemeAuto && flags.Scheme != SchemeHTTPS && flags.Scheme != SchemeHTTP {
+		fmt.Println("The scheme value must be one of: auto, https, http.")
+		os.Exit(1)
+	}
 }

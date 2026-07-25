@@ -37,6 +37,13 @@ const (
 		"mp3,wav,flac,ogg,m4a,aac," + // Audio
 		"ico,cur,eot,otf" // More icons/fonts
 	TimeoutRequest = 10
+
+	// SchemeAuto probes https first and falls back to http for scheme-less targets.
+	SchemeAuto = "auto"
+	// SchemeHTTPS forces the https scheme for scheme-less targets.
+	SchemeHTTPS = "https"
+	// SchemeHTTP forces the http scheme for scheme-less targets.
+	SchemeHTTP = "http"
 )
 
 // Input struct.
@@ -104,6 +111,8 @@ type Input struct {
 	// (Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif, mp4,
 	// webm, mkv, avi, mov, flv, wmv, mp3, wav, flac, ogg, m4a, aac, ico, cur, eot, otf)
 	IgnoreExtensions StringSlice
+	// Scheme selects the URL scheme used for targets without one: auto, https or http.
+	Scheme string
 }
 
 // ScanFlag defines all the options taken
@@ -154,6 +163,9 @@ func ScanFlag() Input {
 
 	maxDepth := flag.Int("md", 0, "Maximum depth level the crawler will follow from the initial target URL.")
 
+	schemePtr := flag.String("scheme", SchemeAuto,
+		"Scheme to use for targets without one: auto (https then http), https or http.")
+
 	var ignoreExtensions StringSlice
 
 	flag.Var(&ignoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning")
@@ -196,6 +208,7 @@ func ScanFlag() Input {
 		*storeRespPtr,
 		*maxDepth,
 		ignoreExtensions,
+		*schemePtr,
 	}
 
 	return result
