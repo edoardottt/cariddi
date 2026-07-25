@@ -56,6 +56,7 @@ type Scan struct {
 	JSON             bool
 	HTML             string
 	Proxy            string
+	Scheme           string
 	Target           string
 	Txt              string
 	UserAgent        string

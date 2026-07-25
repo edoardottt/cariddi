@@ -78,6 +78,7 @@ func main() {
 		Intensive:        flags.Intensive,
 		Rua:              flags.Rua,
 		Proxy:            flags.Proxy,
+		Scheme:           flags.Scheme,
 		SecretsFlag:      flags.Secrets,
 		Plain:            flags.Plain,
 		EndpointsFlag:    flags.Endpoints,

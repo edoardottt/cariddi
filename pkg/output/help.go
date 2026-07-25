@@ -79,6 +79,8 @@ func PrintHelp() {
 	-rua
 		Use a random browser user agent on every request.
 	-s	Hunt for secrets.
+	-scheme string
+		Scheme to use for targets without one: auto (https then http), https or http. (default "auto")
 	-sf string
 		Use an external file (txt, one per line) to use custom regexes for secrets hunting.
 	-sr

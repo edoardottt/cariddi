@@ -57,13 +57,16 @@ func New(scan *Scan) *Results {
 
 	results := &Results{}
 
-	// if there isn't a scheme use http.
-	if !urlUtils.HasProtocol(scan.Target) {
-		protocolTemp = "http"
-		targetTemp = urlUtils.GetHost(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
-	} else {
+	// If the target already carries a scheme, honor it as-is. Otherwise pick the
+	// scheme according to scan.Scheme (auto tries https first, then http).
+	if urlUtils.HasProtocol(scan.Target) {
 		protocolTemp = urlUtils.GetProtocol(scan.Target)
 		targetTemp = urlUtils.GetHost(scan.Target)
+	} else {
+		targetTemp = urlUtils.GetHost(scan.Target)
+		protocolTemp = ResolveProtocol(scan.Scheme, func() bool {
+			return isHTTPSReachable(targetTemp, scan)
+		})
 	}
 
 	if scan.Intensive {
@@ -334,6 +337,71 @@ func CreateColly(delayTime, concurrency, timeout, maxDepth int,
 	}
 
 	return c
+}
+
+// ResolveProtocol decides which scheme to use for a scheme-less target
+// according to the requested mode (input.SchemeAuto, input.SchemeHTTPS or
+// input.SchemeHTTP). For the auto mode the httpsReachable callback is used to
+// probe the host; it is injected so the decision can be unit-tested without
+// performing real network requests.
+func ResolveProtocol(mode string, httpsReachable func() bool) string {
+	switch mode {
+	case input.SchemeHTTP:
+		return input.SchemeHTTP
+	case input.SchemeHTTPS:
+		return input.SchemeHTTPS
+	default:
+		if httpsReachable() {
+			return input.SchemeHTTPS
+		}
+
+		return input.SchemeHTTP
+	}
+}
+
+// isHTTPSReachable probes the host over https and reports whether it answers.
+// Any HTTP response (including 4xx/5xx) counts as reachable; connection, TLS
+// or timeout errors mean it is not. It mirrors the collector TLS, proxy and
+// user-agent configuration.
+func isHTTPSReachable(host string, scan *Scan) bool {
+	transport := &http.Transport{
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+		DisableKeepAlives: true,
+	}
+
+	if scan.Proxy != "" {
+		if proxyParsed, err := url.Parse(scan.Proxy); err == nil {
+			transport.Proxy = http.ProxyURL(proxyParsed)
+		}
+	}
+
+	timeout := scan.Timeout
+	if timeout <= 0 {
+		timeout = input.TimeoutRequest
+	}
+
+	client := &http.Client{
+		Transport: transport,
+		Timeout:   time.Duration(timeout) * time.Second,
+	}
+
+	req, err := http.NewRequest(http.MethodGet, input.SchemeHTTPS+"://"+host, http.NoBody)
+	if err != nil {
+		return false
+	}
+
+	if scan.UserAgent != "" {
+		req.Header.Set("User-Agent", scan.UserAgent)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return false
+	}
+
+	defer resp.Body.Close()
+
+	return true
 }
 
 // registerHTMLEvents registers the associated functions for each
