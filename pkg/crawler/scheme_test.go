@@ -37,27 +37,43 @@ func TestResolveProtocol(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name      string
-		mode      string
-		reachable bool
-		expected  string
+		name       string
+		mode       string
+		httpsUp    bool
+		httpUp     bool
+		wantScheme string
+		wantOK     bool
 	}{
-		{"http mode forces http", input.SchemeHTTP, true, "http"},
-		{"https mode forces https", input.SchemeHTTPS, false, "https"},
-		{"auto uses https when reachable", input.SchemeAuto, true, "https"},
-		{"auto falls back to http when unreachable", input.SchemeAuto, false, "http"},
-		{"empty mode behaves like auto (reachable)", "", true, "https"},
-		{"empty mode behaves like auto (unreachable)", "", false, "http"},
+		{"auto prefers https when both up", input.SchemeAuto, true, true, "https", true},
+		{"auto uses https when only https up", input.SchemeAuto, true, false, "https", true},
+		{"auto falls back to http when only http up", input.SchemeAuto, false, true, "http", true},
+		{"auto skips when nothing up", input.SchemeAuto, false, false, "", false},
+		{"empty mode behaves like auto", "", false, true, "http", true},
+		{"https crawls when 443 up", input.SchemeHTTPS, true, false, "https", true},
+		{"https skips when 443 down", input.SchemeHTTPS, false, true, "", false},
+		{"http crawls when 80 up", input.SchemeHTTP, false, true, "http", true},
+		{"http skips when 80 down", input.SchemeHTTP, true, false, "", false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := crawler.ResolveProtocol(tt.mode, func() bool { return tt.reachable })
-			if got != tt.expected {
-				t.Errorf("ResolveProtocol(mode=%q, reachable=%v) = %q; want %q",
-					tt.mode, tt.reachable, got, tt.expected)
+			reachable := func(scheme string) bool {
+				switch scheme {
+				case input.SchemeHTTPS:
+					return tt.httpsUp
+				case input.SchemeHTTP:
+					return tt.httpUp
+				default:
+					return false
+				}
+			}
+
+			gotScheme, gotOK := crawler.ResolveProtocol(tt.mode, reachable)
+			if gotScheme != tt.wantScheme || gotOK != tt.wantOK {
+				t.Errorf("ResolveProtocol(mode=%q, httpsUp=%v, httpUp=%v) = (%q, %v); want (%q, %v)",
+					tt.mode, tt.httpsUp, tt.httpUp, gotScheme, gotOK, tt.wantScheme, tt.wantOK)
 			}
 		})
 	}

@@ -157,7 +157,7 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 - `cat domains.txt | cariddi -scheme auto` (For targets without a scheme, try https then fall back to http, this is the default)
 - `cat domains.txt | cariddi -scheme https` (Force the https scheme for targets without one)
 
-Targets that already include a scheme (e.g. `https://example.com`) are always crawled as-is; the `-scheme` flag only affects scheme-less targets such as a plain list of FQDNs.
+Targets that already include a scheme (e.g. `https://example.com`) are always crawled as-is; the `-scheme` flag only affects scheme-less targets such as a plain list of FQDNs. A scheme-less target that does not resolve (no IP) or whose web port is closed (nothing on 443/80 for the chosen mode) is skipped instead of being crawled, and cariddi moves on to the next target.
 
 ### Output
 
