@@ -145,6 +145,7 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 
 - `cat urls.txt | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
 - `cat urls.txt | cariddi -d 2` (2 seconds between a page crawled and another)
+- `cat urls.txt | cariddi -rl 10` (Limit all concurrent workers to 10 requests per second; `-rate-limit` is also accepted)
 - `cat urls.txt | cariddi -c 200` (Set the concurrency level to 200)
 - `cat urls.txt | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
 - `cat urls.txt | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
@@ -216,6 +217,8 @@ Usage of cariddi:
      Print only the results.
   -proxy string
      Set a Proxy to be used (http and socks5 supported).
+  -rl, -rate-limit int
+     Maximum requests per second across all workers (0 means unlimited).
   -rua
      Use a random browser user agent on every request.
   -s Hunt for secrets.

@@ -69,6 +69,7 @@ func main() {
 	// passed via the CLI
 	config := &crawler.Scan{
 		Delay:            flags.Delay,
+		RateLimit:        flags.RateLimit,
 		Concurrency:      flags.Concurrency,
 		Ignore:           flags.Ignore,
 		IgnoreTxt:        flags.IgnoreTXT,
