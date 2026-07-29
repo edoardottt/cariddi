@@ -76,6 +76,8 @@ func PrintHelp() {
 		Print only the results.
 	-proxy string
 		Set a Proxy to be used (http and socks5 supported).
+	-rl, -rate-limit int
+		Maximum requests per second across all workers (0 means unlimited).
 	-rua
 		Use a random browser user agent on every request.
 	-s	Hunt for secrets.
