@@ -27,6 +27,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+	"sync"
+
 	"github.com/edoardottt/cariddi/pkg/input"
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
@@ -38,6 +40,10 @@ type Results struct {
 	Extensions []scanner.FileTypeMatched
 	Errors     []scanner.ErrorMatched
 	Infos      []scanner.InfoMatched
+
+	// mutex guards the slices above, which can be appended to from
+	// concurrent colly worker goroutines during a crawl.
+	mutex sync.Mutex
 }
 
 type Scan struct {
@@ -69,6 +75,7 @@ type Scan struct {
 	Concurrency int
 	Delay       int
 	Timeout     int
+	Rps         uint
 
 	// Storage
 	SecretsSlice   []string

@@ -104,6 +104,9 @@ type Input struct {
 	// (Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif, mp4,
 	// webm, mkv, avi, mov, flv, wmv, mp3, wav, flac, ogg, m4a, aac, ico, cur, eot, otf)
 	IgnoreExtensions StringSlice
+
+	// Number of requests per second at all
+	Rps uint
 }
 
 // ScanFlag defines all the options taken
@@ -158,6 +161,8 @@ func ScanFlag() Input {
 
 	flag.Var(&ignoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning")
 
+	rps := flag.Uint("rps", 0, "Number of requests per second at all.")
+
 	flag.Parse()
 
 	// Default Extensions to filter
@@ -196,6 +201,7 @@ func ScanFlag() Input {
 		*storeRespPtr,
 		*maxDepth,
 		ignoreExtensions,
+		*rps,
 	}
 
 	return result

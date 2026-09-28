@@ -27,8 +27,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"time"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
@@ -36,9 +38,22 @@ import (
 	"github.com/edoardottt/cariddi/pkg/input"
 	"github.com/edoardottt/cariddi/pkg/output"
 	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/projectdiscovery/ratelimit"
 )
 
+// newRateLimiter returns the rate limiter used for the whole scan.
+// When no -rps flag is provided (Rps = 0) an unlimited limiter is used,
+// otherwise a plain token bucket with zero tokens would starve and
+// block forever in Take().
+func newRateLimiter(ctx context.Context, rps uint) *ratelimit.Limiter {
+	if rps > 0 {
+		return ratelimit.New(ctx, rps, time.Second)
+	}
+	return ratelimit.NewUnlimited(ctx)
+}
+
 func main() {
+
 	// Scan flags.
 	flags := input.ScanFlag()
 
@@ -89,6 +104,7 @@ func main() {
 		StoreResp:        flags.StoreResp,
 		MaxDepth:         flags.MaxDepth,
 		IgnoreExtensions: flags.IgnoreExtensions,
+		Rps:              flags.Rps,
 	}
 
 	// Read the targets from standard input.
@@ -144,10 +160,13 @@ func main() {
 		config.Headers = input.GetHeaders(headersInput)
 	}
 
+	// Rate limiter applied to the whole scan (all targets).
+	limiter := newRateLimiter(context.Background(), config.Rps)
+
 	// For each target generate a crawler and collect all the results.
 	for _, target := range targets {
 		config.Target = target
-		results := crawler.New(config)
+		results := crawler.New(config, limiter)
 		finalResults = append(finalResults, results.URLs...)
 		finalSecret = append(finalSecret, results.Secrets...)
 		finalEndpoints = append(finalEndpoints, results.Endpoints...)
