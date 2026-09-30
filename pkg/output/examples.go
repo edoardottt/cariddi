@@ -56,6 +56,8 @@ func PrintExamples() {
 
 	cat urls | cariddi -c 200 (Set the concurrency level to 200)
 
+	cat urls | cariddi -rl 10 (Limit all workers to 10 requests per second)
+
 	cat urls | cariddi -plain (Print only results)
 
 	cat urls | cariddi -ot target_name (Results in txt file)

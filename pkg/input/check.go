@@ -112,6 +112,11 @@ func CheckFlags(flags Input) {
 		os.Exit(1)
 	}
 
+	if flags.RateLimit < 0 {
+		fmt.Println("The rate limit must be zero or a positive value.")
+		os.Exit(1)
+	}
+
 	if flags.Ignore != "" && flags.IgnoreTXT != "" {
 		fmt.Println("You should use only one among -i and -it.")
 		fmt.Println("Examples:")
