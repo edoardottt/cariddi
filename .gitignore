@@ -1,5 +1,5 @@
 # cariddi
-cariddi
+/cariddi
 output-cariddi/
 .cariddi_cache/
 *.snap
@@ -22,3 +22,6 @@ output-cariddi/
 
 # VScode Debugging folder
 .vscode/
+
+# JetBrains IDEs
+.idea/

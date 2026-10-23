@@ -76,6 +76,8 @@ func PrintHelp() {
 		Print only the results.
 	-proxy string
 		Set a Proxy to be used (http and socks5 supported).
+	-rps uint
+		Number of requests per second at all.
 	-rua
 		Use a random browser user agent on every request.
 	-s	Hunt for secrets.
