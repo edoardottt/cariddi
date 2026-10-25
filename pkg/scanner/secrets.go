@@ -28,6 +28,8 @@ package scanner
 
 import (
 	"regexp"
+	"slices"
+	"strings"
 	"sync"
 )
 
@@ -55,9 +57,18 @@ type SecretMatched struct {
 	Match  string
 }
 
+// SecretScanner hunts for secrets in response bodies (see Engine).
+// It is safe for concurrent use.
+type SecretScanner struct {
+	secrets []Secret
+	engine  *Engine
+}
+
 var (
-	secrets    []Secret  //nolint: gochecknoglobals
-	onceSecret sync.Once //nolint: gochecknoglobals
+	secrets           []Secret       //nolint: gochecknoglobals
+	onceSecret        sync.Once      //nolint: gochecknoglobals
+	secretScanner     *SecretScanner //nolint: gochecknoglobals
+	onceSecretScanner sync.Once      //nolint: gochecknoglobals
 )
 
 // GetSecretRegexes returns a slice of all the secret structs.
@@ -858,4 +869,54 @@ func RemoveDuplicateSecrets(input []SecretMatched) []SecretMatched {
 	}
 
 	return list
+}
+
+// GetSecretScanner returns the scanner for the predefined secret regexes.
+func GetSecretScanner() *SecretScanner {
+	onceSecretScanner.Do(func() {
+		secretScanner = NewSecretScanner(GetSecretRegexes())
+	})
+
+	return secretScanner
+}
+
+// NewSecretScanner returns a scanner for the given secrets.
+func NewSecretScanner(secrets []Secret) *SecretScanner {
+	s := &SecretScanner{secrets: slices.Clone(secrets)}
+	regexes := make([]*regexp.Regexp, len(s.secrets))
+
+	for i := range s.secrets {
+		regexes[i] = &s.secrets[i].Regex
+	}
+
+	s.engine = NewEngine(regexes)
+
+	return s
+}
+
+// Scan returns the secrets found in body, in the order of the secrets
+// list, excluding known false positives.
+func (s *SecretScanner) Scan(target, body string) []SecretMatched {
+	var results []SecretMatched
+
+	for i, matches := range s.engine.FindAll(body) {
+		for _, match := range matches {
+			if !s.secrets[i].isFalsePositive(match) {
+				results = append(results, SecretMatched{Secret: s.secrets[i], URL: target, Match: match})
+			}
+		}
+	}
+
+	return results
+}
+
+// isFalsePositive reports whether match contains a known false positive.
+func (s *Secret) isFalsePositive(match string) bool {
+	for _, fp := range s.FalsePositives {
+		if strings.Contains(strings.ToLower(match), fp) {
+			return true
+		}
+	}
+
+	return false
 }

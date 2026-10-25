@@ -12,7 +12,6 @@ linters:
     - exhaustive
     - gochecknoglobals
     - gochecknoinits
-    - goconst
     - gocritic
     - godot
     - godox

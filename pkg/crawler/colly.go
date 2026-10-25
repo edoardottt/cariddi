@@ -35,6 +35,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"sync"
 	"time"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
@@ -56,6 +57,9 @@ func New(scan *Scan) *Results {
 	var targetTemp, protocolTemp string
 
 	results := &Results{}
+
+	// Colly callbacks run concurrently: resultsMu guards results.
+	var resultsMu sync.Mutex
 
 	// if there isn't a scheme use http.
 	if !urlUtils.HasProtocol(scan.Target) {
@@ -99,6 +103,12 @@ func New(scan *Scan) *Results {
 		ignoreSlice = fileUtils.ReadFile(scan.IgnoreTxt)
 	}
 
+	// Build the secret regexes only once per target.
+	var secretScanner *scanner.SecretScanner
+	if scan.SecretsFlag {
+		secretScanner = newSecretScanner(scan.SecretsSlice)
+	}
+
 	// crawler creation
 	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout, scan.MaxDepth,
 		scan.Cache, scan.Intensive, scan.Rua,
@@ -127,7 +137,11 @@ func New(scan *Scan) *Results {
 			}
 		}
 
+		resultsMu.Lock()
+
 		results.URLs = append(results.URLs, r.URL.String())
+
+		resultsMu.Unlock()
 
 		if !scan.JSON {
 			fmt.Println(r.URL.String())
@@ -147,7 +161,9 @@ func New(scan *Scan) *Results {
 		minBodyLentgh := 10
 		lengthOk := len(bodyStr) > minBodyLentgh
 		secrets := []scanner.SecretMatched{}
+		endpoints := []scanner.EndpointMatched{}
 		parameters := []scanner.Parameter{}
+		extensionsFound := []scanner.FileTypeMatched{}
 		errors := []scanner.ErrorMatched{}
 		infos := []scanner.InfoMatched{}
 		filetype := &scanner.FileType{}
@@ -161,8 +177,7 @@ func New(scan *Scan) *Results {
 		// HERE SCAN FOR SECRETS
 		if scan.SecretsFlag && lengthOk &&
 			!sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
-			secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, &scan.SecretsSlice)
-			results.Secrets = append(results.Secrets, secretsSlice...)
+			secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, secretScanner)
 			secrets = append(secrets, secretsSlice...)
 		}
 		// HERE SCAN FOR ENDPOINTS
@@ -170,7 +185,7 @@ func New(scan *Scan) *Results {
 			endpointsSlice := huntEndpoints(r.Request.URL.String(), &scan.EndpointsSlice)
 			for _, elem := range endpointsSlice {
 				if len(elem.Parameters) != 0 {
-					results.Endpoints = append(results.Endpoints, elem)
+					endpoints = append(endpoints, elem)
 					parameters = append(parameters, elem.Parameters...)
 				}
 			}
@@ -179,23 +194,33 @@ func New(scan *Scan) *Results {
 		if 1 <= scan.FileType && scan.FileType <= 7 {
 			extension := huntExtensions(r.Request.URL.String(), scan.FileType)
 			if extension.URL != "" {
-				results.Extensions = append(results.Extensions, extension)
+				extensionsFound = append(extensionsFound, extension)
 				filetype = &extension.Filetype
 			}
 		}
 		// HERE SCAN FOR ERRORS
 		if scan.ErrorsFlag && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
 			errorsSlice := huntErrors(r.Request.URL.String(), bodyStr)
-			results.Errors = append(results.Errors, errorsSlice...)
 			errors = append(errors, errorsSlice...)
 		}
 
 		// HERE SCAN FOR INFOS
 		if scan.InfoFlag && !sliceUtils.Contains(scan.IgnoreExtensions, urlUtils.GetURLExtension(r.Request.URL)) {
 			infosSlice := huntInfos(r.Request.URL.String(), bodyStr)
-			results.Infos = append(results.Infos, infosSlice...)
 			infos = append(infos, infosSlice...)
 		}
+
+		// Colly callbacks run concurrently: add the findings to the shared
+		// results all at once, under the lock.
+		resultsMu.Lock()
+
+		results.Secrets = append(results.Secrets, secrets...)
+		results.Endpoints = append(results.Endpoints, endpoints...)
+		results.Extensions = append(results.Extensions, extensionsFound...)
+		results.Errors = append(results.Errors, errors...)
+		results.Infos = append(results.Infos, infos...)
+
+		resultsMu.Unlock()
 
 		if scan.JSON {
 			jsonOutput, err := output.GetJSONString(

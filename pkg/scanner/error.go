@@ -25,6 +25,7 @@ package scanner
 
 import (
 	"regexp"
+	"slices"
 	"sync"
 )
 
@@ -46,9 +47,18 @@ type ErrorMatched struct {
 	Match string
 }
 
+// ErrorScanner hunts for errors in response bodies (see Engine).
+// It is safe for concurrent use.
+type ErrorScanner struct {
+	errs   []Error
+	engine *Engine
+}
+
 var (
-	errors     []Error   //nolint: gochecknoglobals
-	onceErrors sync.Once //nolint: gochecknoglobals
+	errors           []Error       //nolint: gochecknoglobals
+	onceErrors       sync.Once     //nolint: gochecknoglobals
+	errorScanner     *ErrorScanner //nolint: gochecknoglobals
+	onceErrorScanner sync.Once     //nolint: gochecknoglobals
 )
 
 // GetErrorRegexes returns all the error structs.
@@ -180,4 +190,40 @@ func RemoveDuplicateErrors(input []ErrorMatched) []ErrorMatched {
 	}
 
 	return list
+}
+
+// GetErrorScanner returns the scanner for the predefined error regexes.
+func GetErrorScanner() *ErrorScanner {
+	onceErrorScanner.Do(func() {
+		errorScanner = NewErrorScanner(GetErrorRegexes())
+	})
+
+	return errorScanner
+}
+
+// NewErrorScanner returns a scanner for the given errors.
+func NewErrorScanner(errs []Error) *ErrorScanner {
+	s := &ErrorScanner{errs: slices.Clone(errs)}
+	regexes := make([]*regexp.Regexp, len(s.errs))
+
+	for i := range s.errs {
+		regexes[i] = &s.errs[i].Regex
+	}
+
+	s.engine = NewEngine(regexes)
+
+	return s
+}
+
+// Scan returns the errors found in body, in the order of the errors list.
+func (s *ErrorScanner) Scan(target, body string) []ErrorMatched {
+	var results []ErrorMatched
+
+	for i, matches := range s.engine.FindAll(body) {
+		for _, match := range matches {
+			results = append(results, ErrorMatched{Error: s.errs[i], URL: target, Match: match})
+		}
+	}
+
+	return results
 }

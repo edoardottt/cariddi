@@ -35,93 +35,44 @@ import (
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
 
-// huntSecrets hunts for secrets.
-func huntSecrets(target, body string, secretsFile *[]string) []scanner.SecretMatched {
-	var (
-		secrets []scanner.SecretMatched
-		mu      sync.Mutex
-		wg      sync.WaitGroup
-	)
+// newSecretScanner returns the scanner for the predefined secret regexes or,
+// if a secrets file is used, for its regexes (invalid regexes are skipped).
+// Blank lines are ignored: an empty regex would match everywhere.
+func newSecretScanner(secretsFile []string) *scanner.SecretScanner {
+	rawRegexes := make([]string, 0, len(secretsFile))
 
-	if len(*secretsFile) == 0 { // Predefined secret regexes
-		for _, secret := range scanner.GetSecretRegexes() {
-			wg.Add(1)
-
-			go func(secret scanner.Secret) {
-				defer wg.Done()
-
-				matches := secret.Regex.FindAllStringSubmatch(body, -1)
-
-				for _, match := range matches {
-					isFalsePositive := false
-
-					for _, fp := range secret.FalsePositives {
-						if strings.Contains(strings.ToLower(match[0]), fp) {
-							isFalsePositive = true
-							break
-						}
-					}
-
-					if isFalsePositive {
-						continue
-					}
-
-					secretMatch := scanner.SecretMatched{
-						Secret: secret,
-						URL:    target,
-						Match:  match[0],
-					}
-
-					mu.Lock()
-
-					secrets = append(secrets, secretMatch)
-
-					mu.Unlock()
-				}
-			}(secret)
-		}
-	} else { // Custom regex from file
-		for _, rawRegex := range *secretsFile {
-			re, err := regexp.Compile(rawRegex)
-			if err != nil {
-				continue // skip invalid regex
-			}
-
-			wg.Add(1)
-
-			go func(re *regexp.Regexp) {
-				defer wg.Done()
-
-				matches := re.FindAllStringSubmatch(body, -1)
-				if matches == nil {
-					return
-				}
-
-				for _, match := range matches {
-					secretMatch := scanner.SecretMatched{
-						Secret: scanner.Secret{
-							Name:        "CustomFromFile",
-							Description: "",
-							Regex:       *re,
-							Poc:         "",
-						},
-						URL:   target,
-						Match: match[0],
-					}
-
-					mu.Lock()
-
-					secrets = append(secrets, secretMatch)
-
-					mu.Unlock()
-				}
-			}(re)
+	for _, line := range secretsFile {
+		if strings.TrimSpace(line) != "" {
+			rawRegexes = append(rawRegexes, line)
 		}
 	}
 
-	wg.Wait()
+	if len(rawRegexes) == 0 {
+		return scanner.GetSecretScanner()
+	}
 
-	return scanner.RemoveDuplicateSecrets(secrets)
+	secrets := make([]scanner.Secret, 0, len(rawRegexes))
+
+	for _, rawRegex := range rawRegexes {
+		re, err := regexp.Compile(rawRegex)
+		if err != nil {
+			continue // skip invalid regex
+		}
+
+		secrets = append(secrets, scanner.Secret{
+			Name:        "CustomFromFile",
+			Description: "",
+			Regex:       *re,
+			Poc:         "",
+		})
+	}
+
+	return scanner.NewSecretScanner(secrets)
+}
+
+// huntSecrets hunts for secrets.
+func huntSecrets(target, body string, secretScanner *scanner.SecretScanner) []scanner.SecretMatched {
+	return scanner.RemoveDuplicateSecrets(secretScanner.Scan(target, body))
 }
 
 // huntEndpoints hunts for juicy endpoints.
@@ -180,45 +131,7 @@ func huntExtensions(target string, severity int) scanner.FileTypeMatched {
 
 // huntErrors hunts for errors.
 func huntErrors(target, body string) []scanner.ErrorMatched {
-	var (
-		results []scanner.ErrorMatched
-		wg      sync.WaitGroup
-		mutex   sync.Mutex
-	)
-
-	errorRegexes := scanner.GetErrorRegexes()
-
-	for _, err := range errorRegexes {
-		wg.Add(1)
-
-		go func(err scanner.Error) {
-			defer wg.Done()
-
-			matches := err.Regex.FindAllStringSubmatch(body, -1)
-			if matches == nil {
-				return
-			}
-
-			var localResults []scanner.ErrorMatched
-			for _, match := range matches {
-				localResults = append(localResults, scanner.ErrorMatched{
-					Error: err,
-					URL:   target,
-					Match: match[0],
-				})
-			}
-
-			mutex.Lock()
-
-			results = append(results, localResults...)
-
-			mutex.Unlock()
-		}(err)
-	}
-
-	wg.Wait()
-
-	return scanner.RemoveDuplicateErrors(results)
+	return scanner.RemoveDuplicateErrors(scanner.GetErrorScanner().Scan(target, body))
 }
 
 // huntInfos hunts for infos.
