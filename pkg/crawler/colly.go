@@ -110,9 +110,12 @@ func New(scan *Scan) *Results {
 	}
 
 	// crawler creation
+	// targetTemp is the host (or root host in intensive mode); colly matches
+	// the rate-limit rule against the request host, so pass the host here, not
+	// scan.Target (which includes the path and would never match).
 	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout, scan.MaxDepth,
 		scan.Cache, scan.Intensive, scan.Rua,
-		scan.Proxy, scan.UserAgent, scan.Target)
+		scan.Proxy, scan.UserAgent, targetTemp)
 
 	event := &Event{
 		ProtocolTemp: protocolTemp,
