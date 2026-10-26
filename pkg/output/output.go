@@ -27,10 +27,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package output
 
 import (
+	"cmp"
 	"fmt"
-	"html"
+	"log"
 	"os"
+	"slices"
 	"strings"
+	"time"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	"github.com/edoardottt/cariddi/pkg/input"
@@ -148,82 +151,51 @@ func HTMLOutput(flags input.Input, resultFilename string, finalResults []string,
 		fileUtils.CreateOutputFolder()
 	}
 
-	HeaderHTML("Results found", resultFilename)
-
-	for _, elem := range finalResults {
-		AppendOutputToHTML(elem, "", resultFilename, true)
+	// Every card with at least one finding links to its section.
+	report := htmlReport{
+		Generated: time.Now().Format(time.DateTime),
+		Stats: []htmlStat{
+			{"results", "Results", len(finalResults)},
+			{"secrets", "Secrets", len(finalSecret)},
+			{"endpoints", "Endpoints", len(finalEndpoints)},
+			{"extensions", "Extensions", len(finalExtensions)},
+			{"errors", "Errors", len(finalErrors)},
+			{"info", "Info", len(finalInfos)},
+		},
+		Results: finalResults,
 	}
 
-	FooterHTML(resultFilename)
-
 	// if secrets flag enabled save also secrets
-	if flags.Secrets && len(finalSecret) > 0 {
-		HeaderHTML("Secrets found", resultFilename)
-
-		for _, elem := range finalSecret {
-			AppendOutputToHTML(fmt.Sprintf("%s - %s in %s", elem.Secret.Name, elem.Match, elem.URL), "", resultFilename, false)
-		}
-
-		FooterHTML(resultFilename)
+	if flags.Secrets {
+		report.Secrets = finalSecret
 	}
 
 	// if endpoints flag enabled save also endpoints
-	if flags.Endpoints && len(finalEndpoints) > 0 {
-		HeaderHTML("Endpoints found", resultFilename)
-
-		for _, elem := range finalEndpoints {
-			for _, parameter := range elem.Parameters {
-				finalString := "" + parameter.Parameter
-				if len(parameter.Attacks) != 0 {
-					finalString += " -"
-					for _, attack := range parameter.Attacks {
-						finalString += " " + attack
-					}
-				}
-
-				AppendOutputToHTML(fmt.Sprintf("%s in %s", finalString, elem.URL), "", resultFilename, false)
-			}
-		}
-
-		FooterHTML(resultFilename)
+	if flags.Endpoints {
+		report.Endpoints = finalEndpoints
 	}
 
-	// if extensions flag enabled save also extensions
-	if hasValidExtensionFlag(flags.Extensions) && len(finalExtensions) > 0 {
-		HeaderHTML("Extensions found", resultFilename)
-
-		for _, elem := range finalExtensions {
-			AppendOutputToHTML(fmt.Sprintf("%s in %s", elem.Filetype.Extension, elem.URL), "", resultFilename, false)
-		}
-
-		FooterHTML(resultFilename)
+	// if extensions flag enabled save also extensions (juiciest first)
+	if hasValidExtensionFlag(flags.Extensions) {
+		// Sort a copy: the caller still prints the extensions in crawl order.
+		report.Extensions = slices.Clone(finalExtensions)
+		slices.SortStableFunc(report.Extensions, func(a, b scanner.FileTypeMatched) int {
+			return cmp.Or(cmp.Compare(a.Filetype.Severity, b.Filetype.Severity),
+				strings.Compare(a.Filetype.Extension, b.Filetype.Extension))
+		})
 	}
 
 	// if errors flag enabled save also errors
-	if flags.Errors && len(finalErrors) > 0 {
-		HeaderHTML("Errors found", resultFilename)
-
-		for _, elem := range finalErrors {
-			output := fmt.Sprintf("%s - %s in %s", elem.Error.ErrorName, elem.Match, elem.URL)
-			AppendOutputToHTML(output, "", resultFilename, false)
-		}
-
-		FooterHTML(resultFilename)
+	if flags.Errors {
+		report.Errors = finalErrors
 	}
 
 	// if info flag enabled save also infos
-	if flags.Info && len(finalInfos) > 0 {
-		HeaderHTML("Useful informations found", resultFilename)
-
-		for _, elem := range finalInfos {
-			// Escape HTML comment to be shown on the result page
-			AppendOutputToHTML(elem.Info.Name+" - "+
-				html.EscapeString(elem.Match)+
-				" in "+elem.URL, "", resultFilename, false)
-		}
-
-		FooterHTML(resultFilename)
+	if flags.Info {
+		report.Infos = finalInfos
 	}
 
-	BannerFooterHTML(resultFilename)
+	if err := writeHTML(resultFilename, report); err != nil {
+		log.Fatal(err)
+	}
 }

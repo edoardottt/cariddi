@@ -55,7 +55,6 @@ type Scan struct {
 	Ignore           string
 	IgnoreTxt        string
 	JSON             bool
-	HTML             string
 	Proxy            string
 	Target           string
 	Txt              string

@@ -293,10 +293,6 @@ func New(scan *Scan) *Results {
 
 	c.Wait()
 
-	if scan.HTML != "" {
-		output.FooterHTML(scan.HTML)
-	}
-
 	return results
 }
 

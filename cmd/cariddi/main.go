@@ -125,7 +125,6 @@ func main() {
 	var ResultHTML = ""
 	if flags.HTMLout != "" {
 		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
-		output.BannerHTML(ResultHTML)
 	}
 
 	if config.StoreResp {
@@ -172,8 +171,6 @@ func main() {
 
 	// IF HTML OUTPUT >
 	if flags.HTMLout != "" {
-		output.WriteSummaryCard(ResultHTML, len(finalResults), len(finalSecret), len(finalEndpoints),
-			len(finalExtensions), len(finalErrors), len(finalInfos))
 		output.HTMLOutput(flags, ResultHTML, finalResults, finalSecret,
 			finalEndpoints, finalExtensions, finalErrors, finalInfos)
 	}
