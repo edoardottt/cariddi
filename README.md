@@ -65,7 +65,7 @@ nix-shell -p cariddi
 
 #### Building from source
 
-You need [Go](https://go.dev/) (>=1.24.0)
+You need [Go](https://go.dev/) (>=1.25)
 
 <details>
   <summary>Building from source for Linux and Windows</summary>
@@ -102,13 +102,13 @@ Usage 💡
 If you want to scan only a single target you can use
 
 ```console
-echo https://edoardottt.com/ | cariddi
+echo https://edoardottt.github.io/cariddi-test/ | cariddi
 ```
 
 With multiple targets you can use a file instead, e.g. urls.txt containing:
 
 ```console
-https://edoardottt.com/
+https://edoardottt.github.io/cariddi-test/
 http://testphp.vulnweb.com/
 ```
 
@@ -285,7 +285,7 @@ If there aren't errors, go ahead :)
 Test using [https://edoardottt.github.io/cariddi-test/](https://edoardottt.github.io/cariddi-test/)
 
 ```console
-echo "https://edoardottt.github.io/cariddi-test/" | cariddi
+echo https://edoardottt.github.io/cariddi-test/ | cariddi
 ```
 
 **Help me build this!**
