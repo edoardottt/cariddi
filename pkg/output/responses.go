@@ -143,7 +143,7 @@ func UpdateIndex(resp *colly.Response) error {
 	builder.WriteString(resp.Request.URL.String())
 	builder.WriteRune(' ')
 	builder.WriteString("(")
-	builder.WriteString(fmt.Sprint(resp.StatusCode))
+	fmt.Fprint(builder, resp.StatusCode)
 	builder.WriteString(")")
 	builder.WriteRune('\n')
 
