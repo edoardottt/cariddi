@@ -27,10 +27,18 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
-	"fmt"
+	"bytes"
 	"strings"
 
-	urlUtils "github.com/edoardottt/cariddi/internal/url"
+	"github.com/gocolly/colly/v2"
+)
+
+const (
+	// maxRedirects is the maximum number of redirects followed (as Go does).
+	maxRedirects = 10
+	// sitemapProbeKey marks, in the request context, the sitemap.xml
+	// request sent to the target.
+	sitemapProbeKey = "sitemapProbe"
 )
 
 // RetrieveBody retrieves the body (in the response) of a url.
@@ -54,18 +62,20 @@ func IgnoreMatch(url string, ignoreSlice *[]string) bool {
 	return false
 }
 
-// intensiveOk checks if a given url can be crawled
-// in intensive mode (if the 2nd level domain matches with
-// the inputted target).
-func intensiveOk(target string, urlInput string, debug bool) bool {
-	root, err := urlUtils.GetRootHost(urlInput)
-	if err != nil {
-		if debug {
-			fmt.Println(err.Error() + ": " + urlInput)
-		}
+// canVisit checks if a URL can be crawled: it must be
+// in scope and not ignored.
+func canVisit(event *Event, absoluteURL string) bool {
+	return event.Scope.Contains(absoluteURL) &&
+		(!event.Ignore || !IgnoreMatch(absoluteURL, &event.IgnoreSlice))
+}
 
-		return false
-	}
+// isSitemapProbe checks if r is the sitemap.xml request sent to the target
+// (the requests for the links found in it share its context, but are deeper).
+func isSitemapProbe(r *colly.Request) bool {
+	return r.Depth == 1 && r.Ctx.Get(sitemapProbeKey) != ""
+}
 
-	return root == target
+// isSitemap checks if body is an XML sitemap (or sitemap index).
+func isSitemap(body []byte) bool {
+	return bytes.Contains(body, []byte("<urlset")) || bytes.Contains(body, []byte("<sitemapindex"))
 }

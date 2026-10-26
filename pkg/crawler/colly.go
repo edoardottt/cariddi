@@ -70,19 +70,19 @@ func New(scan *Scan) *Results {
 		targetTemp = urlUtils.GetHost(scan.Target)
 	}
 
-	if scan.Intensive {
-		var err error
-
-		targetTemp, err = urlUtils.GetRootHost(fmt.Sprintf("%s://%s", protocolTemp, targetTemp))
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-	}
-
 	if targetTemp == "" {
 		fmt.Println("The URL provided is not built in a proper way: " + scan.Target)
 		os.Exit(1)
+	}
+
+	// The scope tells which URLs can be crawled: only the target host and
+	// port or, in intensive mode, its root domain and all the subdomains.
+	scope, err := urlUtils.NewScope(fmt.Sprintf("%s://%s", protocolTemp, targetTemp), scan.Intensive)
+	if err != nil {
+		// Skip the target (e.g. a TLD in intensive mode).
+		log.Println(err.Error() + ": " + scan.Target)
+
+		return results
 	}
 
 	// clean target input
@@ -110,18 +110,13 @@ func New(scan *Scan) *Results {
 	}
 
 	// crawler creation
-	// targetTemp is the host (or root host in intensive mode); colly matches
-	// the rate-limit rule against the request host, so pass the host here, not
-	// scan.Target (which includes the path and would never match).
 	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout, scan.MaxDepth,
-		scan.Cache, scan.Intensive, scan.Rua,
-		scan.Proxy, scan.UserAgent, targetTemp)
+		scan.Cache, scan.Rua, scan.Proxy, scan.UserAgent)
 
 	event := &Event{
 		ProtocolTemp: protocolTemp,
 		TargetTemp:   targetTemp,
-		Target:       scan.Target,
-		Intensive:    scan.Intensive,
+		Scope:        scope,
 		Ignore:       ignoreBool,
 		Debug:        scan.Debug,
 		JSON:         scan.JSON,
@@ -131,6 +126,20 @@ func New(scan *Scan) *Results {
 
 	registerHTMLEvents(c, event)
 	registerXMLEvents(c, event)
+	c.SetRedirectHandler(redirectHandler(event))
+
+	// addURL adds a crawled URL to the results and prints it.
+	addURL := func(u string) {
+		resultsMu.Lock()
+
+		results.URLs = append(results.URLs, u)
+
+		resultsMu.Unlock()
+
+		if !scan.JSON {
+			fmt.Println(u)
+		}
+	}
 
 	c.OnRequest(func(r *colly.Request) {
 		// Add headers (if needed) on each request
@@ -140,18 +149,24 @@ func New(scan *Scan) *Results {
 			}
 		}
 
-		resultsMu.Lock()
-
-		results.URLs = append(results.URLs, r.URL.String())
-
-		resultsMu.Unlock()
-
-		if !scan.JSON {
-			fmt.Println(r.URL.String())
+		// The sitemap probe is added only if it's a valid sitemap (OnResponse).
+		if isSitemapProbe(r) {
+			return
 		}
+
+		addURL(r.URL.String())
 	})
 
 	c.OnResponse(func(r *colly.Response) {
+		// Ignore the sitemap probe if it isn't a valid sitemap (as a 404).
+		if isSitemapProbe(r.Request) {
+			if !isSitemap(r.Body) {
+				return
+			}
+
+			addURL(r.Request.URL.String())
+		}
+
 		if scan.StoreResp {
 			err := output.StoreHTTPResponse(r)
 			if err != nil {
@@ -237,27 +252,19 @@ func New(scan *Scan) *Results {
 		}
 	})
 
-	// Start scraping on target
+	// Start scraping on target, probing the sitemap too: it's added to the
+	// results only if it's a valid sitemap (see OnResponse).
 	path, err := urlUtils.GetPath(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
-	if err == nil {
-		var addPath string
+	if err == nil && (path == "" || path == "/") {
+		sitemapURL := fmt.Sprintf("%s://%s/sitemap.xml", protocolTemp, targetTemp)
+		if !ignoreBool || !IgnoreMatch(sitemapURL, &ignoreSlice) {
+			ctx := colly.NewContext()
+			ctx.Put(sitemapProbeKey, "true")
 
-		if path == "" {
-			addPath = "/"
-		}
-
-		visitURL := func(filePath string) {
-			absoluteURL := fmt.Sprintf("%s://%s%s%s", protocolTemp, scan.Target, addPath, filePath)
-			if !ignoreBool || (ignoreBool && !IgnoreMatch(absoluteURL, &ignoreSlice)) {
-				err := c.Visit(absoluteURL)
-				if err != nil && scan.Debug {
-					log.Println(err)
-				}
+			err := c.Request(http.MethodGet, sitemapURL, nil, ctx, nil)
+			if err != nil && scan.Debug {
+				log.Println(err)
 			}
-		}
-
-		if path == "" || path == "/" {
-			visitURL("sitemap.xml")
 		}
 	}
 
@@ -296,19 +303,27 @@ func New(scan *Scan) *Results {
 // CreateColly takes as input all the settings needed to instantiate
 // a new Colly Collector object and it returns this object.
 func CreateColly(delayTime, concurrency, timeout, maxDepth int,
-	cache, intensive, rua bool,
-	proxy string, userAgent string, target string) *colly.Collector {
+	cache, rua bool,
+	proxy string, userAgent string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
 	c.IgnoreRobotsTxt = true
 	c.AllowURLRevisit = false
 
-	err := c.Limit(
+	// Request every URL only once (see visitedStorage).
+	err := c.SetStorage(newVisitedStorage())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Only URLs in scope are requested (links and redirects are checked),
+	// so the limits can apply to every request.
+	err = c.Limit(
 		&colly.LimitRule{
 			Parallelism: concurrency,
 			Delay:       time.Duration(delayTime) * time.Second,
-			DomainGlob:  "*" + target,
+			DomainGlob:  "*",
 		},
 	)
 	if err != nil {
@@ -370,28 +385,28 @@ func registerHTMLEvents(c *colly.Collector, event *Event) {
 	c.OnHTML("a[href], link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		if len(link) != 0 && link[0] != '#' {
-			visitHTMLLink(link, event, e, c)
+			visitHTMLLink(link, event, e)
 		}
 	})
 
 	c.OnHTML("script[src], iframe[src], svg[src], img[src], video[src], embed[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e, c)
+		visitHTMLLink(e.Attr("src"), event, e)
 	})
 
 	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("action"), event, e, c)
+		visitHTMLLink(e.Attr("action"), event, e)
 	})
 
 	c.OnHTML("[data-src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data-src"), event, e, c)
+		visitHTMLLink(e.Attr("data-src"), event, e)
 	})
 
 	c.OnHTML("[data-href]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data-href"), event, e, c)
+		visitHTMLLink(e.Attr("data-href"), event, e)
 	})
 
 	c.OnHTML("[data-url]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data-url"), event, e, c)
+		visitHTMLLink(e.Attr("data-url"), event, e)
 	})
 
 	c.OnHTML("img[srcset], source[srcset]", func(e *colly.HTMLElement) {
@@ -402,7 +417,7 @@ func registerHTMLEvents(c *colly.Collector, event *Event) {
 			parts := strings.Fields(strings.TrimSpace(entry))
 			if len(parts) > 0 {
 				link := parts[0]
-				visitHTMLLink(link, event, e, c)
+				visitHTMLLink(link, event, e)
 			}
 		}
 	})
@@ -417,18 +432,18 @@ func registerHTMLEvents(c *colly.Collector, event *Event) {
 				if strings.HasPrefix(trimmed, "url=") {
 					// Correctly extract the URL by trimming the "url=" part
 					redirectURL := strings.TrimPrefix(trimmed, "url=")
-					visitHTMLLink(redirectURL, event, e, c)
+					visitHTMLLink(redirectURL, event, e)
 				}
 			}
 		}
 	})
 
 	c.OnHTML("object[data]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data"), event, e, c)
+		visitHTMLLink(e.Attr("data"), event, e)
 	})
 
 	c.OnHTML("applet[code]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("code"), event, e, c)
+		visitHTMLLink(e.Attr("code"), event, e)
 	})
 }
 
@@ -437,54 +452,73 @@ func registerHTMLEvents(c *colly.Collector, event *Event) {
 func registerXMLEvents(c *colly.Collector, event *Event) {
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//url/loc", func(e *colly.XMLElement) {
-		visitXMLLink(e.Text, event, e, c)
+		visitXMLLink(e.Text, event, e)
+	})
+
+	// Create a callback on the XPath query searching for the sitemaps
+	// listed in a sitemap index
+	c.OnXML("//sitemap/loc", func(e *colly.XMLElement) {
+		visitXMLLink(e.Text, event, e)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//link", func(e *colly.XMLElement) {
-		visitXMLLink(e.Text, event, e, c)
+		visitXMLLink(e.Text, event, e)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//href", func(e *colly.XMLElement) {
-		visitXMLLink(e.Text, event, e, c)
+		visitXMLLink(e.Text, event, e)
 	})
 
 	// Create a callback on the XPath query searching for the URLs
 	c.OnXML("//fileurl", func(e *colly.XMLElement) {
-		visitXMLLink(e.Text, event, e, c)
+		visitXMLLink(e.Text, event, e)
 	})
 }
 
 // visitHTMLLink checks if the collector should visit a link or not.
-func visitHTMLLink(link string, event *Event, e *colly.HTMLElement, c *colly.Collector) {
+func visitHTMLLink(link string, event *Event, e *colly.HTMLElement) {
 	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
 		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
-		// Only those links are visited which are in AllowedDomains
-		visitLink(event, c, absoluteURL)
+		// Only those links are visited which are in scope
+		visitLink(event, e.Request, absoluteURL)
 	}
 }
 
 // visitXMLLink checks if the collector should visit a link or not.
-func visitXMLLink(link string, event *Event, e *colly.XMLElement, c *colly.Collector) {
+func visitXMLLink(link string, event *Event, e *colly.XMLElement) {
 	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
 		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
-		// Only those links are visited which are in AllowedDomains
-		visitLink(event, c, absoluteURL)
+		// Only those links are visited which are in scope
+		visitLink(event, e.Request, absoluteURL)
 	}
 }
 
-// visitLink is a protocol agnostic wrapper to visit a link.
-func visitLink(event *Event, c *colly.Collector, absoluteURL string) {
-	if (!event.Intensive && urlUtils.SameDomain(event.ProtocolTemp+"://"+event.Target, absoluteURL)) ||
-		(event.Intensive && intensiveOk(event.TargetTemp, absoluteURL, event.Debug)) {
-		if !event.Ignore || (event.Ignore && !IgnoreMatch(absoluteURL, &event.IgnoreSlice)) {
-			err := c.Visit(absoluteURL)
-			if err != nil && event.Debug {
-				log.Println(err)
-			}
+// visitLink is a protocol agnostic wrapper to visit a link
+// found in the response to r.
+func visitLink(event *Event, r *colly.Request, absoluteURL string) {
+	if canVisit(event, absoluteURL) {
+		// Visit it from r (not from the collector) to increase
+		// the depth, so the max depth is honored.
+		err := r.Visit(absoluteURL)
+		if err != nil && event.Debug {
+			log.Println(err)
 		}
+	}
+}
+
+// redirectHandler follows only the redirects in scope and not ignored
+// (e.g. http://target.com -> https://target.com), at most maxRedirects.
+func redirectHandler(event *Event) func(req *http.Request, via []*http.Request) error {
+	return func(req *http.Request, via []*http.Request) error {
+		if len(via) >= maxRedirects || !canVisit(event, req.URL.String()) {
+			// Stop here: the redirect response is handled as an error.
+			return http.ErrUseLastResponse
+		}
+
+		return nil
 	}
 }

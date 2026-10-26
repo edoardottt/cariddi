@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+	urlUtils "github.com/edoardottt/cariddi/internal/url"
 	"github.com/edoardottt/cariddi/pkg/input"
 	"github.com/edoardottt/cariddi/pkg/scanner"
 )
@@ -78,8 +79,7 @@ type Scan struct {
 type Event struct {
 	ProtocolTemp string
 	TargetTemp   string
-	Target       string
-	Intensive    bool
+	Scope        *urlUtils.Scope
 	Ignore       bool
 	Debug        bool
 	JSON         bool

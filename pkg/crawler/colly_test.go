@@ -31,7 +31,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"slices"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/edoardottt/cariddi/pkg/crawler"
@@ -189,5 +192,270 @@ func TestNewBlankSecretsFile(t *testing.T) {
 		if s.Secret.Name != "AWS Access Key" {
 			t.Fatalf("unexpected secret %q: %q", s.Secret.Name, s.Match)
 		}
+	}
+}
+
+// serve starts a test server closed at the end of the test.
+func serve(t *testing.T, handler http.HandlerFunc) *httptest.Server {
+	t.Helper()
+
+	server := httptest.NewServer(handler)
+	t.Cleanup(server.Close)
+
+	return server
+}
+
+// TestNewRedirects checks that only the redirects in scope are followed.
+func TestNewRedirects(t *testing.T) {
+	var outside, landed atomic.Int32
+
+	other := serve(t, func(_ http.ResponseWriter, _ *http.Request) {
+		outside.Add(1)
+	})
+
+	server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/":
+			fmt.Fprint(w, `<html><a href="/in">in</a> <a href="/out">out</a></html>`)
+		case "/in":
+			http.Redirect(w, r, "/landed", http.StatusFound)
+		case "/out":
+			http.Redirect(w, r, other.URL+"/login", http.StatusFound)
+		case "/landed":
+			landed.Add(1)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+
+	crawl(t, &crawler.Scan{
+		Target:      server.URL,
+		Concurrency: testConcurrency,
+		Timeout:     input.TimeoutRequest,
+	})
+
+	if got := landed.Load(); got != 1 {
+		t.Errorf("redirect in scope followed %d times, want 1", got)
+	}
+
+	if got := outside.Load(); got != 0 {
+		t.Errorf("host out of scope got %d requests, want 0", got)
+	}
+}
+
+// TestNewMaxDepth checks that the links are followed up to the max depth.
+func TestNewMaxDepth(t *testing.T) {
+	const chainLength = 5
+
+	server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+		var i int
+		if _, err := fmt.Sscanf(r.URL.Path, "/chain/%d", &i); (err != nil && r.URL.Path != "/") || i >= chainLength {
+			http.NotFound(w, r)
+
+			return
+		}
+
+		fmt.Fprintf(w, `<html><a href="/chain/%d">next</a></html>`, i+1)
+	})
+
+	results := crawl(t, &crawler.Scan{
+		Target:      server.URL,
+		MaxDepth:    2,
+		Concurrency: testConcurrency,
+		Timeout:     input.TimeoutRequest,
+	})
+
+	if !slices.Contains(results.URLs, server.URL+"/chain/1") ||
+		slices.Contains(results.URLs, server.URL+"/chain/2") {
+		t.Errorf("got %v, want /chain/1 (depth 2) but not /chain/2 (depth 3)", results.URLs)
+	}
+}
+
+// TestNewSitemapProbe checks that the sitemap.xml requested by default is
+// in the results only if it's a valid sitemap.
+func TestNewSitemapProbe(t *testing.T) {
+	tests := []struct {
+		name    string
+		status  int
+		sitemap string
+		want    bool
+	}{
+		{name: "missing", status: http.StatusNotFound, sitemap: "not found", want: false},
+		{name: "not a sitemap", status: http.StatusOK, sitemap: "<html>soft 404</html>", want: false},
+		{
+			name:   "valid",
+			status: http.StatusOK,
+			sitemap: `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>/from-sitemap</loc></url></urlset>`,
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+				switch r.URL.Path {
+				case "/sitemap.xml":
+					w.Header().Set("Content-Type", "application/xml")
+					w.WriteHeader(tt.status)
+					fmt.Fprint(w, tt.sitemap)
+				default:
+					fmt.Fprint(w, "<html></html>")
+				}
+			})
+
+			results := crawl(t, &crawler.Scan{
+				Target:      server.URL,
+				Concurrency: testConcurrency,
+				Timeout:     input.TimeoutRequest,
+			})
+
+			if got := slices.Contains(results.URLs, server.URL+"/sitemap.xml"); got != tt.want {
+				t.Errorf("sitemap in results = %v, want %v (results: %v)", got, tt.want, results.URLs)
+			}
+
+			if got := slices.Contains(results.URLs, server.URL+"/from-sitemap"); got != tt.want {
+				t.Errorf("link of the sitemap in results = %v, want %v (results: %v)", got, tt.want, results.URLs)
+			}
+		})
+	}
+}
+
+// TestNewIntensiveTLD checks that a TLD is skipped in intensive mode.
+func TestNewIntensiveTLD(t *testing.T) {
+	results := crawl(t, &crawler.Scan{
+		Target:      "https://co.uk/",
+		Intensive:   true,
+		Concurrency: testConcurrency,
+		Timeout:     input.TimeoutRequest,
+	})
+
+	if len(results.URLs) != 0 {
+		t.Errorf("got %v, want no URLs", results.URLs)
+	}
+}
+
+// TestNewRequestsEachURLOnce checks that a URL found at the same time in
+// different pages is requested only once.
+func TestNewRequestsEachURLOnce(t *testing.T) {
+	const pages = 1000
+
+	var requests sync.Map
+
+	server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+		count, _ := requests.LoadOrStore(r.URL.Path, new(atomic.Int32))
+		count.(*atomic.Int32).Add(1)
+
+		var i int
+		if _, err := fmt.Sscanf(r.URL.Path, "/page/%d", &i); err != nil && r.URL.Path != "/" {
+			http.NotFound(w, r)
+
+			return
+		}
+
+		var sb strings.Builder
+		for k := 1; k <= 10; k++ {
+			fmt.Fprintf(&sb, `<a href="/page/%d">x</a>`, (i*7+k)%pages)
+		}
+
+		fmt.Fprintf(w, "<html>%s</html>", sb.String())
+	})
+
+	crawl(t, &crawler.Scan{
+		Target:      server.URL,
+		Concurrency: testConcurrency,
+		Timeout:     input.TimeoutRequest,
+	})
+
+	requests.Range(func(path, count any) bool {
+		if n := count.(*atomic.Int32).Load(); n != 1 {
+			t.Errorf("%s requested %d times, want 1", path, n)
+		}
+
+		return true
+	})
+}
+
+// TestNewSitemapIndex checks that the sitemaps listed in a sitemap index
+// are crawled, in scope only and once, up to the max depth.
+func TestNewSitemapIndex(t *testing.T) {
+	tests := []struct {
+		name     string
+		maxDepth int
+		wantPage bool
+	}{
+		{name: "no max depth", maxDepth: 0, wantPage: true},
+		// index (depth 1) -> sitemap (depth 2) -> page (depth 3)
+		{name: "max depth 2", maxDepth: 2, wantPage: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var outside atomic.Int32
+
+			other := serve(t, func(_ http.ResponseWriter, _ *http.Request) {
+				outside.Add(1)
+			})
+
+			var requests sync.Map
+
+			server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+				count, _ := requests.LoadOrStore(r.URL.Path, new(atomic.Int32))
+				count.(*atomic.Int32).Add(1)
+
+				w.Header().Set("Content-Type", "application/xml")
+
+				switch r.URL.Path {
+				case "/sitemap.xml":
+					// It lists itself too, to check that loops end.
+					fmt.Fprintf(w, `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>
+      http://%[1]s/sitemap-pages.xml
+    </loc>
+    <lastmod>2026-10-26</lastmod>
+  </sitemap>
+  <sitemap><loc>http://%[1]s/sitemap.xml</loc></sitemap>
+  <sitemap><loc>%[2]s/sitemap-outside.xml</loc></sitemap>
+</sitemapindex>`, r.Host, other.URL)
+				case "/sitemap-pages.xml":
+					fmt.Fprintf(w, `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>http://%s/from-sitemap</loc><lastmod>2026-10-26</lastmod></url>
+</urlset>`, r.Host)
+				default:
+					w.Header().Set("Content-Type", "text/html")
+					fmt.Fprint(w, "<html></html>")
+				}
+			})
+
+			results := crawl(t, &crawler.Scan{
+				Target:      server.URL,
+				MaxDepth:    tt.maxDepth,
+				Concurrency: testConcurrency,
+				Timeout:     input.TimeoutRequest,
+			})
+
+			for _, path := range []string{"/sitemap.xml", "/sitemap-pages.xml"} {
+				if !slices.Contains(results.URLs, server.URL+path) {
+					t.Errorf("%s not in results: %v", path, results.URLs)
+				}
+			}
+
+			if got := slices.Contains(results.URLs, server.URL+"/from-sitemap"); got != tt.wantPage {
+				t.Errorf("page of the listed sitemap in results = %v, want %v", got, tt.wantPage)
+			}
+
+			if got := outside.Load(); got != 0 {
+				t.Errorf("host out of scope got %d requests, want 0", got)
+			}
+
+			requests.Range(func(path, count any) bool {
+				if n := count.(*atomic.Int32).Load(); n != 1 {
+					t.Errorf("%s requested %d times, want 1", path, n)
+				}
+
+				return true
+			})
+		})
 	}
 }

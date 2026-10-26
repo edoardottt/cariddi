@@ -65,7 +65,7 @@ func PrintHelp() {
 	-info
 		Hunt for useful information in websites.
 	-intensive
-		Crawl searching for resources matching 2nd level domain.
+		Crawl searching for resources matching the root domain and its subdomains.
 	-it string
 		Ignore the URL containing at least one of the lines of this file.
 	-oh string

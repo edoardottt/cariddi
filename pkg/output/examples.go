@@ -70,7 +70,7 @@ func PrintExamples() {
 
 	cat urls | cariddi -t 5 (Set the timeout for the requests)
 
-	cat urls | cariddi -intensive (Crawl searching for resources matching 2nd level domain)
+	cat urls | cariddi -intensive (Crawl searching for resources matching the root domain and its subdomains)
 
 	cat urls | cariddi -rua (Use a random browser user agent on every request)
 

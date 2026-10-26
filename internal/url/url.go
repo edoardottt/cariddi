@@ -28,13 +28,25 @@ package url
 
 import (
 	"fmt"
+	"net"
 	"net/url"
 	"path"
 	"path/filepath"
 	"strings"
+	"unicode/utf8"
 
 	errUtils "github.com/edoardottt/cariddi/internal/error"
+	"golang.org/x/net/idna"
+	"golang.org/x/net/publicsuffix"
 )
+
+// Scope defines which URLs can be crawled starting from a target.
+type Scope struct {
+	host       string // target host or, in intensive mode, its root domain.
+	port       string // target port, "" for the default web ports.
+	anyPort    bool
+	subdomains bool
+}
 
 // GetHost takes as input a string and
 // tries to parse it as url, if it's a
@@ -69,7 +81,11 @@ func GetProtocol(input string) string {
 // GetRootHost takes as input a string and
 // tries to parse it as url, if it's a
 // well formatted url this function returns
-// the second level domain.
+// the root domain: the TLD plus one label
+// (e.g. edoardottt.com for a.b.edoardottt.com,
+// edoardottt.co.uk for a.b.edoardottt.co.uk).
+// IP addresses and single label hosts are
+// returned as they are.
 func GetRootHost(input string) (string, error) {
 	if !HasProtocol(input) {
 		input = "http://" + input
@@ -80,14 +96,105 @@ func GetRootHost(input string) (string, error) {
 		return "", err
 	}
 
-	// divide host and port, then split by dot
-	parts := strings.Split(strings.Split(u.Host, ":")[0], ".")
-	// return the last two parts
-	if len(parts) > 1 {
-		return parts[len(parts)-2] + "." + parts[len(parts)-1], nil
+	host := normalizeHost(u.Hostname())
+	if host == "" {
+		return "", fmt.Errorf("%w", errUtils.ErrDomainFormat)
 	}
 
-	return "", fmt.Errorf("%w", errUtils.ErrDomainFormat)
+	if net.ParseIP(host) != nil {
+		return host, nil
+	}
+
+	labels := strings.Split(host, ".")
+
+	// The TLD is the longest ICANN public suffix (e.g. com, co.uk):
+	// the private ones (e.g. github.io) are ignored.
+	for i := range labels {
+		suffix := strings.Join(labels[i:], ".")
+		if tld, icann := publicsuffix.PublicSuffix(suffix); icann && tld == suffix {
+			if i == 0 {
+				return "", fmt.Errorf("%w", errUtils.ErrDomainTLD)
+			}
+
+			return strings.Join(labels[i-1:], "."), nil
+		}
+	}
+
+	// Unknown TLD (e.g. internal) or single label host (e.g. localhost).
+	if len(labels) > 1 {
+		return strings.Join(labels[len(labels)-2:], "."), nil
+	}
+
+	return host, nil
+}
+
+// NewScope returns the scope of the target: its host and port or,
+// in intensive mode, its root domain and all the subdomains on any port.
+func NewScope(target string, intensive bool) (*Scope, error) {
+	if !HasProtocol(target) {
+		target = "http://" + target
+	}
+
+	u, err := url.Parse(target)
+	if err != nil {
+		return nil, err
+	}
+
+	host := normalizeHost(u.Hostname())
+	if host == "" {
+		return nil, fmt.Errorf("%w", errUtils.ErrDomainFormat)
+	}
+
+	if !intensive {
+		return &Scope{host: host, port: webPort(u.Port())}, nil
+	}
+
+	root, err := GetRootHost(target)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Scope{host: root, anyPort: true, subdomains: net.ParseIP(root) == nil}, nil
+}
+
+// Contains checks if the input is an http(s) URL in scope.
+func (s *Scope) Contains(input string) bool {
+	u, err := url.Parse(input)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		return false
+	}
+
+	host := normalizeHost(u.Hostname())
+	if host != s.host && (!s.subdomains || !strings.HasSuffix(host, "."+s.host)) {
+		return false
+	}
+
+	return s.anyPort || webPort(u.Port()) == s.port
+}
+
+// normalizeHost lowercases the host, removes the trailing dot and
+// converts internationalized domain names to ASCII, as colly does
+// for the URLs it visits (e.g. bücher.de -> xn--bcher-kva.de).
+func normalizeHost(host string) string {
+	host = strings.TrimSuffix(strings.ToLower(host), ".")
+
+	if strings.ContainsFunc(host, func(r rune) bool { return r >= utf8.RuneSelf }) {
+		if ascii, err := idna.Lookup.ToASCII(host); err == nil {
+			return ascii
+		}
+	}
+
+	return host
+}
+
+// webPort returns the port, or "" for the default web ports (80 and 443):
+// http://target.com and https://target.com are the same website.
+func webPort(port string) string {
+	if port == "80" || port == "443" {
+		return ""
+	}
+
+	return port
 }
 
 // HasProtocol takes as input a string and
@@ -154,25 +261,6 @@ func AbsoluteURL(protocol string, target string, path string) string {
 	}
 
 	return protocol + "://" + target + "/" + path
-}
-
-// SameDomain checks if two urls have the same domain.
-func SameDomain(url1 string, url2 string) bool {
-	u1, err := url.Parse(url1)
-	if err != nil {
-		return false
-	}
-
-	u2, err := url.Parse(url2)
-	if err != nil {
-		return false
-	}
-
-	if u1.Host == "" || u2.Host == "" {
-		return false
-	}
-
-	return u1.Host == u2.Host
 }
 
 // GetPath returns the path of the input string

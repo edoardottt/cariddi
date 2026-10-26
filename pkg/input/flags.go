@@ -68,7 +68,7 @@ type Input struct {
 	Cache bool
 	// Timeout set timeout for the requests. (default 10)
 	Timeout int
-	// Intensive crawls searching for resources matching 2nd level domain.
+	// Intensive crawls searching for resources matching the root domain and its subdomains.
 	Intensive bool
 	// Rua uses a random browser user agent on every request.
 	Rua bool
@@ -123,7 +123,7 @@ func ScanFlag() Input {
 	ignoreTXTPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
 	cachePtr := flag.Bool("cache", false, "Use the .cariddi_cache folder as cache.")
 	timeoutPtr := flag.Int("t", TimeoutRequest, "Set timeout for the requests.")
-	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching 2nd level domain.")
+	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching the root domain and its subdomains.")
 	ruaPtr := flag.Bool("rua", false, "Use a random browser user agent on every request.")
 	proxyPtr := flag.String("proxy", "", "Set a Proxy, http and socks5 supported.")
 

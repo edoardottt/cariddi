@@ -30,4 +30,5 @@ import "errors"
 
 var (
 	ErrDomainFormat = errors.New("domain formatted in a bad way")
+	ErrDomainTLD    = errors.New("domain is a TLD (e.g. com, co.uk)")
 )
