@@ -57,7 +57,7 @@ func PrintHelp() {
 	-json
 		Print the output as JSON in stdout.
 	-md int
-		Maximum level the crawler will follow from the initial target URL.
+		Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).
 	-i string
 		Ignore the URL containing at least one of the elements of this array.
 	-ie value

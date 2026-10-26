@@ -243,7 +243,8 @@ func TestNewRedirects(t *testing.T) {
 	}
 }
 
-// TestNewMaxDepth checks that the links are followed up to the max depth.
+// TestNewMaxDepth checks that the links are followed up to the max depth,
+// counted as katana does: the target is at depth 0, its links at depth 1.
 func TestNewMaxDepth(t *testing.T) {
 	const chainLength = 5
 
@@ -258,16 +259,20 @@ func TestNewMaxDepth(t *testing.T) {
 		fmt.Fprintf(w, `<html><a href="/chain/%d">next</a></html>`, i+1)
 	})
 
-	results := crawl(t, &crawler.Scan{
-		Target:      server.URL,
-		MaxDepth:    2,
-		Concurrency: testConcurrency,
-		Timeout:     input.TimeoutRequest,
-	})
+	for maxDepth := 1; maxDepth <= 3; maxDepth++ {
+		results := crawl(t, &crawler.Scan{
+			Target:      server.URL,
+			MaxDepth:    maxDepth,
+			Concurrency: testConcurrency,
+			Timeout:     input.TimeoutRequest,
+		})
 
-	if !slices.Contains(results.URLs, server.URL+"/chain/1") ||
-		slices.Contains(results.URLs, server.URL+"/chain/2") {
-		t.Errorf("got %v, want /chain/1 (depth 2) but not /chain/2 (depth 3)", results.URLs)
+		last := fmt.Sprintf("%s/chain/%d", server.URL, maxDepth)
+		next := fmt.Sprintf("%s/chain/%d", server.URL, maxDepth+1)
+
+		if !slices.Contains(results.URLs, last) || slices.Contains(results.URLs, next) {
+			t.Errorf("max depth %d: got %v, want %s but not %s", maxDepth, results.URLs, last, next)
+		}
 	}
 }
 
@@ -384,8 +389,8 @@ func TestNewSitemapIndex(t *testing.T) {
 		wantPage bool
 	}{
 		{name: "no max depth", maxDepth: 0, wantPage: true},
-		// index (depth 1) -> sitemap (depth 2) -> page (depth 3)
-		{name: "max depth 2", maxDepth: 2, wantPage: false},
+		// index (depth 0) -> sitemap (depth 1) -> page (depth 2)
+		{name: "max depth 1", maxDepth: 1, wantPage: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

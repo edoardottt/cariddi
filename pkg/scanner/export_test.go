@@ -48,7 +48,7 @@ func EngineModes(e *Engine, text string) []string {
 	modes := make([]string, len(e.rules))
 
 	for i := range e.rules {
-		switch mode, _ := e.rules[i].plan(hits, truncated, e.matcher.keywords); mode {
+		switch e.rules[i].plan(hits, truncated) {
 		case scanSkip:
 			modes[i] = "skip"
 		case scanFull:

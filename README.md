@@ -159,7 +159,7 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 - `cat urls.txt | cariddi -json` (Print the output as JSON in stdout)
 - `cat urls.txt | cariddi -sr` (Store HTTP responses)
 - `cat urls.txt | cariddi -debug` (Print debug information while crawling)
-- `cat urls.txt | cariddi -md 3` (Max 3 depth levels)
+- `cat urls.txt | cariddi -md 3` (Follow the links up to 3 levels deep)
 
 Get Started 🎉
 ----------
@@ -192,8 +192,8 @@ Usage of cariddi:
      Read from an external file custom headers (same format of headers flag).
   -json
      Print the output as JSON in stdout.
-  -md
-     Maximum depth level the crawler will follow from the initial target URL.
+  -md int
+     Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).
   -i string
      Ignore the URL containing at least one of the elements of this array.
   -ie value

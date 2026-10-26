@@ -98,7 +98,8 @@ type Input struct {
 	UserAgent string
 	// StoreResp stores HTTP responses.
 	StoreResp bool
-	// MaxDepth specifies the maximum level the crawler will follow from the initial target URL
+	// MaxDepth is the maximum depth to crawl: 1 follows the links
+	// of the target, 2 also their links and so on (0 means no limit).
 	MaxDepth int
 	// IgnoreExtensions specifies which extensions must be ignored while scanning
 	// (Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif, mp4,
@@ -152,7 +153,7 @@ func ScanFlag() Input {
 
 	storeRespPtr := flag.Bool("sr", false, "Store HTTP responses.")
 
-	maxDepth := flag.Int("md", 0, "Maximum depth level the crawler will follow from the initial target URL.")
+	maxDepth := flag.Int("md", 0, "Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).")
 
 	var ignoreExtensions StringSlice
 

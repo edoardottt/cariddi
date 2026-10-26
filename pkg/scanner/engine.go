@@ -27,8 +27,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package scanner
 
 import (
+	"container/heap"
+	"iter"
 	"regexp"
-	"sort"
 	"sync"
 	"unicode/utf8"
 )
@@ -142,7 +143,7 @@ func (e *Engine) FindAll(text string) [][]string {
 	for i := range e.rules {
 		rule := &e.rules[i]
 
-		mode, occurrences := rule.plan(hits, truncated, e.matcher.keywords)
+		mode := rule.plan(hits, truncated)
 		if mode == scanSkip {
 			continue
 		}
@@ -155,7 +156,7 @@ func (e *Engine) FindAll(text string) [][]string {
 			if mode == scanFull {
 				results[i] = rule.re.FindAllString(text, -1)
 			} else {
-				results[i] = rule.findInWindows(text, occurrences)
+				results[i] = rule.findInWindows(text, hits, e.matcher.keywords)
 			}
 		}()
 	}
@@ -171,30 +172,28 @@ func (e *Engine) findKeywords(text string) (hits [][]int, truncated []bool) {
 }
 
 // plan decides how the rule must be run on a text.
-func (r *engineRule) plan(hits [][]int, truncated []bool, keywords []string) (scanMode, []occurrence) {
+func (r *engineRule) plan(hits [][]int, truncated []bool) scanMode {
 	if r.keywords == nil {
-		return scanFull, nil
+		return scanFull
 	}
 
-	var occurrences []occurrence
+	found := false
 
 	for _, id := range r.keywords {
 		if truncated[id] {
-			return scanFull, nil
+			return scanFull
 		}
 
-		for _, start := range hits[id] {
-			occurrences = append(occurrences, occurrence{start, start + len(keywords[id])})
-		}
+		found = found || len(hits[id]) > 0
 	}
 
 	switch {
-	case len(occurrences) == 0:
-		return scanSkip, nil
+	case !found:
+		return scanSkip
 	case r.maxLen < 0 && r.alphabet == nil:
-		return scanFull, nil
+		return scanFull
 	default:
-		return scanWindows, occurrences
+		return scanWindows
 	}
 }
 
@@ -209,44 +208,112 @@ func (r *engineRule) plan(hits [][]int, truncated []bool, keywords []string) (sc
 // matchable bytes around p; the window also includes the delimiting byte on
 // each side, so the engine sees the same context as in the full text.
 // Windows are aligned to rune boundaries and merged when they overlap.
-func (r *engineRule) findInWindows(text string, occurrences []occurrence) []string {
-	sort.Slice(occurrences, func(i, j int) bool { return occurrences[i].start < occurrences[j].start })
+//
+// The occurrences are visited in order and every window is scanned as soon
+// as the next occurrence can't extend it: nothing is copied or stored, so
+// the memory doesn't depend on how many occurrences the text contains.
+func (r *engineRule) findInWindows(text string, hits [][]int, keywords []string) []string {
+	var (
+		matches []string
+		cur     window
+		open    bool
+	)
 
-	var windows []window
+	for o := range r.occurrences(hits, keywords) {
+		// Occurrences inside the current run window have the same window.
+		if r.maxLen < 0 && open && o.end <= cur.hi {
+			continue
+		}
 
-	for _, o := range occurrences {
 		var w window
-
 		if r.maxLen >= 0 {
 			w = window{max(0, o.start-r.maxLen), min(len(text), o.start+r.maxLen+1)}
 		} else {
-			// Occurrences inside the previous run window have the same window.
-			if n := len(windows); n > 0 && o.end <= windows[n-1].hi {
-				continue
-			}
-
 			w = r.runWindow(text, o)
 		}
 
 		w = alignWindow(text, w)
 
-		if n := len(windows); n > 0 && w.lo <= windows[n-1].hi {
-			windows[n-1].hi = max(windows[n-1].hi, w.hi)
-		} else {
-			windows = append(windows, w)
+		if open && w.lo <= cur.hi {
+			cur.hi = max(cur.hi, w.hi)
+
+			continue
 		}
+
+		if open {
+			matches = r.appendMatches(matches, text, cur)
+		}
+
+		cur, open = w, true
 	}
 
-	var matches []string
-
-	for _, w := range windows {
-		part := text[w.lo:w.hi]
-		for _, loc := range r.re.FindAllStringIndex(part, -1) {
-			matches = append(matches, part[loc[0]:loc[1]])
-		}
+	if open {
+		matches = r.appendMatches(matches, text, cur)
 	}
 
 	return matches
+}
+
+// appendMatches appends to matches the matches of the rule in the window w.
+func (r *engineRule) appendMatches(matches []string, text string, w window) []string {
+	part := text[w.lo:w.hi]
+	for _, loc := range r.re.FindAllStringIndex(part, -1) {
+		matches = append(matches, part[loc[0]:loc[1]])
+	}
+
+	return matches
+}
+
+// occurrences yields the occurrences of the rule keywords in text, sorted
+// by start: it merges the hits of each keyword (already sorted).
+func (r *engineRule) occurrences(hits [][]int, keywords []string) iter.Seq[occurrence] {
+	return func(yield func(occurrence) bool) {
+		cursors := make(hitHeap, 0, len(r.keywords))
+
+		for _, id := range r.keywords {
+			if len(hits[id]) > 0 {
+				cursors = append(cursors, hitCursor{starts: hits[id], length: len(keywords[id])})
+			}
+		}
+
+		heap.Init(&cursors)
+
+		for len(cursors) > 0 {
+			c := &cursors[0]
+			if !yield(occurrence{c.starts[0], c.starts[0] + c.length}) {
+				return
+			}
+
+			if c.starts = c.starts[1:]; len(c.starts) == 0 {
+				heap.Pop(&cursors)
+			} else {
+				heap.Fix(&cursors, 0)
+			}
+		}
+	}
+}
+
+// hitCursor points to the next occurrences of a keyword.
+type hitCursor struct {
+	starts []int // start offsets, in increasing order.
+	length int   // keyword length.
+}
+
+// hitHeap is a min-heap of cursors, by next start (see container/heap).
+type hitHeap []hitCursor
+
+func (h hitHeap) Len() int           { return len(h) }
+func (h hitHeap) Less(i, j int) bool { return h[i].starts[0] < h[j].starts[0] }
+func (h hitHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *hitHeap) Push(x any) { *h = append(*h, x.(hitCursor)) }
+
+func (h *hitHeap) Pop() any {
+	old := *h
+	c := old[len(old)-1]
+	*h = old[:len(old)-1]
+
+	return c
 }
 
 // runWindow returns the run of matchable bytes around o, plus the

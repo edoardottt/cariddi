@@ -38,6 +38,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
 	urlUtils "github.com/edoardottt/cariddi/internal/url"
@@ -368,8 +369,10 @@ func CreateColly(delayTime, concurrency, timeout, maxDepth int,
 		})
 	}
 
-	if maxDepth != 0 {
-		c.MaxDepth = maxDepth
+	// The target is at depth 0, its links at depth 1 and so on
+	// (colly starts from 1). 0 means no limit.
+	if maxDepth > 0 {
+		c.MaxDepth = maxDepth + 1
 	}
 
 	return c
@@ -418,20 +421,27 @@ func registerHTMLEvents(c *colly.Collector, event *Event) {
 		}
 	})
 
-	c.OnHTML("meta[http-equiv='refresh']", func(e *colly.HTMLElement) {
-		content := e.Attr("content")
-		if len(content) > 0 {
-			// Assuming the format is like: "0; url=/redirect.html"
-			parts := strings.Split(content, ";")
-			for _, part := range parts {
-				trimmed := strings.TrimSpace(part)
-				if strings.HasPrefix(trimmed, "url=") {
-					// Correctly extract the URL by trimming the "url=" part
-					redirectURL := strings.TrimPrefix(trimmed, "url=")
-					visitHTMLLink(redirectURL, event, e)
-				}
-			}
+	// Meta refresh redirects, e.g. <meta http-equiv="Refresh" content="0; URL='/next'">.
+	c.OnHTML("meta[http-equiv]", func(e *colly.HTMLElement) {
+		if refresh, ok := metaRefreshURL(e.Attr("http-equiv"), e.Attr("content")); ok {
+			visitHTMLLink(refresh, event, e)
 		}
+	})
+
+	// The content of <noscript> is parsed as text (as browsers do when
+	// JavaScript is enabled): parse it to find the meta refresh redirects
+	// for the browsers without JavaScript.
+	c.OnHTML("noscript", func(e *colly.HTMLElement) {
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(e.Text))
+		if err != nil {
+			return
+		}
+
+		doc.Find("meta[http-equiv]").Each(func(_ int, meta *goquery.Selection) {
+			if refresh, ok := metaRefreshURL(meta.AttrOr("http-equiv", ""), meta.AttrOr("content", "")); ok {
+				visitHTMLLink(refresh, event, e)
+			}
+		})
 	})
 
 	c.OnHTML("object[data]", func(e *colly.HTMLElement) {

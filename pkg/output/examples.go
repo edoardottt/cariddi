@@ -88,7 +88,7 @@ func PrintExamples() {
 
 	cat urls | cariddi -sr (Store HTTP responses)
 
-	cat urls | cariddi -md 3 (Max 3 levels)
+	cat urls | cariddi -md 3 (Follow the links up to 3 levels deep)
 
 	cat urls | cariddi -ie pdf,png,jpg (Ignore these extensions while scanning)`)
 }
