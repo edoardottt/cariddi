@@ -55,7 +55,8 @@ func WriteAllTxt(output []string, filename string) {
 	var buf strings.Builder
 
 	for _, elem := range output {
-		buf.WriteString(elem + "\n")
+		buf.WriteString(elem)
+		buf.WriteString("\n")
 	}
 
 	if err := os.WriteFile(filename, []byte(buf.String()), fileUtils.Permission0644); err != nil {

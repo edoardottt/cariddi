@@ -76,11 +76,15 @@ func FormatResponse(resp *colly.Response) ([]byte, error) {
 	builder.WriteString(" ")
 	builder.WriteString("HTTP/1.1")
 	builder.WriteString("\n")
-	builder.WriteString("Host: " + resp.Request.URL.Host)
+	builder.WriteString("Host: ")
+	builder.WriteString(resp.Request.URL.Host)
 	builder.WriteRune('\n')
 
 	for k, v := range *resp.Request.Headers {
-		builder.WriteString(k + ": " + strings.Join(v, "; ") + "\n")
+		builder.WriteString(k)
+		builder.WriteString(": ")
+		builder.WriteString(strings.Join(v, "; "))
+		builder.WriteString("\n")
 	}
 
 	if resp.Request.Body != nil {
@@ -98,7 +102,10 @@ func FormatResponse(resp *colly.Response) ([]byte, error) {
 	builder.WriteString("\n")
 
 	for k, v := range *resp.Headers {
-		builder.WriteString(k + ": " + strings.Join(v, "; ") + "\n")
+		builder.WriteString(k)
+		builder.WriteString(": ")
+		builder.WriteString(strings.Join(v, "; "))
+		builder.WriteString("\n")
 	}
 
 	builder.WriteString("\n")
@@ -135,7 +142,9 @@ func UpdateIndex(resp *colly.Response) error {
 	builder.WriteRune(' ')
 	builder.WriteString(resp.Request.URL.String())
 	builder.WriteRune(' ')
-	builder.WriteString("(" + fmt.Sprint(resp.StatusCode) + ")")
+	builder.WriteString("(")
+	builder.WriteString(fmt.Sprint(resp.StatusCode))
+	builder.WriteString(")")
 	builder.WriteRune('\n')
 
 	if _, writeErr := index.Write(builder.Bytes()); writeErr != nil {
