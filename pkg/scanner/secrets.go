@@ -401,7 +401,7 @@ func GetSecretRegexes() []Secret {
 				*regexp.MustCompile(`(?i)(?:fastly)(?:[0-9a-z\-_\t .]{0,20})(?:[\s|']|[\s|"]){0,3}` +
 					`(?:=|>|:{1,3}=|\|\|:|<=|=>|:|\?=)(?:'|\"|\s|=|\x60){0,5}` +
 					`([a-z0-9=_\-]{32})(?:['|\"|\n|\r|\s|\x60|;]|$)`),
-				[]string{"facebook.com", "facebook.svg"},
+				[]string{},
 				"?",
 			},
 			{

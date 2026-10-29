@@ -93,9 +93,6 @@ func main() {
 		IgnoreExtensions: flags.IgnoreExtensions,
 	}
 
-	// Read the targets from standard input.
-	targets := input.ScanTargets()
-
 	// Check if there are errors in the flags definition.
 	input.CheckFlags(flags)
 
@@ -118,17 +115,6 @@ func main() {
 	finalErrors := []scanner.ErrorMatched{}
 	finalInfos := []scanner.InfoMatched{}
 
-	// Create output files if needed (txt / html).
-	config.Txt = ""
-	if flags.TXTout != "" {
-		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
-	}
-
-	var ResultHTML = ""
-	if flags.HTMLout != "" {
-		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
-	}
-
 	// Read headers if needed
 	if flags.HeadersFile != "" || flags.Headers != "" {
 		var headersInput string
@@ -139,6 +125,21 @@ func main() {
 		}
 
 		config.Headers = input.GetHeaders(headersInput)
+	}
+
+	// Read the targets from standard input, once the flags and the files
+	// they name are checked: an error doesn't wait for the whole input.
+	targets := input.ScanTargets()
+
+	// Create output files if needed (txt / html).
+	config.Txt = ""
+	if flags.TXTout != "" {
+		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
+	}
+
+	var ResultHTML = ""
+	if flags.HTMLout != "" {
+		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
 	}
 
 	// CTRL+C stops the crawl: the results found so far are still saved.
