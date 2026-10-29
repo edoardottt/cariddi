@@ -73,6 +73,7 @@ type Input struct {
 	// Rua uses a random browser user agent on every request.
 	Rua bool
 	// Proxy set a Proxy to be used (http and socks5 supported).
+	// If not set, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used.
 	Proxy string
 	// Secrets hunts for secrets.
 	Secrets bool
@@ -126,7 +127,8 @@ func ScanFlag() Input {
 	timeoutPtr := flag.Int("t", TimeoutRequest, "Set timeout for the requests.")
 	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching the root domain and its subdomains.")
 	ruaPtr := flag.Bool("rua", false, "Use a random browser user agent on every request.")
-	proxyPtr := flag.String("proxy", "", "Set a Proxy, http and socks5 supported.")
+	proxyPtr := flag.String("proxy", "", "Set a Proxy, http and socks5 supported "+
+		"(default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables).")
 
 	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
 	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line)"+

@@ -148,12 +148,12 @@ func huntInfos(target, body string) []scanner.InfoMatched {
 		go func(infoItem scanner.Info) {
 			defer wg.Done()
 
-			matches := infoItem.Regex.FindAllStringSubmatch(body, -1)
+			matches := infoItem.FindAll(body)
 
 			for _, match := range matches {
 				mu.Lock()
 
-				infosSlice = append(infosSlice, scanner.InfoMatched{Info: infoItem, URL: target, Match: match[0]})
+				infosSlice = append(infosSlice, scanner.InfoMatched{Info: infoItem, URL: target, Match: match})
 
 				mu.Unlock()
 			}

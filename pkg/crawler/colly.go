@@ -395,7 +395,8 @@ func CreateColly(delayTime, concurrency, timeout int,
 	return c
 }
 
-// newTransport returns the HTTP transport of a crawl, using proxy if set.
+// newTransport returns the HTTP transport of a crawl, using proxy if set
+// or else the proxy environment variables.
 // It keeps an idle connection for each parallel request, so connections
 // are reused: by default only 2 per host are kept, so most of the
 // parallel requests opened a new connection.
@@ -403,13 +404,17 @@ func newTransport(concurrency int, proxy string) *http.Transport {
 	idleConns := max(concurrency, 1)
 
 	transport := &http.Transport{
+		// HTTPS_PROXY for the https URLs, HTTP_PROXY for the http ones,
+		// except the hosts in NO_PROXY (and localhost, always direct).
+		Proxy:               http.ProxyFromEnvironment,
 		TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
 		MaxIdleConns:        idleConns,
 		MaxIdleConnsPerHost: idleConns,
 		IdleConnTimeout:     idleConnTimeout,
 	}
 
-	// Use a Proxy if needed
+	// Use a Proxy if needed: it has the priority over the environment
+	// variables and it's used for every request (NO_PROXY doesn't apply).
 	if proxy != "" {
 		proxyParsed, err := url.Parse(proxy)
 		if err != nil {

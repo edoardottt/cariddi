@@ -140,6 +140,7 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 ### Configuration
 
 - `cat urls.txt | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
+- `cat urls.txt | HTTPS_PROXY=http://127.0.0.1:8080 cariddi` (Without -proxy, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used)
 - `cat urls.txt | cariddi -d 2` (2 seconds between a page crawled and another)
 - `cat urls.txt | cariddi -c 200` (Set the concurrency level to 200)
 - `cat urls.txt | cariddi -i forum,blog,community,open` (Ignore urls containing these words)
@@ -212,6 +213,7 @@ Usage of cariddi:
      Print only the results.
   -proxy string
      Set a Proxy to be used (http and socks5 supported).
+     Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
   -rua
      Use a random browser user agent on every request.
   -s Hunt for secrets.

@@ -28,7 +28,11 @@ package input
 
 import (
 	"bufio"
+	"bytes"
+	"errors"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"strings"
 
@@ -36,9 +40,19 @@ import (
 	pdutils "github.com/projectdiscovery/utils/file"
 )
 
+const (
+	// maxTargetLength is the maximum length of an input line: a longer
+	// line can't be a real URL.
+	maxTargetLength = 64 * 1024
+	// skippedPreviewLength is how much of a skipped line is printed.
+	skippedPreviewLength = 100
+)
+
 // ScanTargets return the array of elements
 // taken as input on stdin.
-func ScanTargets() []string {
+// The lines longer than maxTargetLength are skipped (and printed
+// in debug mode), the following ones are still read.
+func ScanTargets(debug bool) []string {
 	if !pdutils.HasStdin() {
 		fmt.Println("No input provided.")
 		os.Exit(1)
@@ -48,11 +62,44 @@ func ScanTargets() []string {
 
 	// Accept the targets on stdin, one per line. They are not lowercased:
 	// the path and the query of a URL are case sensitive.
-	sc := bufio.NewScanner(os.Stdin)
-	for sc.Scan() {
-		target := strings.TrimSpace(sc.Text())
-		if target != "" {
+	r := bufio.NewReaderSize(os.Stdin, maxTargetLength)
+
+	for lineNumber := 1; ; lineNumber++ {
+		line, err := r.ReadSlice('\n')
+
+		if errors.Is(err, bufio.ErrBufferFull) {
+			// The line is too long: skip it up to its end.
+			skipped := len(line)
+			preview := string(line[:skippedPreviewLength])
+
+			for errors.Is(err, bufio.ErrBufferFull) {
+				line, err = r.ReadSlice('\n')
+				skipped += len(line)
+			}
+
+			// The line break is not part of the line.
+			skipped -= len(line) - len(bytes.TrimRight(line, "\r\n"))
+
+			// The preview is quoted: the line can contain control characters.
+			if debug {
+				log.Printf("Input line %d skipped, too long for a URL (%d bytes): %q...", lineNumber, skipped, preview)
+			}
+
+			line = nil
+		}
+
+		if target := strings.TrimSpace(string(line)); target != "" {
 			result = append(result, target)
+		}
+
+		if err != nil {
+			// A read error must not leave the input silently incomplete.
+			if !errors.Is(err, io.EOF) {
+				fmt.Println("Error reading the input:", err)
+				os.Exit(1)
+			}
+
+			break
 		}
 	}
 

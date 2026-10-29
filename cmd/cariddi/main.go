@@ -31,6 +31,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"syscall"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
@@ -129,7 +130,7 @@ func main() {
 
 	// Read the targets from standard input, once the flags and the files
 	// they name are checked: an error doesn't wait for the whole input.
-	targets := input.ScanTargets()
+	targets := input.ScanTargets(flags.Debug)
 
 	// Create output files if needed (txt / html).
 	config.Txt = ""
@@ -142,9 +143,10 @@ func main() {
 		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
 	}
 
-	// CTRL+C stops the crawl: the results found so far are still saved.
-	// A second CTRL+C exits immediately (stop restores the default).
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	// CTRL+C (SIGINT) or SIGTERM (e.g. kill, timeout, docker stop) stops
+	// the crawl: the results found so far are still saved. A second signal
+	// exits immediately (stop restores the default).
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	context.AfterFunc(ctx, stop)
 
 	// For each target generate a crawler and collect all the results.

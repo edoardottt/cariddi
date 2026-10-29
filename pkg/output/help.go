@@ -76,6 +76,7 @@ func PrintHelp() {
 		Print only the results.
 	-proxy string
 		Set a Proxy to be used (http and socks5 supported).
+		Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
 	-rua
 		Use a random browser user agent on every request.
 	-s	Hunt for secrets.

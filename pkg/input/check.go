@@ -27,11 +27,17 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package input
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
+	"net/url"
 	"os"
+	"regexp"
+	"slices"
 	"strings"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
+	"golang.org/x/net/http/httpproxy"
 )
 
 // CheckOutputFile checks if the string provided as input
@@ -45,6 +51,101 @@ func CheckOutputFile(input string) bool {
 	}
 
 	return true
+}
+
+// CheckProxy checks if the proxy provided as input is a URL with a host
+// and a scheme supported by the HTTP client (http, https, socks5 or socks5h).
+// E.g. 127.0.0.1:8080 has no scheme and localhost:8080 has "localhost" as
+// scheme: every request would fail.
+func CheckProxy(input string) bool {
+	u, err := url.Parse(input)
+	if err != nil || u.Hostname() == "" {
+		return false
+	}
+
+	return slices.Contains([]string{"http", "https", "socks5", "socks5h"}, u.Scheme)
+}
+
+// checkSecretsFile checks the custom regexes of the secrets file, one per
+// line (blank lines are ignored): it must contain at least one regex and all
+// of them must be valid, or the scan would silently use fewer regexes (or
+// none). If not, it prints every problem found and exits.
+func checkSecretsFile(filename string) {
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Can't open the secrets file:", err)
+		os.Exit(1)
+	}
+
+	var (
+		invalid []string
+		regexes int
+		line    int
+	)
+
+	sc := bufio.NewScanner(file)
+	for sc.Scan() {
+		line++
+
+		if strings.TrimSpace(sc.Text()) == "" {
+			continue
+		}
+
+		regexes++
+
+		if _, err := regexp.Compile(sc.Text()); err != nil {
+			invalid = append(invalid, fmt.Sprintf("line %d: %s", line, err))
+		}
+	}
+
+	file.Close()
+
+	if err := sc.Err(); err != nil {
+		if !errors.Is(err, bufio.ErrTooLong) {
+			fmt.Println("Can't read the secrets file:", err)
+			os.Exit(1)
+		}
+
+		invalid = append(invalid, fmt.Sprintf("line %d: too long (more than %d bytes)", line+1, bufio.MaxScanTokenSize))
+	}
+
+	if len(invalid) > 0 {
+		fmt.Printf("The secrets file %s contains invalid regexes:\n", filename)
+
+		for _, problem := range invalid {
+			fmt.Println("	- " + problem)
+		}
+
+		os.Exit(1)
+	}
+
+	if regexes == 0 {
+		fmt.Printf("The secrets file %s is empty: it must contain the regexes to hunt for, one per line.\n", filename)
+		os.Exit(1)
+	}
+}
+
+// checkProxyEnvironment checks the proxy environment variables, used when
+// -proxy is not set: an invalid proxy would make every request fail. As the
+// HTTP client does, a proxy without a scheme is an http one (e.g. 127.0.0.1:8080).
+func checkProxyEnvironment() {
+	env := httpproxy.FromEnvironment()
+
+	for _, variable := range []struct{ name, value string }{
+		{"HTTP_PROXY (or http_proxy)", env.HTTPProxy},
+		{"HTTPS_PROXY (or https_proxy)", env.HTTPSProxy},
+	} {
+		proxy := variable.value
+		if proxy != "" && !strings.Contains(proxy, "://") {
+			proxy = "http://" + proxy
+		}
+
+		if proxy != "" && !CheckProxy(proxy) {
+			fmt.Printf("The %s environment variable is not a valid proxy: %s\n", variable.name, variable.value)
+			fmt.Println("It must be a URL with scheme http, https, socks5 or socks5h (e.g. http://127.0.0.1:8080).")
+			os.Exit(1)
+		}
+	}
 }
 
 // CheckFlags checks the flags taken as input.
@@ -84,6 +185,8 @@ func CheckFlags(flags Input) {
 			fmt.Println("If you want to scan for custom regexes enter both -s and -sf {filename}.")
 			os.Exit(1)
 		}
+
+		checkSecretsFile(flags.SecretsFile)
 	}
 
 	if flags.Plain && flags.TXTout == "" && flags.HTMLout == "" {
@@ -131,5 +234,17 @@ func CheckFlags(flags Input) {
 	if flags.MaxDepth < 0 {
 		fmt.Println("MaxDepth cannot be less than 0.")
 		os.Exit(1)
+	}
+
+	if flags.Proxy != "" && !CheckProxy(flags.Proxy) {
+		fmt.Println("The proxy must be a URL with scheme http, https, socks5 or socks5h.")
+		fmt.Println("Examples:")
+		fmt.Println("	- cat urls | cariddi -proxy http://127.0.0.1:8080")
+		fmt.Println("	- cat urls | cariddi -proxy socks5://127.0.0.1:1080")
+		os.Exit(1)
+	}
+
+	if flags.Proxy == "" {
+		checkProxyEnvironment()
 	}
 }
