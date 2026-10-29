@@ -86,7 +86,7 @@ type Input struct {
 	Extensions int
 	// Headers uses custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
 	Headers string
-	// HeadersFile reads from an external file custom headers (same format of headers flag).
+	// HeadersFile reads from an external file custom headers (same format of headers flag, or one per line).
 	HeadersFile string
 	// Errors hunts for errors in websites.
 	Errors bool
@@ -141,7 +141,7 @@ func ScanFlag() Input {
 	headersPtr := flag.String("headers", "", "Use custom headers for each request "+
 		"E.g. -headers \"Cookie: auth=yes;;Client: type=2\".")
 	headersFilePtr := flag.String("headersfile", "", "Read from an external file "+
-		"custom headers (same format of headers flag).")
+		"custom headers (same format of headers flag, or one per line).")
 
 	errorsPtr := flag.Bool("err", false, "Hunt for errors in websites.")
 

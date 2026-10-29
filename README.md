@@ -189,7 +189,7 @@ Usage of cariddi:
   -headers string
      Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
   -headersfile string
-     Read from an external file custom headers (same format of headers flag).
+     Read from an external file custom headers (same format of headers flag, or one per line).
   -json
      Print the output as JSON in stdout.
   -md int

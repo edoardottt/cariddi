@@ -603,7 +603,7 @@ func GetSecretRegexes() []Secret {
 			{
 				"Heroku API key",
 				"Heroku API key",
-				*regexp.MustCompile(`(?i)heroku(.{0,20})?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`),
+				*regexp.MustCompile(`(?i)heroku(.{0,20})?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`),
 				[]string{},
 				"?",
 			},
@@ -813,8 +813,8 @@ func GetSecretRegexes() []Secret {
 			{
 				"Google Calendar URI",
 				"Google Calendar URI",
-				*regexp.MustCompile(`https\:\/\/(.*)calendar\.google\.com` +
-					`\/calendar\/[0-9a-z\/]+\/embed\?src=[A-Za-z0-9%@&;=\-_\.\/]+`),
+				*regexp.MustCompile(`https?:\/\/(?:calendar|www)\.google\.com` +
+					`\/calendar\/(?:[0-9a-z.\/-]+\/)?embed\?src=[A-Za-z0-9%@&;=\-_\.\/]+`),
 				[]string{},
 				"?",
 			},

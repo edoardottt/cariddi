@@ -126,7 +126,7 @@ func GetErrorRegexes() []Error {
 					`|ERROR: parser: parse error at or near` +
 					`|PostgreSQL error` +
 					`|PostgreSQL.*?ERROR` +
-					`|Warning.*?\\Wpg_` +
+					`|Warning.*?\Wpg_` +
 					`|Npgsql\.` +
 					`|org\.postgresql\.util\.PSQLException` +
 					`|ERROR:\s\ssyntax error at or near` +
@@ -141,8 +141,8 @@ func GetErrorRegexes() []Error {
 					`|SQLServer JDBC Driver` +
 					`|Driver.*? SQL[\-\_\ ]*Server` +
 					`|OLE DB.*? SQL Server` +
-					`|\bSQL Server[^&lt;&quot;]+Driver|Warning.*?\W(mssql|sqlsrv)_` +
-					`|\bSQL Server[^&lt;&quot;]+[0-9a-fA-F]{8}` +
+					`|\bSQL Server[^<"\n]+Driver|Warning.*?\W(mssql|sqlsrv)_` +
+					`|\bSQL Server[^<"\n]+[0-9a-fA-F]{8}` +
 					`|System\.Data\.SqlClient\.SqlException` +
 					`|Exception.*?\bRoadhouse\.Cms\.` +
 					`|\[SQL Server\]` +

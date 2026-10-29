@@ -94,12 +94,17 @@ func TestCheckInputArray(t *testing.T) {
 		{
 			name:  "with duplicates",
 			input: "a,b,a,,c,,d,b, ,  ,, ",
-			want:  []string{"a", "b", "c", "d", " ", "  "},
+			want:  []string{"a", "b", "c", "d"},
 		},
 		{
 			name:  "without duplicates",
 			input: "a,b,c,d=234, ,",
-			want:  []string{"a", "b", "c", "d=234", " "},
+			want:  []string{"a", "b", "c", "d=234"},
+		},
+		{
+			name:  "spaces around elements",
+			input: "forum, blog , forum,\tshop",
+			want:  []string{"forum", "blog", "shop"},
 		},
 	}
 	for _, tt := range tests {

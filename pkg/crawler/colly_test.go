@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -36,6 +37,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/edoardottt/cariddi/pkg/crawler"
 	"github.com/edoardottt/cariddi/pkg/input"
@@ -90,6 +92,13 @@ func newTestSite(t *testing.T) *httptest.Server {
 func crawl(t *testing.T, scan *crawler.Scan) *crawler.Results {
 	t.Helper()
 
+	return crawlContext(t, t.Context(), scan)
+}
+
+// crawlContext is crawl, stopped when ctx is canceled.
+func crawlContext(t *testing.T, ctx context.Context, scan *crawler.Scan) *crawler.Results {
+	t.Helper()
+
 	devNull, err := os.OpenFile(os.DevNull, os.O_WRONLY, 0)
 	if err != nil {
 		t.Fatal(err)
@@ -104,7 +113,7 @@ func crawl(t *testing.T, scan *crawler.Scan) *crawler.Results {
 		devNull.Close()
 	}()
 
-	return crawler.New(scan)
+	return crawler.New(ctx, scan)
 }
 
 // TestNewFindsEverySecretAndError checks that the results collected by the
@@ -244,7 +253,7 @@ func TestNewRedirects(t *testing.T) {
 }
 
 // TestNewMaxDepth checks that the links are followed up to the max depth,
-// counted as katana does: the target is at depth 0, its links at depth 1.
+// the target is at depth 0, its links at depth 1.
 func TestNewMaxDepth(t *testing.T) {
 	const chainLength = 5
 
@@ -273,6 +282,43 @@ func TestNewMaxDepth(t *testing.T) {
 		if !slices.Contains(results.URLs, last) || slices.Contains(results.URLs, next) {
 			t.Errorf("max depth %d: got %v, want %s but not %s", maxDepth, results.URLs, last, next)
 		}
+	}
+}
+
+// TestNewMaxDepthLowestDepth checks that a page gets its lowest depth (the
+// fewest links from the target, whatever its URL path), even if a longer
+// chain of links to it is found first: /x/y/hub is linked by the target
+// (depth 1) after many other links, and by /b (which would make it depth 2).
+func TestNewMaxDepthLowestDepth(t *testing.T) {
+	server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/":
+			fmt.Fprint(w, `<html><a href="/b">b</a>`)
+
+			for i := range testPages * 5 {
+				fmt.Fprintf(w, `<a href="/page/%d">page</a>`, i)
+			}
+
+			fmt.Fprint(w, `<a href="/x/y/hub">hub</a></html>`)
+		case "/b":
+			fmt.Fprint(w, `<html><a href="/x/y/hub">hub</a></html>`)
+		case "/x/y/hub":
+			fmt.Fprint(w, `<html><a href="/leaf">leaf</a></html>`)
+		default:
+			fmt.Fprint(w, "<html></html>")
+		}
+	})
+
+	results := crawl(t, &crawler.Scan{
+		Target:      server.URL,
+		MaxDepth:    2,
+		Concurrency: testConcurrency,
+		Timeout:     input.TimeoutRequest,
+	})
+
+	// The target (depth 0) -> /x/y/hub (depth 1) -> /leaf (depth 2).
+	if !slices.Contains(results.URLs, server.URL+"/leaf") {
+		t.Errorf("max depth 2: %s/leaf (depth 2) not crawled", server.URL)
 	}
 }
 
@@ -325,17 +371,149 @@ func TestNewSitemapProbe(t *testing.T) {
 	}
 }
 
-// TestNewIntensiveTLD checks that a TLD is skipped in intensive mode.
-func TestNewIntensiveTLD(t *testing.T) {
+// TestNewErrorPages checks that the error pages are scanned, but their links
+// are not followed and their URLs are not findings (endpoints, extensions).
+func TestNewErrorPages(t *testing.T) {
+	var linked atomic.Int32
+
+	server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/":
+			fmt.Fprint(w, `<html><a href="/backup.sql?id=1">a</a> <a href="/crash">b</a></html>`)
+		case "/backup.sql":
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, `<html>%s <a href="/linked">x</a></html>`, awsKey(404))
+		case "/crash":
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "<html>Fatal error: Uncaught exception</html>")
+		case "/linked":
+			linked.Add(1)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+
 	results := crawl(t, &crawler.Scan{
-		Target:      "https://co.uk/",
-		Intensive:   true,
-		Concurrency: testConcurrency,
+		Target:        server.URL,
+		SecretsFlag:   true,
+		ErrorsFlag:    true,
+		EndpointsFlag: true,
+		FileType:      7,
+		Concurrency:   testConcurrency,
+		Timeout:       input.TimeoutRequest,
+	})
+
+	if len(results.Secrets) != 1 || results.Secrets[0].Match != awsKey(404) {
+		t.Errorf("got secrets %v, want %s (404 page)", results.Secrets, awsKey(404))
+	}
+
+	if len(results.Errors) == 0 || results.Errors[0].URL != server.URL+"/crash" {
+		t.Errorf("got errors %v, want the errors of the 500 page", results.Errors)
+	}
+
+	if len(results.Endpoints) != 0 || len(results.Extensions) != 0 {
+		t.Errorf("got endpoints %v and extensions %v, want none", results.Endpoints, results.Extensions)
+	}
+
+	if got := linked.Load(); got != 0 {
+		t.Errorf("link of the 404 page requested %d times, want 0", got)
+	}
+}
+
+// TestNewCanceled checks that a canceled crawl (CTRL+C) returns at once, even
+// with a delay between the requests, with the results found so far, and that
+// the request in flight is aborted.
+func TestNewCanceled(t *testing.T) {
+	const pages = 20
+
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+
+	var requested atomic.Int32
+
+	aborted := make(chan struct{})
+
+	server := serve(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/index" {
+			fmt.Fprintf(w, "<html>%s", awsKey(0))
+
+			for i := 1; i <= pages; i++ {
+				fmt.Fprintf(w, `<a href="/page/%d">page</a>`, i)
+			}
+
+			fmt.Fprint(w, "</html>")
+
+			return
+		}
+
+		// The first page requested cancels the crawl and never answers.
+		if requested.Add(1) == 1 {
+			cancel()
+			<-r.Context().Done()
+			close(aborted)
+		}
+	})
+
+	start := time.Now()
+	results := crawlContext(t, ctx, &crawler.Scan{
+		Target:      server.URL + "/index", // not the root: no sitemap probe.
+		SecretsFlag: true,
+		// Nothing is printed by the requests left, which can still run
+		// after New returns (when stdout is restored).
+		JSON:        true,
+		Delay:       1,
+		Concurrency: 1,
 		Timeout:     input.TimeoutRequest,
 	})
 
-	if len(results.URLs) != 0 {
-		t.Errorf("got %v, want no URLs", results.URLs)
+	// Waiting for the requests left would take a delay each (20s).
+	if elapsed := time.Since(start); elapsed > 5*time.Second {
+		t.Errorf("canceled crawl returned after %v", elapsed)
+	}
+
+	if len(results.Secrets) != 1 || results.Secrets[0].Match != awsKey(0) {
+		t.Errorf("got secrets %v, want %s (found before the cancel)", results.Secrets, awsKey(0))
+	}
+
+	select {
+	case <-aborted:
+	case <-time.After(5 * time.Second):
+		t.Error("the request in flight was not aborted")
+	}
+}
+
+// TestNewTargets checks the parsing of the targets: http is used if there's
+// no scheme (even if "://" is in the query), the case of the path is kept and
+// the invalid targets are skipped.
+func TestNewTargets(t *testing.T) {
+	server := serve(t, func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, "<html></html>")
+	})
+	host := strings.TrimPrefix(server.URL, "http://")
+
+	tests := []struct {
+		target    string
+		intensive bool
+		want      []string
+	}{
+		{target: host + "/?next=https://example.org", want: []string{server.URL + "/?next=https://example.org"}},
+		{target: "HTTP://" + host + "/Index.HTML", want: []string{server.URL + "/Index.HTML"}},
+		{target: "http://"},
+		{target: "https://co.uk/", intensive: true}, // a TLD.
+	}
+	for _, tt := range tests {
+		t.Run(tt.target, func(t *testing.T) {
+			results := crawl(t, &crawler.Scan{
+				Target:      tt.target,
+				Intensive:   tt.intensive,
+				Concurrency: testConcurrency,
+				Timeout:     input.TimeoutRequest,
+			})
+
+			if !slices.Equal(results.URLs, tt.want) {
+				t.Errorf("got %v, want %v", results.URLs, tt.want)
+			}
+		})
 	}
 }
 

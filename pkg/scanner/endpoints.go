@@ -144,7 +144,6 @@ func GetJuicyParameters() []Parameter {
 		{"code", []string{"RCE"}},
 		{"option", []string{"RCE"}},
 		{"load", []string{"RCE"}},
-		{"option", []string{"RCE"}},
 		{"process", []string{"RCE"}},
 		{"step", []string{"RCE"}},
 		{"read", []string{"RCE", "LFI"}},
@@ -189,8 +188,8 @@ func GetJuicyParameters() []Parameter {
 	return juicyParameters
 }
 
-// RemovDuplicateEndpoints removes duplicate endpoints found.
-func RemovDuplicateEndpoints(input []EndpointMatched) []EndpointMatched {
+// RemoveDuplicateEndpoints removes duplicate endpoints found.
+func RemoveDuplicateEndpoints(input []EndpointMatched) []EndpointMatched {
 	keys := make(map[string]bool)
 	list := []EndpointMatched{}
 

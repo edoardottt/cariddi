@@ -55,21 +55,21 @@ func RemoveDuplicateValues(strSlice []string) []string {
 
 // CheckInputArray checks the basic rules to
 // be valid and then returns the array as input.
+// - Trim the spaces around the elements (e.g. "forum, blog").
 // - Delete duplicates.
 // - Avoid empty strings.
 func CheckInputArray(input string) []string {
 	delimiter := byte(',')
 	sliceOut := strings.Split(input, string(delimiter))
-	sliceOut = RemoveDuplicateValues(sliceOut)
 	result := make([]string, 0, len(sliceOut))
 
 	for _, elem := range sliceOut {
-		if elem != "" {
+		if elem = strings.TrimSpace(elem); elem != "" {
 			result = append(result, elem)
 		}
 	}
 
-	return result
+	return RemoveDuplicateValues(result)
 }
 
 // CheckCookies checks if the string provided to the

@@ -53,7 +53,7 @@ type Scope struct {
 // well formatted url this function returns
 // the host (the domain if you prefer).
 func GetHost(input string) string {
-	if !HasProtocol(input) {
+	if !HasScheme(input) {
 		input = "http://" + input
 	}
 
@@ -87,7 +87,7 @@ func GetProtocol(input string) string {
 // IP addresses and single label hosts are
 // returned as they are.
 func GetRootHost(input string) (string, error) {
-	if !HasProtocol(input) {
+	if !HasScheme(input) {
 		input = "http://" + input
 	}
 
@@ -131,7 +131,7 @@ func GetRootHost(input string) (string, error) {
 // NewScope returns the scope of the target: its host and port or,
 // in intensive mode, its root domain and all the subdomains on any port.
 func NewScope(target string, intensive bool) (*Scope, error) {
-	if !HasProtocol(target) {
+	if !HasScheme(target) {
 		target = "http://" + target
 	}
 
@@ -205,16 +205,26 @@ func HasProtocol(input string) bool {
 	return res >= 0
 }
 
-// RemoveProtocol removes the protocol from
-// the input string (something://...).
-// If it's not present it returns the input.
-func RemoveProtocol(input string) string {
-	res := strings.Index(input, "://")
-	if res >= 0 {
-		return input[res+3:]
+// HasScheme checks if the input starts with a scheme followed by "://"
+// (e.g. https://example.com). Unlike HasProtocol, it ignores "://" in
+// the rest of the input (e.g. example.com/?next=https://example.org).
+func HasScheme(input string) bool {
+	scheme, _, found := strings.Cut(input, "://")
+	if !found || scheme == "" {
+		return false
 	}
 
-	return input
+	// RFC 3986: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." ).
+	for i, c := range scheme {
+		switch {
+		case 'a' <= c && c <= 'z', 'A' <= c && c <= 'Z':
+		case i > 0 && ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.'):
+		default:
+			return false
+		}
+	}
+
+	return true
 }
 
 // RemovePort removes port from the input string.

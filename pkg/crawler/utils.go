@@ -28,7 +28,10 @@ package crawler
 
 import (
 	"bytes"
+	"net/http"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -41,6 +44,9 @@ const (
 	sitemapProbeKey = "sitemapProbe"
 	// htmlSpace is the ASCII whitespace of the HTML standard.
 	htmlSpace = "\t\n\f\r "
+	// idleConnTimeout is how long an unused connection is kept open
+	// (as in http.DefaultTransport).
+	idleConnTimeout = 90 * time.Second
 )
 
 // RetrieveBody retrieves the body (in the response) of a url.
@@ -71,8 +77,49 @@ func canVisit(event *Event, absoluteURL string) bool {
 		(!event.Ignore || !IgnoreMatch(absoluteURL, &event.IgnoreSlice))
 }
 
+// nextLinks collects the links to crawl at the next depth, each one once.
+type nextLinks struct {
+	mu     sync.Mutex
+	links  []string
+	queued map[string]struct{}
+}
+
+// add queues link, unless it was already queued (at this or a lower depth).
+func (n *nextLinks) add(link string) {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
+	if _, ok := n.queued[link]; ok {
+		return
+	}
+
+	if n.queued == nil {
+		n.queued = map[string]struct{}{}
+	}
+
+	n.queued[link] = struct{}{}
+	n.links = append(n.links, link)
+}
+
+// take returns the queued links and empties the queue.
+func (n *nextLinks) take() []string {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+
+	links := n.links
+	n.links = nil
+
+	return links
+}
+
+// isSuccess checks if r is a successful (2xx) response.
+func isSuccess(r *colly.Response) bool {
+	return r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices
+}
+
 // isSitemapProbe checks if r is the sitemap.xml request sent to the target
-// (the requests for the links found in it share its context, but are deeper).
+// (the requests for the links found in it share its context, but are deeper,
+// or, with a max depth, are sent with a new context).
 func isSitemapProbe(r *colly.Request) bool {
 	return r.Depth == 1 && r.Ctx.Get(sitemapProbeKey) != ""
 }

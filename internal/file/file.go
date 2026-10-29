@@ -53,18 +53,6 @@ func CreateOutputFolder() {
 	}
 }
 
-// CreateHostOutputFolder creates the host output folder
-// for the HTTP responses.
-// If it fails exits with an error message.
-func CreateHostOutputFolder(host string) {
-	// Create a folder/directory at a full qualified path
-	err := os.MkdirAll(filepath.Join("output-cariddi", host), Permission0755)
-	if err != nil {
-		fmt.Println("Can't create host output folder.")
-		os.Exit(1)
-	}
-}
-
 // CreateOutputFile takes as input a target (of the attack), a subcommand
 // and a format (json-html-txt).
 // It creates the output folder if needed, then checks if the output file
@@ -114,29 +102,6 @@ func CreateOutputFile(target string, subcommand string, format string) string {
 	return filename
 }
 
-// CreateIndexOutputFile takes as input the name of the index file.
-// It creates the output folder if needed, then checks if the index output file
-// already exists, if no cariddi creates it.
-// Whenever an instruction fails, it exits with an error message.
-func CreateIndexOutputFile(filename string) {
-	_, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		if _, err := os.Stat("output-cariddi/"); os.IsNotExist(err) {
-			CreateOutputFolder()
-		}
-		// If the file doesn't exist, create it.
-		filename = filepath.Join("output-cariddi", filename)
-
-		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, Permission0644)
-		if err != nil {
-			fmt.Println("Can't create output file.")
-			os.Exit(1)
-		}
-
-		f.Close()
-	}
-}
-
 // ReplaceBadCharacterOutput replaces forward-slashes
 // with dashes (to avoid problems with output folder).
 func ReplaceBadCharacterOutput(input string) string {
@@ -146,6 +111,8 @@ func ReplaceBadCharacterOutput(input string) string {
 
 // ReadFile reads a file line per line
 // and returns a slice of strings.
+// Blank lines are skipped (e.g. in an ignore
+// file a blank line would match every URL).
 func ReadFile(inputFile string) []string {
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -156,8 +123,11 @@ func ReadFile(inputFile string) []string {
 	scanner.Split(bufio.ScanLines)
 
 	var text []string
+
 	for scanner.Scan() {
-		text = append(text, scanner.Text())
+		if strings.TrimSpace(scanner.Text()) != "" {
+			text = append(text, scanner.Text())
+		}
 	}
 
 	file.Close()

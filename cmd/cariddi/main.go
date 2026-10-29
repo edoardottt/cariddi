@@ -27,8 +27,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
@@ -127,10 +129,6 @@ func main() {
 		ResultHTML = fileUtils.CreateOutputFile(flags.HTMLout, "", "html")
 	}
 
-	if config.StoreResp {
-		fileUtils.CreateIndexOutputFile("index.responses.txt")
-	}
-
 	// Read headers if needed
 	if flags.HeadersFile != "" || flags.Headers != "" {
 		var headersInput string
@@ -143,10 +141,19 @@ func main() {
 		config.Headers = input.GetHeaders(headersInput)
 	}
 
+	// CTRL+C stops the crawl: the results found so far are still saved.
+	// A second CTRL+C exits immediately (stop restores the default).
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	context.AfterFunc(ctx, stop)
+
 	// For each target generate a crawler and collect all the results.
 	for _, target := range targets {
+		if ctx.Err() != nil {
+			break
+		}
+
 		config.Target = target
-		results := crawler.New(config)
+		results := crawler.New(ctx, config)
 		finalResults = append(finalResults, results.URLs...)
 		finalSecret = append(finalSecret, results.Secrets...)
 		finalEndpoints = append(finalEndpoints, results.Endpoints...)
@@ -158,7 +165,7 @@ func main() {
 	// Remove duplicates from all the results.
 	finalResults = sliceUtils.RemoveDuplicateValues(finalResults)
 	finalSecret = scanner.RemoveDuplicateSecrets(finalSecret)
-	finalEndpoints = scanner.RemovDuplicateEndpoints(finalEndpoints)
+	finalEndpoints = scanner.RemoveDuplicateEndpoints(finalEndpoints)
 	finalExtensions = scanner.RemoveDuplicateExtensions(finalExtensions)
 	finalErrors = scanner.RemoveDuplicateErrors(finalErrors)
 	finalInfos = scanner.RemoveDuplicateInfos(finalInfos)
@@ -218,5 +225,10 @@ func main() {
 		for _, elem := range finalInfos {
 			output.EncapsulateCustomGreen(elem.Info.Name, fmt.Sprintf("%s in %s", elem.Match, elem.URL))
 		}
+	}
+
+	// An interrupted scan exits with an error: its results are partial.
+	if ctx.Err() != nil {
+		os.Exit(1)
 	}
 }

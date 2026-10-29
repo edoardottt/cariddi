@@ -36,10 +36,6 @@ import (
 	pdutils "github.com/projectdiscovery/utils/file"
 )
 
-const (
-	coupleSize = 2
-)
-
 // ScanTargets return the array of elements
 // taken as input on stdin.
 func ScanTargets() []string {
@@ -50,12 +46,13 @@ func ScanTargets() []string {
 
 	var result []string
 
-	// accept domains on stdin
+	// Accept the targets on stdin, one per line. They are not lowercased:
+	// the path and the query of a URL are case sensitive.
 	sc := bufio.NewScanner(os.Stdin)
 	for sc.Scan() {
-		domain := strings.ToLower(sc.Text())
-		if len(domain) > coupleSize {
-			result = append(result, domain)
+		target := strings.TrimSpace(sc.Text())
+		if target != "" {
+			result = append(result, target)
 		}
 	}
 
@@ -65,6 +62,8 @@ func ScanTargets() []string {
 // GetHeaders returns the headers provided as input
 // using the headers flag.
 // E.g. -headers \"Cookie: auth=yes;;Client: type=2\".
+// Line breaks separate the headers too (e.g. one header
+// per line in a headers file): a header can't contain them.
 func GetHeaders(input string) map[string]string {
 	result := make(map[string]string)
 
@@ -74,16 +73,20 @@ func GetHeaders(input string) map[string]string {
 			os.Exit(1)
 		}
 
-		headers := strings.Split(input, ";;")
-		for _, header := range headers {
-			var parts []string
-			if strings.Contains(header, ":") {
-				parts = strings.SplitN(header, ":", coupleSize)
-			} else {
-				continue
-			}
+		lines := strings.FieldsFuncSeq(input, func(r rune) bool { return r == '\n' || r == '\r' })
+		for line := range lines {
+			for header := range strings.SplitSeq(line, ";;") {
+				name, value, found := strings.Cut(header, ":")
+				name = strings.TrimSpace(name)
 
-			result[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+				// Skip the headers without a name, e.g. the HTTP/2 pseudo
+				// headers (":authority: ...") copied from a browser.
+				if !found || name == "" {
+					continue
+				}
+
+				result[name] = strings.TrimSpace(value)
+			}
 		}
 	} else {
 		fmt.Println("Headers or HeadersFile flag provided, but the content is empty.")

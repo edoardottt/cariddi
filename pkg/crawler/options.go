@@ -84,4 +84,13 @@ type Event struct {
 	JSON         bool
 	IgnoreSlice  []string
 	URLs         *[]string
+	// MaxDepth is the maximum depth to crawl (0 means no limit).
+	// With a max depth, the pages are crawled depth by depth (see New).
+	MaxDepth int
+
+	// depth is the depth of the pages being crawled, with a max depth.
+	// It changes only between two depths, when no request is running.
+	depth int
+	// next are the links to crawl at the next depth, with a max depth.
+	next nextLinks
 }

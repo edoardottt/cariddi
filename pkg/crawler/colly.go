@@ -27,13 +27,13 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"os/signal"
 	"strings"
 	"sync"
 	"time"
@@ -52,28 +52,29 @@ import (
 // New it's the actual crawler engine.
 // It controls all the behaviours of a scan
 // (event handlers, secrets, errors, extensions and endpoints scanning).
-func New(scan *Scan) *Results {
-	// This is to avoid to insert into the crawler target regular
-	// expression directories passed as input.
-	var targetTemp, protocolTemp string
-
+// When ctx is canceled the crawl stops and the results found so far
+// are returned.
+func New(ctx context.Context, scan *Scan) *Results {
 	results := &Results{}
 
 	// Colly callbacks run concurrently: resultsMu guards results.
 	var resultsMu sync.Mutex
 
 	// if there isn't a scheme use http.
-	if !urlUtils.HasProtocol(scan.Target) {
-		protocolTemp = "http"
-		targetTemp = urlUtils.GetHost(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
-	} else {
-		protocolTemp = urlUtils.GetProtocol(scan.Target)
-		targetTemp = urlUtils.GetHost(scan.Target)
+	target := scan.Target
+	if !urlUtils.HasScheme(target) {
+		target = "http://" + target
 	}
 
+	protocolTemp := urlUtils.GetProtocol(target)
+	// Hosts are case insensitive (unlike paths).
+	targetTemp := strings.ToLower(urlUtils.GetHost(target))
+
 	if targetTemp == "" {
-		fmt.Println("The URL provided is not built in a proper way: " + scan.Target)
-		os.Exit(1)
+		// Skip the target: the other targets can still be crawled.
+		log.Println("The URL provided is not built in a proper way: " + scan.Target)
+
+		return results
 	}
 
 	// The scope tells which URLs can be crawled: only the target host and
@@ -86,9 +87,6 @@ func New(scan *Scan) *Results {
 		return results
 	}
 
-	// clean target input
-	scan.Target = urlUtils.RemoveProtocol(scan.Target)
-
 	ignoreSlice := []string{}
 	ignoreBool := false
 
@@ -98,10 +96,14 @@ func New(scan *Scan) *Results {
 		ignoreSlice = sliceUtils.CheckInputArray(scan.Ignore)
 	}
 
-	// if ignoreTxt -> produce the slice
+	// if ignoreTxt -> produce the slice (trimmed as for -i: the
+	// spaces around a line would never match a URL)
 	if scan.IgnoreTxt != "" {
 		ignoreBool = true
-		ignoreSlice = fileUtils.ReadFile(scan.IgnoreTxt)
+
+		for _, line := range fileUtils.ReadFile(scan.IgnoreTxt) {
+			ignoreSlice = append(ignoreSlice, strings.TrimSpace(line))
+		}
 	}
 
 	// Build the secret regexes only once per target.
@@ -110,9 +112,33 @@ func New(scan *Scan) *Results {
 		secretScanner = newSecretScanner(scan.SecretsSlice)
 	}
 
+	// The connections kept for reuse serve only the crawl of this target.
+	transport := newTransport(scan.Concurrency, scan.Proxy)
+	defer transport.CloseIdleConnections()
+
 	// crawler creation
-	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout, scan.MaxDepth,
-		scan.Cache, scan.Rua, scan.Proxy, scan.UserAgent)
+	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout,
+		scan.Cache, scan.Rua, transport, scan.UserAgent)
+
+	// When ctx is canceled (CTRL+C) the requests in flight and the queued
+	// ones fail at once, so the crawl ends with the results found so far.
+	c.Context = ctx
+
+	// wait waits for the queued requests, but returns at once on CTRL+C:
+	// the requests left fail, but each one still waits for the delay.
+	wait := func() {
+		done := make(chan struct{})
+
+		go func() {
+			c.Wait()
+			close(done)
+		}()
+
+		select {
+		case <-done:
+		case <-ctx.Done():
+		}
+	}
 
 	event := &Event{
 		ProtocolTemp: protocolTemp,
@@ -123,6 +149,7 @@ func New(scan *Scan) *Results {
 		JSON:         scan.JSON,
 		IgnoreSlice:  ignoreSlice,
 		URLs:         &results.URLs,
+		MaxDepth:     scan.MaxDepth,
 	}
 
 	registerHTMLEvents(c, event)
@@ -199,8 +226,10 @@ func New(scan *Scan) *Results {
 			secretsSlice := huntSecrets(r.Request.URL.String(), bodyStr, secretScanner)
 			secrets = append(secrets, secretsSlice...)
 		}
+		// The URL of an error page (e.g. a 404) is not a finding,
+		// so endpoints and extensions are hunted in 2xx responses only.
 		// HERE SCAN FOR ENDPOINTS
-		if scan.EndpointsFlag {
+		if scan.EndpointsFlag && isSuccess(r) {
 			endpointsSlice := huntEndpoints(r.Request.URL.String(), &scan.EndpointsSlice)
 			for _, elem := range endpointsSlice {
 				if len(elem.Parameters) != 0 {
@@ -210,7 +239,7 @@ func New(scan *Scan) *Results {
 			}
 		}
 		// HERE SCAN FOR EXTENSIONS
-		if 1 <= scan.FileType && scan.FileType <= 7 {
+		if 1 <= scan.FileType && scan.FileType <= 7 && isSuccess(r) {
 			extension := huntExtensions(r.Request.URL.String(), scan.FileType)
 			if extension.URL != "" {
 				extensionsFound = append(extensionsFound, extension)
@@ -255,58 +284,70 @@ func New(scan *Scan) *Results {
 
 	// Start scraping on target, probing the sitemap too: it's added to the
 	// results only if it's a valid sitemap (see OnResponse).
-	path, err := urlUtils.GetPath(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
+	path, err := urlUtils.GetPath(target)
 	if err == nil && (path == "" || path == "/") {
 		sitemapURL := fmt.Sprintf("%s://%s/sitemap.xml", protocolTemp, targetTemp)
 		if !ignoreBool || !IgnoreMatch(sitemapURL, &ignoreSlice) {
-			ctx := colly.NewContext()
-			ctx.Put(sitemapProbeKey, "true")
+			probeCtx := colly.NewContext()
+			probeCtx.Put(sitemapProbeKey, "true")
 
-			err := c.Request(http.MethodGet, sitemapURL, nil, ctx, nil)
+			err := c.Request(http.MethodGet, sitemapURL, nil, probeCtx, nil)
 			if err != nil && scan.Debug {
 				log.Println(err)
 			}
 		}
 	}
 
-	err = c.Visit(fmt.Sprintf("%s://%s", protocolTemp, scan.Target))
+	err = c.Visit(target)
 	if err != nil && scan.Debug {
 		log.Println(err)
 	}
 
-	// Setup graceful exit (immediate exit on CTRL+C)
-	chanC := make(chan os.Signal, 1)
-	signal.Notify(chanC, os.Interrupt)
+	wait()
 
-	go func() {
-		<-chanC
+	// With a max depth, the target is at depth 0, the links found in it at
+	// depth 1, the links found in those pages at depth 2 and so on. The
+	// links found at a depth are crawled together at the next one (see
+	// visitLink): a page is always reached through the fewest links, never
+	// first through a longer chain, which would leave its links beyond the
+	// max depth.
+	for links := event.next.take(); len(links) > 0 && ctx.Err() == nil; links = event.next.take() {
+		event.depth++
 
-		if scan.Debug {
-			fmt.Fprint(os.Stdout, "\r")
-			fmt.Println("CTRL+C pressed: Exiting immediately")
+		for _, link := range links {
+			err := c.Visit(link)
+			if err != nil && scan.Debug {
+				log.Println(err)
+			}
 		}
 
-		// CLEANUP LOGIC
-		// return *results?
+		wait()
+	}
 
-		os.Exit(1)
-	}()
+	// After a CTRL+C the callbacks still running can add to the results:
+	// return a copy taken under the lock (appends never change the items
+	// already in the copy).
+	resultsMu.Lock()
+	defer resultsMu.Unlock()
 
-	c.Wait()
+	snapshot := *results
 
-	return results
+	return &snapshot
 }
 
 // CreateColly takes as input all the settings needed to instantiate
 // a new Colly Collector object and it returns this object.
-func CreateColly(delayTime, concurrency, timeout, maxDepth int,
+func CreateColly(delayTime, concurrency, timeout int,
 	cache, rua bool,
-	proxy string, userAgent string) *colly.Collector {
+	transport http.RoundTripper, userAgent string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
 	c.IgnoreRobotsTxt = true
 	c.AllowURLRevisit = false
+	// Scan the error pages too (e.g. a 500 with a stack trace): by default
+	// colly passes only the successful responses to the callbacks.
+	c.ParseHTTPErrorResponse = true
 
 	// Request every URL only once (see visitedStorage).
 	err := c.SetStorage(newVisitedStorage())
@@ -349,6 +390,25 @@ func CreateColly(delayTime, concurrency, timeout, maxDepth int,
 		c.UserAgent = userAgent
 	}
 
+	c.WithTransport(transport)
+
+	return c
+}
+
+// newTransport returns the HTTP transport of a crawl, using proxy if set.
+// It keeps an idle connection for each parallel request, so connections
+// are reused: by default only 2 per host are kept, so most of the
+// parallel requests opened a new connection.
+func newTransport(concurrency int, proxy string) *http.Transport {
+	idleConns := max(concurrency, 1)
+
+	transport := &http.Transport{
+		TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
+		MaxIdleConns:        idleConns,
+		MaxIdleConnsPerHost: idleConns,
+		IdleConnTimeout:     idleConnTimeout,
+	}
+
 	// Use a Proxy if needed
 	if proxy != "" {
 		proxyParsed, err := url.Parse(proxy)
@@ -357,25 +417,10 @@ func CreateColly(delayTime, concurrency, timeout, maxDepth int,
 			os.Exit(1)
 		}
 
-		c.WithTransport(&http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true},
-			Proxy:             http.ProxyURL(proxyParsed),
-			DisableKeepAlives: true,
-		})
-	} else {
-		c.WithTransport(&http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		})
+		transport.Proxy = http.ProxyURL(proxyParsed)
 	}
 
-	// The target is at depth 0, its links at depth 1 and so on
-	// (colly starts from 1). 0 means no limit.
-	if maxDepth > 0 {
-		c.MaxDepth = maxDepth + 1
-	}
-
-	return c
+	return transport
 }
 
 // registerHTMLEvents registers the associated functions for each
@@ -484,8 +529,10 @@ func registerXMLEvents(c *colly.Collector, event *Event) {
 }
 
 // visitHTMLLink checks if the collector should visit a link or not.
+// The links of the error pages are not followed: a 404 page with relative
+// links, served for any path, would lead to endless /a/a/a/... chains.
 func visitHTMLLink(link string, event *Event, e *colly.HTMLElement) {
-	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") && isSuccess(e.Response) {
 		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
 		// Only those links are visited which are in scope
@@ -493,9 +540,10 @@ func visitHTMLLink(link string, event *Event, e *colly.HTMLElement) {
 	}
 }
 
-// visitXMLLink checks if the collector should visit a link or not.
+// visitXMLLink checks if the collector should visit a link or not
+// (not if it's found in an error page, see visitHTMLLink).
 func visitXMLLink(link string, event *Event, e *colly.XMLElement) {
-	if len(link) != 0 && !strings.HasPrefix(link, "data:image") {
+	if len(link) != 0 && !strings.HasPrefix(link, "data:image") && isSuccess(e.Response) {
 		absoluteURL := urlUtils.AbsoluteURL(event.ProtocolTemp, event.TargetTemp, e.Request.AbsoluteURL(link))
 		// Visit link found on page
 		// Only those links are visited which are in scope
@@ -506,13 +554,22 @@ func visitXMLLink(link string, event *Event, e *colly.XMLElement) {
 // visitLink is a protocol agnostic wrapper to visit a link
 // found in the response to r.
 func visitLink(event *Event, r *colly.Request, absoluteURL string) {
-	if canVisit(event, absoluteURL) {
-		// Visit it from r (not from the collector) to increase
-		// the depth, so the max depth is honored.
-		err := r.Visit(absoluteURL)
-		if err != nil && event.Debug {
-			log.Println(err)
+	if !canVisit(event, absoluteURL) {
+		return
+	}
+
+	// With a max depth, the link is crawled at the next depth (see New).
+	if event.MaxDepth > 0 {
+		if event.depth < event.MaxDepth {
+			event.next.add(absoluteURL)
 		}
+
+		return
+	}
+
+	err := r.Visit(absoluteURL)
+	if err != nil && event.Debug {
+		log.Println(err)
 	}
 }
 
