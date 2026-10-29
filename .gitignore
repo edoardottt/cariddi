@@ -1,5 +1,7 @@
-# cariddi
-cariddi
+# cariddi binaries built from source (go build, make)
+/cariddi
+/cariddi-arm64
+/cmd/cariddi/cariddi
 output-cariddi/
 .cariddi_cache/
 *.snap
