@@ -86,7 +86,7 @@ func PrintHelp() {
 		Store HTTP responses.
 	-t int
 		Set timeout for the requests. (default 10)
-	-ua
+	-ua string
 		Use a custom User Agent.
 	-version
 		Print the version.`)
