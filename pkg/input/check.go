@@ -188,11 +188,11 @@ func CheckFlags(flags Input) {
 		checkSecretsFile(flags.SecretsFile)
 	}
 
-	if flags.Plain && flags.TXTout == "" && flags.HTMLout == "" {
+	if flags.Plain && !flags.JSON && flags.TXTout == "" && flags.HTMLout == "" {
 		if flags.Secrets || flags.Endpoints || flags.Extensions != 0 || flags.Errors || flags.Info {
-			fmt.Println("In the plain mode cariddi prints only links found on targets.")
+			fmt.Println("In the plain mode cariddi prints only the URLs found on targets.")
 			fmt.Println("If you want to see the secrets, endpoints, extensions, errors and info found")
-			fmt.Println("you should define a Txt or/and Html file output, or remove the plain mode.")
+			fmt.Println("you should define a Txt or/and Html file output, use -json, or remove the plain mode.")
 			fmt.Println("Examples:")
 			fmt.Println("	- cat urls | cariddi -plain -s -ot {target-name}")
 			fmt.Println("	- cat urls | cariddi -s")

@@ -129,7 +129,7 @@ For Windows:
 - `cat urls.txt | cariddi -s` (Hunt for secrets)
 - `cat urls.txt | cariddi -err` (Hunt for errors in websites)
 - `cat urls.txt | cariddi -e` (Hunt for juicy endpoints)
-- `cat urls.txt | cariddi -info` (Hunt for useful informations in websites)
+- `cat urls.txt | cariddi -info` (Hunt for useful information in websites)
 - `cat urls.txt | cariddi -ext 2` (Hunt for juicy (level 2 out of 7) files)
 - `cat urls.txt | cariddi -e -ef endpoints_file` (Hunt for custom endpoints)
 - `cat urls.txt | cariddi -s -sf secrets_file` (Hunt for custom secrets)
@@ -139,7 +139,7 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 
 ### Configuration
 
-- `cat urls.txt | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy, http and socks5 supported)
+- `cat urls.txt | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy: http, https, socks5 and socks5h supported)
 - `cat urls.txt | HTTPS_PROXY=http://127.0.0.1:8080 cariddi` (Without -proxy, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used)
 - `cat urls.txt | cariddi -d 2` (2 seconds between a page crawled and another)
 - `cat urls.txt | cariddi -c 200` (Set the concurrency level to 200)
@@ -147,14 +147,14 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 - `cat urls.txt | cariddi -it ignore_file` (Ignore urls containing at least one line in the input file)
 - `cat urls.txt | cariddi -cache` (Use the .cariddi_cache folder as cache)
 - `cat urls.txt | cariddi -t 5` (Set the timeout for the requests)
-- `cat urls.txt | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"`
+- `cat urls.txt | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader"` (Use custom headers)
 - `cat urls.txt | cariddi -headersfile headers.txt` (Read from an external file custom headers)
 - `cat urls.txt | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
 - `cat urls.txt | cariddi -rua` (Use a random browser user agent on every request)
 
 ### Output
 
-- `cat urls.txt | cariddi -plain` (Print only results)
+- `cat urls.txt | cariddi -plain` (Print only the URLs found, without the banner)
 - `cat urls.txt | cariddi -ot target_name` (Results in txt file)
 - `cat urls.txt | cariddi -oh target_name` (Results in html file)
 - `cat urls.txt | cariddi -json` (Print the output as JSON in stdout)
@@ -191,28 +191,28 @@ Usage of cariddi:
      Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
   -headersfile string
      Read from an external file custom headers (same format of headers flag, or one per line).
-  -json
-     Print the output as JSON in stdout.
-  -md int
-     Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).
   -i string
      Ignore the URL containing at least one of the elements of this array.
   -ie value
      Comma-separated list of extensions to ignore while scanning.
   -info
-     Hunt for useful informations in websites.
+     Hunt for useful information in websites.
   -intensive
      Crawl searching for resources matching the root domain and its subdomains.
   -it string
      Ignore the URL containing at least one of the lines of this file.
+  -json
+     Print the output as JSON in stdout.
+  -md int
+     Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).
   -oh string
      Write the output into an HTML file.
   -ot string
      Write the output into a TXT file.
   -plain
-     Print only the results.
+     Print only the URLs found, without the banner.
   -proxy string
-     Set a Proxy to be used (http and socks5 supported).
+     Set a Proxy to be used (http, https, socks5 and socks5h supported).
      Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
   -rua
      Use a random browser user agent on every request.

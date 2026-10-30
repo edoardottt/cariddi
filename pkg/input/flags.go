@@ -28,6 +28,9 @@ package input
 
 import (
 	"flag"
+	"fmt"
+	"io"
+	"os"
 )
 
 const (
@@ -52,13 +55,13 @@ type Input struct {
 	Help bool
 	// Examples prints the examples banner.
 	Examples bool
-	// Plain prints only the results.
+	// Plain prints only the URLs found, without the banner.
 	Plain bool
 	// JSON prints the output as JSON in stdout.
 	JSON bool
 	// HTMLout writes the output into an HTML file.
 	HTMLout string
-	// TXTout writes the output into an TXT file.
+	// TXTout writes the output into a TXT file.
 	TXTout string
 	// Ignore ignores the URL containing at least one of the elements of this array.
 	Ignore string
@@ -72,7 +75,7 @@ type Input struct {
 	Intensive bool
 	// Rua uses a random browser user agent on every request.
 	Rua bool
-	// Proxy set a Proxy to be used (http and socks5 supported).
+	// Proxy set a Proxy to be used (http, https, socks5 and socks5h supported).
 	// If not set, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used.
 	Proxy string
 	// Secrets hunts for secrets.
@@ -91,7 +94,7 @@ type Input struct {
 	HeadersFile string
 	// Errors hunts for errors in websites.
 	Errors bool
-	// Info hunts for useful informations in websites.
+	// Info hunts for useful information in websites.
 	Info bool
 	// Debug prints debug information while crawling.
 	Debug bool
@@ -119,7 +122,7 @@ func ScanFlag() Input {
 	flag.IntVar(&flags.Concurrency, "c", DefaultConcurrency, "Concurrency level.")
 	flag.BoolVar(&flags.Help, "h", false, "Print the help.")
 	flag.BoolVar(&flags.Examples, "examples", false, "Print the examples.")
-	flag.BoolVar(&flags.Plain, "plain", false, "Print only results.")
+	flag.BoolVar(&flags.Plain, "plain", false, "Print only the URLs found, without the banner.")
 	flag.BoolVar(&flags.JSON, "json", false, "Print the output as JSON in stdout.")
 	flag.StringVar(&flags.HTMLout, "oh", "", "Write the output into an HTML file.")
 	flag.StringVar(&flags.TXTout, "ot", "", "Write the output into a TXT file.")
@@ -129,8 +132,8 @@ func ScanFlag() Input {
 	flag.IntVar(&flags.Timeout, "t", TimeoutRequest, "Set timeout for the requests.")
 	flag.BoolVar(&flags.Intensive, "intensive", false, "Crawl searching for resources matching the root domain and its subdomains.")
 	flag.BoolVar(&flags.Rua, "rua", false, "Use a random browser user agent on every request.")
-	flag.StringVar(&flags.Proxy, "proxy", "", "Set a Proxy, http and socks5 supported "+
-		"(default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables).")
+	flag.StringVar(&flags.Proxy, "proxy", "", "Set a Proxy to be used (http, https, socks5 and socks5h supported).\n"+
+		"Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.")
 
 	flag.BoolVar(&flags.Secrets, "s", false, "Hunt for secrets.")
 	flag.StringVar(&flags.SecretsFile, "sf", "", "Use an external file (txt, one per line)"+
@@ -149,7 +152,7 @@ func ScanFlag() Input {
 
 	flag.BoolVar(&flags.Errors, "err", false, "Hunt for errors in websites.")
 
-	flag.BoolVar(&flags.Info, "info", false, "Hunt for useful informations in websites.")
+	flag.BoolVar(&flags.Info, "info", false, "Hunt for useful information in websites.")
 
 	flag.BoolVar(&flags.Debug, "debug", false, "Print debug information while crawling.")
 
@@ -159,7 +162,10 @@ func ScanFlag() Input {
 
 	flag.IntVar(&flags.MaxDepth, "md", 0, "Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).")
 
-	flag.Var(&flags.IgnoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning")
+	flag.Var(&flags.IgnoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning.")
+
+	// An unknown flag prints the usage.
+	flag.Usage = func() { PrintUsage(os.Stderr) }
 
 	flag.Parse()
 
@@ -169,4 +175,15 @@ func ScanFlag() Input {
 	}
 
 	return flags
+}
+
+// PrintUsage prints the usage of cariddi to w:
+// the flags with their description and default value.
+func PrintUsage(w io.Writer) {
+	fmt.Fprintln(w, "Usage of cariddi:")
+
+	out := flag.CommandLine.Output()
+	flag.CommandLine.SetOutput(w)
+	flag.PrintDefaults()
+	flag.CommandLine.SetOutput(out)
 }

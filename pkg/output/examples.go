@@ -40,11 +40,11 @@ func PrintExamples() {
 
 	cat urls | cariddi -s (Hunt for secrets)
 
-	cat urls | cariddi -err (Hunt for errors)
+	cat urls | cariddi -err (Hunt for errors in websites)
 
 	cat urls | cariddi -e (Hunt for juicy endpoints)
 
-	cat urls | cariddi -info (Hunt for useful information)
+	cat urls | cariddi -info (Hunt for useful information in websites)
 
 	cat urls | cariddi -ext 2 (Hunt for juicy (level 2 out of 7) files)
 
@@ -56,7 +56,7 @@ func PrintExamples() {
 
 	cat urls | cariddi -c 200 (Set the concurrency level to 200)
 
-	cat urls | cariddi -plain (Print only results)
+	cat urls | cariddi -plain (Print only the URLs found, without the banner)
 
 	cat urls | cariddi -ot target_name (Results in txt file)
 
@@ -64,17 +64,17 @@ func PrintExamples() {
 
 	cat urls | cariddi -i forum,blog,community,open (Ignore urls containing these words)
 
-	cat urls | cariddi -it ignore_file (Ignore urls containing at least one line in the input file.)
+	cat urls | cariddi -it ignore_file (Ignore urls containing at least one line in the input file)
 
 	cat urls | cariddi -cache (Use the .cariddi_cache folder as cache)
 
 	cat urls | cariddi -t 5 (Set the timeout for the requests)
 
-	cat urls | cariddi -intensive (Crawl searching for resources matching the root domain and its subdomains)
+	cat urls | cariddi -intensive (Crawl searching also subdomains, same as *.target.com)
 
 	cat urls | cariddi -rua (Use a random browser user agent on every request)
 
-	cat urls | cariddi -proxy http://127.0.0.1:8080 (Set a Proxy to be used (http and socks5 supported))
+	cat urls | cariddi -proxy http://127.0.0.1:8080 (Set a Proxy: http, https, socks5 and socks5h supported)
 
 	cat urls | HTTPS_PROXY=http://127.0.0.1:8080 cariddi (Without -proxy, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used)
 
@@ -82,11 +82,11 @@ func PrintExamples() {
 
 	cat urls | cariddi -headersfile headers.txt (Read from an external file custom headers)
 
-	cat urls | cariddi -debug (Print debug information)
+	cat urls | cariddi -debug (Print debug information while crawling)
 
 	cat urls | cariddi -ua "Custom User Agent" (Use a custom User Agent)
 
-	cat urls | cariddi -json (Print the output as JSON)
+	cat urls | cariddi -json (Print the output as JSON in stdout)
 
 	cat urls | cariddi -sr (Store HTTP responses)
 

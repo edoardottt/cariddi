@@ -26,68 +26,14 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package output
 
-import "fmt"
+import (
+	"os"
+
+	"github.com/edoardottt/cariddi/v2/pkg/input"
+)
 
 // PrintHelp prints the help.
 func PrintHelp() {
 	Banner()
-	fmt.Println(`Usage of cariddi:
-	-c int
-		Concurrency level. (default 20)
-	-cache
-		Use the .cariddi_cache folder as cache.
-	-d int
-		Delay between a page crawled and another.
-	-debug
-		Print debug information while crawling.
-	-e	Hunt for juicy endpoints.
-	-ef string
-		Use an external file (txt, one per line) to use custom parameters for endpoints hunting.
-	-err
-		Hunt for errors in websites.
-	-examples
-		Print the examples.
-	-ext int
-		Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).
-	-h	Print the help.
-	-headers string
-		Use custom headers for each request E.g. -headers "Cookie: auth=yes;;Client: type=2".
-	-headersfile string
-		Read from an external file custom headers (same format of headers flag, or one per line).
-	-json
-		Print the output as JSON in stdout.
-	-md int
-		Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).
-	-i string
-		Ignore the URL containing at least one of the elements of this array.
-	-ie value
-		Comma-separated list of extensions to ignore while scanning.
-	-info
-		Hunt for useful information in websites.
-	-intensive
-		Crawl searching for resources matching the root domain and its subdomains.
-	-it string
-		Ignore the URL containing at least one of the lines of this file.
-	-oh string
-		Write the output into an HTML file.
-	-ot string
-		Write the output into a TXT file.
-	-plain
-		Print only the results.
-	-proxy string
-		Set a Proxy to be used (http and socks5 supported).
-		Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
-	-rua
-		Use a random browser user agent on every request.
-	-s	Hunt for secrets.
-	-sf string
-		Use an external file (txt, one per line) to use custom regexes for secrets hunting.
-	-sr
-		Store HTTP responses.
-	-t int
-		Set timeout for the requests. (default 10)
-	-ua string
-		Use a custom User Agent.
-	-version
-		Print the version.`)
+	input.PrintUsage(os.Stdout)
 }
