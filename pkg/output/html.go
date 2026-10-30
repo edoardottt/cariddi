@@ -33,8 +33,8 @@ import (
 	"os"
 	"strings"
 
-	fileUtils "github.com/edoardottt/cariddi/internal/file"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	fileUtils "github.com/edoardottt/cariddi/v2/internal/file"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 // The report is a single file: style and script are inlined by the template.

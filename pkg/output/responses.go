@@ -40,7 +40,7 @@ import (
 
 	"github.com/gocolly/colly/v2"
 
-	fileUtils "github.com/edoardottt/cariddi/internal/file"
+	fileUtils "github.com/edoardottt/cariddi/v2/internal/file"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
+	sliceUtils "github.com/edoardottt/cariddi/v2/internal/slice"
 )
 
 // StringSlice is a custom flag type for []string.

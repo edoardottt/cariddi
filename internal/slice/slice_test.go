@@ -30,7 +30,7 @@ import (
 	"reflect"
 	"testing"
 
-	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
+	sliceUtils "github.com/edoardottt/cariddi/v2/internal/slice"
 )
 
 func TestRemoveDuplicateValues(t *testing.T) {

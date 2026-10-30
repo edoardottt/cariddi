@@ -1,5 +1,7 @@
 version: 2
 
+project_name: cariddi
+
 release:
   header: |
     ## cariddi {{ .Tag }} 🥳

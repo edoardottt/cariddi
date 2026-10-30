@@ -33,8 +33,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/edoardottt/cariddi/pkg/output"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/edoardottt/cariddi/v2/pkg/output"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 	"github.com/gocolly/colly/v2"
 )
 

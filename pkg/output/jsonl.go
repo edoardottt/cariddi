@@ -31,7 +31,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 	"github.com/gocolly/colly/v2"
 )
 

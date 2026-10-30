@@ -1,4 +1,4 @@
-REPO := github.com/edoardottt/cariddi
+REPO := github.com/edoardottt/cariddi/v2
 BIN := cariddi
 BUILD_DIR := ./cmd/$(BIN)
 INSTALL_PATH := /usr/bin/$(BIN)

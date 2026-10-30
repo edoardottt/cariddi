@@ -37,7 +37,7 @@ import (
 	"testing"
 	"unicode"
 
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 // The tests check that the engine returns exactly what running every regex

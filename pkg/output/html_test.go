@@ -32,9 +32,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/edoardottt/cariddi/pkg/input"
-	"github.com/edoardottt/cariddi/pkg/output"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/edoardottt/cariddi/v2/pkg/input"
+	"github.com/edoardottt/cariddi/v2/pkg/output"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 func TestHTMLOutput(t *testing.T) {

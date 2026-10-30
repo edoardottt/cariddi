@@ -32,8 +32,8 @@ import (
 	"reflect"
 	"testing"
 
-	errUtils "github.com/edoardottt/cariddi/internal/error"
-	urlUtils "github.com/edoardottt/cariddi/internal/url"
+	errUtils "github.com/edoardottt/cariddi/v2/internal/error"
+	urlUtils "github.com/edoardottt/cariddi/v2/internal/url"
 )
 
 func TestGetHost(t *testing.T) {

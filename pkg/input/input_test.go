@@ -30,7 +30,7 @@ import (
 	"maps"
 	"testing"
 
-	"github.com/edoardottt/cariddi/pkg/input"
+	"github.com/edoardottt/cariddi/v2/pkg/input"
 )
 
 func TestGetHeaders(t *testing.T) {

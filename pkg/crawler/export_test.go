@@ -29,7 +29,7 @@ package crawler
 import (
 	"net/url"
 
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 // This file exposes internals to the tests (package crawler_test).

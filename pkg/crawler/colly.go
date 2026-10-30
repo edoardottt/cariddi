@@ -39,11 +39,11 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
-	urlUtils "github.com/edoardottt/cariddi/internal/url"
-	"github.com/edoardottt/cariddi/pkg/input"
-	"github.com/edoardottt/cariddi/pkg/output"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	sliceUtils "github.com/edoardottt/cariddi/v2/internal/slice"
+	urlUtils "github.com/edoardottt/cariddi/v2/internal/url"
+	"github.com/edoardottt/cariddi/v2/pkg/input"
+	"github.com/edoardottt/cariddi/v2/pkg/output"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 	"github.com/gocolly/colly/v2"
 )
 

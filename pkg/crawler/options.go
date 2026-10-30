@@ -27,9 +27,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
-	urlUtils "github.com/edoardottt/cariddi/internal/url"
-	"github.com/edoardottt/cariddi/pkg/input"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	urlUtils "github.com/edoardottt/cariddi/v2/internal/url"
+	"github.com/edoardottt/cariddi/v2/pkg/input"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 type Results struct {

@@ -37,7 +37,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 const (

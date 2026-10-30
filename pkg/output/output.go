@@ -35,9 +35,9 @@ import (
 	"strings"
 	"time"
 
-	fileUtils "github.com/edoardottt/cariddi/internal/file"
-	"github.com/edoardottt/cariddi/pkg/input"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	fileUtils "github.com/edoardottt/cariddi/v2/internal/file"
+	"github.com/edoardottt/cariddi/v2/pkg/input"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 const (

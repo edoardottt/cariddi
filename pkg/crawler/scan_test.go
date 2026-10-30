@@ -30,7 +30,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/edoardottt/cariddi/pkg/crawler"
+	"github.com/edoardottt/cariddi/v2/pkg/crawler"
 )
 
 // TestHuntExtensions checks that the extension is hunted in the decoded

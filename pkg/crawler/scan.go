@@ -32,8 +32,8 @@ import (
 	"strings"
 	"sync"
 
-	urlUtils "github.com/edoardottt/cariddi/internal/url"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	urlUtils "github.com/edoardottt/cariddi/v2/internal/url"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 // newSecretScanner returns the scanner for the predefined secret regexes or,

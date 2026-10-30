@@ -35,7 +35,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 const testTarget = "https://example.com/page"

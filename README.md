@@ -48,7 +48,7 @@ sudo snap install cariddi
 #### Golang
 
 ```console
-go install -v github.com/edoardottt/cariddi/cmd/cariddi@latest
+go install -v github.com/edoardottt/cariddi/v2/cmd/cariddi@latest
 ```
 
 #### Pacman
@@ -65,7 +65,7 @@ nix-shell -p cariddi
 
 #### Building from source
 
-You need [Go](https://go.dev/) (>=1.25)
+You need [Go](https://go.dev/) (>=1.26)
 
 <details>
   <summary>Building from source for Linux and Windows</summary>

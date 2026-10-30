@@ -1,8 +1,8 @@
-module github.com/edoardottt/cariddi
+module github.com/edoardottt/cariddi/v2
 
-go 1.25.0
+go 1.26.0
 
-toolchain go1.25.14
+toolchain go1.26.10
 
 require (
 	github.com/fatih/color v1.19.0

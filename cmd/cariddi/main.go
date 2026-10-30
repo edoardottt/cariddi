@@ -33,12 +33,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	fileUtils "github.com/edoardottt/cariddi/internal/file"
-	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
-	"github.com/edoardottt/cariddi/pkg/crawler"
-	"github.com/edoardottt/cariddi/pkg/input"
-	"github.com/edoardottt/cariddi/pkg/output"
-	"github.com/edoardottt/cariddi/pkg/scanner"
+	fileUtils "github.com/edoardottt/cariddi/v2/internal/file"
+	sliceUtils "github.com/edoardottt/cariddi/v2/internal/slice"
+	"github.com/edoardottt/cariddi/v2/pkg/crawler"
+	"github.com/edoardottt/cariddi/v2/pkg/input"
+	"github.com/edoardottt/cariddi/v2/pkg/output"
+	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
 func main() {

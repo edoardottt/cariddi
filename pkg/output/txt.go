@@ -30,7 +30,7 @@ import (
 	"log"
 	"os"
 
-	fileUtils "github.com/edoardottt/cariddi/internal/file"
+	fileUtils "github.com/edoardottt/cariddi/v2/internal/file"
 )
 
 // WriteAllTxt opens the output file and append all the strings

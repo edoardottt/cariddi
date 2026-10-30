@@ -34,7 +34,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	errUtils "github.com/edoardottt/cariddi/internal/error"
+	errUtils "github.com/edoardottt/cariddi/v2/internal/error"
 	"golang.org/x/net/idna"
 	"golang.org/x/net/publicsuffix"
 )

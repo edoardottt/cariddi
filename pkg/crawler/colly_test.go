@@ -39,8 +39,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/edoardottt/cariddi/pkg/crawler"
-	"github.com/edoardottt/cariddi/pkg/input"
+	"github.com/edoardottt/cariddi/v2/pkg/crawler"
+	"github.com/edoardottt/cariddi/v2/pkg/input"
 )
 
 const (

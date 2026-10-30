@@ -36,7 +36,7 @@ import (
 	"os"
 	"strings"
 
-	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
+	sliceUtils "github.com/edoardottt/cariddi/v2/internal/slice"
 	pdutils "github.com/projectdiscovery/utils/file"
 )
 
