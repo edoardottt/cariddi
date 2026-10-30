@@ -7,7 +7,7 @@ toolchain go1.26.10
 require (
 	github.com/fatih/color v1.19.0
 	github.com/gocolly/colly/v2 v2.3.0
-	golang.org/x/net v0.55.0
+	golang.org/x/net v0.58.0
 )
 
 require (
@@ -29,13 +29,13 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/nlnwa/whatwg-url v0.6.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/projectdiscovery/blackrock v0.0.1 // indirect
-	github.com/projectdiscovery/utils v0.11.1
+	github.com/projectdiscovery/blackrock v0.0.2 // indirect
+	github.com/projectdiscovery/utils v0.11.10
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
-	golang.org/x/sys v0.45.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
