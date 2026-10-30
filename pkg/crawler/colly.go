@@ -46,7 +46,6 @@ import (
 	"github.com/edoardottt/cariddi/pkg/output"
 	"github.com/edoardottt/cariddi/pkg/scanner"
 	"github.com/gocolly/colly/v2"
-	"github.com/gocolly/colly/v2/extensions"
 )
 
 // New it's the actual crawler engine.
@@ -380,7 +379,9 @@ func CreateColly(delayTime, concurrency, timeout int,
 
 	// Use a Random User Agent for each request if needed
 	if rua {
-		extensions.RandomUserAgent(c)
+		c.OnRequest(func(r *colly.Request) {
+			r.Headers.Set("User-Agent", GenerateRandomUserAgent())
+		})
 	} else {
 		// Avoid using the default colly user agent
 		c.UserAgent = GenerateRandomUserAgent()

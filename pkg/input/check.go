@@ -231,6 +231,14 @@ func CheckFlags(flags Input) {
 		os.Exit(1)
 	}
 
+	if flags.UserAgent != "" && flags.Rua {
+		fmt.Println("You should use only one among -ua and -rua.")
+		fmt.Println("Examples:")
+		fmt.Println("	- cat urls | cariddi -ua \"Custom User Agent\"")
+		fmt.Println("	- cat urls | cariddi -rua")
+		os.Exit(1)
+	}
+
 	if flags.MaxDepth < 0 {
 		fmt.Println("MaxDepth cannot be less than 0.")
 		os.Exit(1)

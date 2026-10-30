@@ -40,21 +40,11 @@ const (
 )
 
 // genOsString generates a random OS string for a User Agent.
-func genOsString() string {
+func genOsString(osStrings []string) string {
 	source := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(source)
 
-	// Operating system.
-	var OsStrings = []string{
-		"Macintosh; Intel Mac OS X 10_10",
-		"Windows NT 10.0",
-		"Windows NT 5.1",
-		"Windows NT 6.1; WOW64",
-		"Windows NT 6.1; Win64; x64",
-		"X11; Linux x86_64",
-	}
-
-	return OsStrings[rng.Intn(len(OsStrings))]
+	return osStrings[rng.Intn(len(osStrings))]
 }
 
 // genFirefoxUA generates a random Firefox User Agent.
@@ -62,47 +52,47 @@ func genFirefoxUA() string {
 	source := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(source)
 
+	// Operating systems (Firefox caps macOS at 10.15).
+	var OsStrings = []string{
+		"Macintosh; Intel Mac OS X 10.15",
+		"Windows NT 10.0; Win64; x64",
+		"X11; Linux x86_64",
+	}
+
 	// Firefox versions.
 	var FirefoxVersions = []float32{
-		127.0,
-		126.0,
-		124.0,
-		123.0,
-		122.0,
-		121.0,
-		120.0,
-		119.0,
-		118.0,
-		117.0,
-		116.0,
-		115.0,
-		114.0,
-		113.0,
-		112.0,
-		111.0,
-		110.0,
-		109.0,
-		108.0,
-		107.0,
-		106.0,
-		105.0,
-		104.0,
-		103.0,
-		102.0,
-		101.0,
-		100.0,
-		58.0,
-		57.0,
-		56.0,
-		52.0,
-		48.0,
-		40.0,
-		35.0,
+		159.0,
+		158.0,
+		157.0,
+		156.0,
+		155.0,
+		154.0,
+		153.0,
+		152.0,
+		151.0,
+		150.0,
+		149.0,
+		148.0,
+		147.0,
+		146.0,
+		145.0,
+		144.0,
+		143.0,
+		142.0,
+		141.0,
+		140.0,
+		139.0,
+		138.0,
+		137.0,
+		136.0,
+		135.0,
+		134.0,
+		133.0,
 	}
 
 	version := FirefoxVersions[rng.Intn(len(FirefoxVersions))]
 
-	return fmt.Sprintf("Mozilla/5.0 (%s; rv:%.1f) Gecko/20100101 Firefox/%.1f", genOsString(), version, version)
+	return fmt.Sprintf("Mozilla/5.0 (%s; rv:%.1f) Gecko/20100101 Firefox/%.1f", genOsString(OsStrings), version, version)
 }
 
 // genChromeUA generates a random Chrome User Agent.
@@ -110,43 +100,48 @@ func genChromeUA() string {
 	source := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(source)
 
-	// Chrome versions.
-	var ChromeVersions = []string{
-		"126.0.6478.126",
-		"124.0.6367.60",
-		"123.0.6312.105",
-		"121.0.6167.160",
-		"120.0.6099.199",
-		"119.0.6045.199",
-		"118.0.5993.70",
-		"117.0.5938.149",
-		"116.0.5845.140",
-		"115.0.5790.170",
-		"114.0.5735.90",
-		"113.0.5672.126",
-		"112.0.5615.137",
-		"111.0.5563.110",
-		"109.0.5414.119",
-		"108.0.5359.94",
-		"107.0.5304.62",
-		"106.0.5249.15",
-		"105.0.5195.51",
-		"104.0.5112.105",
-		"103.0.5060.2",
-		"102.0.5005.156",
-		"101.0.4951.69",
-		"100.0.4896.163",
-		"65.0.3325.146",
-		"64.0.3282.0",
-		"41.0.2228.0",
-		"40.0.2214.93",
-		"37.0.2062.124",
+	// Operating systems (Chrome freezes the OS version).
+	var OsStrings = []string{
+		"Macintosh; Intel Mac OS X 10_15_7",
+		"Windows NT 10.0; Win64; x64",
+		"X11; Linux x86_64",
+	}
+
+	// Chrome major versions (Chrome reports minor, build and patch as 0).
+	var ChromeVersions = []int{
+		157,
+		156,
+		155,
+		154,
+		153,
+		152,
+		151,
+		150,
+		149,
+		148,
+		147,
+		146,
+		145,
+		144,
+		143,
+		142,
+		141,
+		140,
+		139,
+		138,
+		137,
+		136,
+		135,
+		134,
+		133,
+		132,
+		131,
 	}
 
 	version := ChromeVersions[rng.Intn(len(ChromeVersions))]
 
-	return fmt.Sprintf("Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Safari/537.36",
-		genOsString(), version)
+	return fmt.Sprintf("Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%d.0.0.0 Safari/537.36",
+		genOsString(OsStrings), version)
 }
 
 // GenerateRandomUserAgent generates a random user agent
