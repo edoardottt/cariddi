@@ -189,9 +189,9 @@ func CheckFlags(flags Input) {
 	}
 
 	if flags.Plain && flags.TXTout == "" && flags.HTMLout == "" {
-		if flags.Secrets || flags.Endpoints || flags.Extensions != 0 {
+		if flags.Secrets || flags.Endpoints || flags.Extensions != 0 || flags.Errors || flags.Info {
 			fmt.Println("In the plain mode cariddi prints only links found on targets.")
-			fmt.Println("If you want to see the results of secrets, endpoints and extensions found")
+			fmt.Println("If you want to see the secrets, endpoints, extensions, errors and info found")
 			fmt.Println("you should define a Txt or/and Html file output, or remove the plain mode.")
 			fmt.Println("Examples:")
 			fmt.Println("	- cat urls | cariddi -plain -s -ot {target-name}")
