@@ -239,7 +239,7 @@ func New(ctx context.Context, scan *Scan) *Results {
 		}
 		// HERE SCAN FOR EXTENSIONS
 		if 1 <= scan.FileType && scan.FileType <= 7 && isSuccess(r) {
-			extension := huntExtensions(r.Request.URL.String(), scan.FileType)
+			extension := huntExtensions(r.Request.URL, scan.FileType)
 			if extension.URL != "" {
 				extensionsFound = append(extensionsFound, extension)
 				filetype = &extension.Filetype

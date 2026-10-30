@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+	"net/url"
 	"regexp"
 	"strings"
 	"sync"
@@ -112,17 +113,14 @@ func EndpointsMatch(target string, endpointsFile *[]string) []scanner.EndpointMa
 	return endpoints
 }
 
-// huntExtensions hunts for extensions.
-func huntExtensions(target string, severity int) scanner.FileTypeMatched {
-	originalTarget := target
-
-	if idx := strings.Index(target, "?"); idx != -1 {
-		target = target[:idx]
-	}
+// huntExtensions hunts for extensions in the path of u: decoded and
+// without the query and the fragment (e.g. /a%2Esql#top is /a.sql).
+func huntExtensions(u *url.URL, severity int) scanner.FileTypeMatched {
+	urlPath := strings.ToLower(u.Path)
 
 	for _, ext := range scanner.GetExtensions() {
-		if ext.Severity <= severity && strings.HasSuffix(strings.ToLower(target), "."+ext.Extension) {
-			return scanner.FileTypeMatched{Filetype: ext, URL: originalTarget}
+		if ext.Severity <= severity && strings.HasSuffix(urlPath, "."+ext.Extension) {
+			return scanner.FileTypeMatched{Filetype: ext, URL: u.String()}
 		}
 	}
 

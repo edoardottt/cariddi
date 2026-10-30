@@ -31,7 +31,6 @@ import (
 	"net"
 	"net/url"
 	"path"
-	"path/filepath"
 	"strings"
 	"unicode/utf8"
 
@@ -293,28 +292,16 @@ func IsEmailURL(input string) (bool, string) {
 	return false, ""
 }
 
-// GetURLExtension extracts the file extension (without the dot) from a URL.
-// It decodes the URL path first and returns the extension in lowercase.
-// Returns "" if there's no extension.
+// GetURLExtension extracts the file extension (without the dot) from a URL,
+// in lowercase. Returns "" if there's no extension.
 func GetURLExtension(u *url.URL) string {
 	if u == nil {
 		return ""
 	}
 
-	// Decode percent-encoded characters in the path
-	decodedPath, err := url.PathUnescape(u.Path)
-	if err != nil {
-		return ""
-	}
-
-	// Get the last part of the path (e.g. file name)
-	lastPart := path.Base(decodedPath)
-
-	// Get extension (includes the dot, e.g. ".pdf")
-	ext := filepath.Ext(lastPart)
-	if ext == "" {
-		return ""
-	}
+	// u.Path is already decoded: decoding it again would read e.g.
+	// /a%252Epng (the file "a%2Epng") as /a.png.
+	ext := path.Ext(path.Base(u.Path))
 
 	// Remove the dot and return lowercase
 	return strings.ToLower(strings.TrimPrefix(ext, "."))

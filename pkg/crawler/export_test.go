@@ -26,9 +26,20 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 package crawler
 
+import (
+	"net/url"
+
+	"github.com/edoardottt/cariddi/pkg/scanner"
+)
+
 // This file exposes internals to the tests (package crawler_test).
 
 // MetaRefreshURL returns the URL of a meta refresh redirect (see metaRefreshURL).
 func MetaRefreshURL(httpEquiv, content string) (string, bool) {
 	return metaRefreshURL(httpEquiv, content)
+}
+
+// HuntExtensions hunts for the extension of a URL (see huntExtensions).
+func HuntExtensions(u *url.URL, severity int) scanner.FileTypeMatched {
+	return huntExtensions(u, severity)
 }

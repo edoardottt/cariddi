@@ -28,6 +28,7 @@ package url_test
 
 import (
 	"errors"
+	"net/url"
 	"reflect"
 	"testing"
 
@@ -305,5 +306,36 @@ func TestHasProtocol(t *testing.T) {
 				t.Errorf("HasProtocol() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestGetURLExtension(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"https://example.com/a.png", "png"},
+		{"https://example.com/A.PNG", "png"},
+		{"https://example.com/dir/a.min.js?v=1#top", "js"},
+		{"https://example.com/a%2Epng", "png"},    // %2E is a dot.
+		{"https://example.com/a%252Epng", ""},     // the file a%2Epng.
+		{"https://example.com/100%25.png", "png"}, // the file 100%.png.
+		{"https://example.com/dir.png/file", ""},
+		{"https://example.com/a.png%5Cb", `png\b`}, // the same on every OS.
+		{"https://example.com/", ""},
+	}
+	for _, tt := range tests {
+		u, err := url.Parse(tt.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if got := urlUtils.GetURLExtension(u); got != tt.want {
+			t.Errorf("GetURLExtension(%s) = %q, want %q", tt.input, got, tt.want)
+		}
+	}
+
+	if got := urlUtils.GetURLExtension(nil); got != "" {
+		t.Errorf("GetURLExtension(nil) = %q, want \"\"", got)
 	}
 }
