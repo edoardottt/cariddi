@@ -31,6 +31,7 @@ import (
 	"net"
 	"net/url"
 	"path"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -285,4 +286,159 @@ func GetURLExtension(u *url.URL) string {
 
 	// Remove the dot and return lowercase
 	return strings.ToLower(strings.TrimPrefix(ext, "."))
+}
+
+// ParseSrcset returns the URLs of the image candidates of a srcset
+// attribute (e.g. "a.jpg 1x, b.jpg 2x"), parsed as browsers do
+// (https://html.spec.whatwg.org/multipage/images.html#parse-a-srcset-attribute).
+// A URL can contain commas (e.g. /w_400,h_300/a.jpg): the candidates are
+// separated only by the commas at the end of a URL or after its descriptors.
+// The candidates with invalid descriptors (e.g. a.jpg 2X) are skipped,
+// as browsers ignore them.
+func ParseSrcset(srcset string) []string {
+	var urls []string
+
+	pos := 0
+
+	for {
+		for pos < len(srcset) && (isASCIIWhitespace(srcset[pos]) || srcset[pos] == ',') {
+			pos++
+		}
+
+		if pos == len(srcset) {
+			return urls
+		}
+
+		start := pos
+		for pos < len(srcset) && !isASCIIWhitespace(srcset[pos]) {
+			pos++
+		}
+
+		link := srcset[start:pos]
+
+		// The commas at the end of the URL end the candidate (no descriptors).
+		if strings.HasSuffix(link, ",") {
+			urls = append(urls, strings.TrimRight(link, ","))
+			continue
+		}
+
+		var descriptors srcsetDescriptors
+
+		pos = descriptors.parse(srcset, pos)
+		if descriptors.valid() {
+			urls = append(urls, link)
+		}
+	}
+}
+
+// srcsetDescriptors validates the descriptors of an image candidate:
+// none, a width (e.g. 400w) with an optional height (e.g. 300h)
+// or a pixel density (e.g. 1.5x).
+type srcsetDescriptors struct {
+	width   bool
+	height  bool
+	density bool
+	invalid bool
+}
+
+// parse reads the descriptors from pos (after the URL) to the comma ending
+// the candidate, or to the end of srcset, and returns the position after it.
+// In parentheses, whitespace and commas don't end a descriptor
+// (e.g. "a.jpg (1, 2)" has the only descriptor "(1, 2)").
+func (d *srcsetDescriptors) parse(srcset string, pos int) int {
+	start := pos
+	inParens := false
+
+	for ; pos < len(srcset); pos++ {
+		c := srcset[pos]
+
+		switch {
+		case inParens:
+			inParens = c != ')'
+		case c == ',':
+			d.add(srcset[start:pos])
+
+			return pos + 1
+		case isASCIIWhitespace(c):
+			d.add(srcset[start:pos])
+			start = pos + 1
+		case c == '(':
+			inParens = true
+		}
+	}
+
+	d.add(srcset[start:])
+
+	return pos
+}
+
+// add validates a descriptor (if not empty), given the previous ones.
+func (d *srcsetDescriptors) add(descriptor string) {
+	if descriptor == "" || d.invalid {
+		return
+	}
+
+	value, unit := descriptor[:len(descriptor)-1], descriptor[len(descriptor)-1]
+
+	switch {
+	case unit == 'w' && isDigits(value):
+		d.invalid = d.width || d.density || strings.TrimLeft(value, "0") == ""
+		d.width = true
+	case unit == 'h' && isDigits(value):
+		d.invalid = d.height || d.density || strings.TrimLeft(value, "0") == ""
+		d.height = true
+	case unit == 'x' && isFloatingPointNumber(value):
+		// The spec's parsing rules fail for the values too large
+		// (e.g. 1e400), as ParseFloat does.
+		density, err := strconv.ParseFloat(value, 64)
+		d.invalid = d.width || d.height || d.density || err != nil || density < 0
+		d.density = true
+	default:
+		d.invalid = true
+	}
+}
+
+// valid checks if the descriptors are valid: a height requires a width.
+func (d *srcsetDescriptors) valid() bool {
+	return !d.invalid && (!d.height || d.width)
+}
+
+// isFloatingPointNumber checks if s is a valid floating-point number
+// (https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-floating-point-number),
+// e.g. 1, -1.5, .5 or 1e-3, but not 1., +1, 0x1, Infinity or NaN.
+func isFloatingPointNumber(s string) bool {
+	s = strings.TrimPrefix(s, "-")
+
+	if i := strings.IndexAny(s, "eE"); i >= 0 {
+		exponent := s[i+1:]
+		if strings.HasPrefix(exponent, "-") || strings.HasPrefix(exponent, "+") {
+			exponent = exponent[1:]
+		}
+
+		if !isDigits(exponent) {
+			return false
+		}
+
+		s = s[:i]
+	}
+
+	integer, fraction, found := strings.Cut(s, ".")
+	if !found {
+		return isDigits(integer)
+	}
+
+	return (integer == "" || isDigits(integer)) && isDigits(fraction)
+}
+
+// isDigits checks if s is a non-empty sequence of ASCII digits.
+func isDigits(s string) bool {
+	return s != "" && strings.Trim(s, "0123456789") == ""
+}
+
+// isASCIIWhitespace checks if c is a tab, a line feed, a form feed,
+// a carriage return or a space (https://infra.spec.whatwg.org/#ascii-whitespace).
+// Other whitespace (e.g. the vertical tab or the non-breaking space)
+// can be part of a URL or a descriptor.
+func isASCIIWhitespace(c byte) bool {
+	return c == '\t' || c == '\n' || c == '\f' || c == '\r' || c == ' '
 }

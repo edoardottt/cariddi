@@ -457,15 +457,8 @@ func registerHTMLEvents(c *colly.Collector, event *Event) {
 	})
 
 	c.OnHTML("img[srcset], source[srcset]", func(e *colly.HTMLElement) {
-		srcset := e.Attr("srcset")
-		entries := strings.Split(srcset, ",")
-
-		for _, entry := range entries {
-			parts := strings.Fields(strings.TrimSpace(entry))
-			if len(parts) > 0 {
-				link := parts[0]
-				visitHTMLLink(link, event, e)
-			}
+		for _, link := range urlUtils.ParseSrcset(e.Attr("srcset")) {
+			visitHTMLLink(link, event, e)
 		}
 	})
 
