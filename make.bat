@@ -56,7 +56,7 @@ echo Done
 EXIT /B 0
 
 :Tidy
-go get -u "./..."
+for /f "delims=" %%m in ('go list -m -f "{{if not .Main}}{{if not .Indirect}}{{.Path}}@latest{{end}}{{end}}" all') do go get %%m
 go mod tidy -v
 echo Done.
 EXIT /B 0
@@ -68,7 +68,7 @@ EXIT /B 0
 :Update
 set GO111MODULE=on
 echo Updating ...
-go get -u "./..."
+for /f "delims=" %%m in ('go list -m -f "{{if not .Main}}{{if not .Indirect}}{{.Path}}@latest{{end}}{{end}}" all') do go get %%m
 go mod tidy -v
 CALL :Unwindows
 git pull

@@ -5,9 +5,10 @@ INSTALL_PATH := /usr/bin/$(BIN)
 
 .PHONY: tidy remod update lint linux unlinux test
 
+# Update only the direct dependencies (see update).
 tidy:
 	@echo "Tidying modules..."
-	@go get -u ./...
+	@go get $$(go list -m -f '{{if not .Main}}{{if not .Indirect}}{{.Path}}@latest{{end}}{{end}}' all)
 	@go mod tidy -v
 
 remod:
@@ -17,11 +18,14 @@ remod:
 	@go get
 	@echo "Done."
 
-update: unlinux
-	@echo "Updating modules..."
-	@go get -u ./...
-	@go mod tidy -v
+# Pull first, update only the direct dependencies (their dependencies move
+# only as far as they require: go get -u can pick an incompatible version),
+# then install: if the build fails, the installed binary is kept.
+update:
 	@git pull
+	@echo "Updating modules..."
+	@go get $$(go list -m -f '{{if not .Main}}{{if not .Indirect}}{{.Path}}@latest{{end}}{{end}}' all)
+	@go mod tidy -v
 	@$(MAKE) linux
 	@echo "Done."
 
