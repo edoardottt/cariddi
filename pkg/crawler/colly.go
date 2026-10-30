@@ -45,6 +45,8 @@ import (
 	"github.com/edoardottt/cariddi/v2/pkg/output"
 	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 	"github.com/gocolly/colly/v2"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 // New it's the actual crawler engine.
@@ -426,72 +428,96 @@ func newTransport(concurrency int, proxy string) *http.Transport {
 	return transport
 }
 
-// registerHTMLEvents registers the associated functions for each
-// HTML event triggering an action.
+// maxFragmentDepth is the number of levels of comments and <noscript>
+// elements parsed inside each other (e.g. a <noscript> commented out):
+// each level parses the text of the one above again, so a page of
+// thousands of nested <noscript> would be parsed thousands of times.
+const maxFragmentDepth = 3
+
+// registerHTMLEvents registers the function visiting the links
+// of each HTML page (see visitHTMLLinks).
 func registerHTMLEvents(c *colly.Collector, event *Event) {
-	c.OnHTML("a[href], link[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		if len(link) != 0 && link[0] != '#' {
+	// The parent of :root (<html>) is the document, with the comments
+	// before and after <html> too.
+	c.OnHTML(":root", func(e *colly.HTMLElement) {
+		visitHTMLLinks(e.DOM.Nodes[0].Parent, event, e, 0)
+	})
+}
+
+// visitHTMLLinks visits the links of the elements in root, the page of e.
+// The comments and the content of the <noscript> elements are parsed as
+// HTML too (up to maxFragmentDepth levels): the comments to find the links
+// commented out (e.g. to an old admin panel), <noscript> to find the links
+// for the browsers without JavaScript, as its content is parsed as text
+// (as browsers do when JavaScript is enabled).
+func visitHTMLLinks(root *html.Node, event *Event, e *colly.HTMLElement, depth int) {
+	doc := goquery.NewDocumentFromNode(root)
+
+	visitAttr := func(selector, attr string) {
+		doc.Find(selector).Each(func(_ int, s *goquery.Selection) {
+			visitHTMLLink(s.AttrOr(attr, ""), event, e)
+		})
+	}
+
+	doc.Find("a[href], link[href]").Each(func(_ int, s *goquery.Selection) {
+		if link := s.AttrOr("href", ""); len(link) != 0 && link[0] != '#' {
 			visitHTMLLink(link, event, e)
 		}
 	})
 
-	c.OnHTML("script[src], iframe[src], svg[src], img[src], video[src], embed[src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("src"), event, e)
+	// The files of the SVG elements, e.g. <use href="/icons.svg#search">:
+	// without the fragment (an icon of the file), to request each file once.
+	doc.Find("use[href], image[href]").Each(func(_ int, s *goquery.Selection) {
+		if link, _, _ := strings.Cut(s.AttrOr("href", ""), "#"); link != "" {
+			visitHTMLLink(link, event, e)
+		}
 	})
 
-	c.OnHTML("form[action]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("action"), event, e)
-	})
+	visitAttr("script[src], iframe[src], frame[src], img[src], video[src], embed[src]", "src")
+	visitAttr("form[action]", "action")
+	visitAttr("[data-src]", "data-src")
+	visitAttr("[data-href]", "data-href")
+	visitAttr("[data-url]", "data-url")
+	visitAttr("object[data]", "data")
 
-	c.OnHTML("[data-src]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data-src"), event, e)
-	})
-
-	c.OnHTML("[data-href]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data-href"), event, e)
-	})
-
-	c.OnHTML("[data-url]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data-url"), event, e)
-	})
-
-	c.OnHTML("img[srcset], source[srcset]", func(e *colly.HTMLElement) {
-		for _, link := range urlUtils.ParseSrcset(e.Attr("srcset")) {
+	doc.Find("img[srcset], source[srcset]").Each(func(_ int, s *goquery.Selection) {
+		for _, link := range urlUtils.ParseSrcset(s.AttrOr("srcset", "")) {
 			visitHTMLLink(link, event, e)
 		}
 	})
 
 	// Meta refresh redirects, e.g. <meta http-equiv="Refresh" content="0; URL='/next'">.
-	c.OnHTML("meta[http-equiv]", func(e *colly.HTMLElement) {
-		if refresh, ok := metaRefreshURL(e.Attr("http-equiv"), e.Attr("content")); ok {
+	doc.Find("meta[http-equiv]").Each(func(_ int, s *goquery.Selection) {
+		if refresh, ok := metaRefreshURL(s.AttrOr("http-equiv", ""), s.AttrOr("content", "")); ok {
 			visitHTMLLink(refresh, event, e)
 		}
 	})
 
-	// The content of <noscript> is parsed as text (as browsers do when
-	// JavaScript is enabled): parse it to find the meta refresh redirects
-	// for the browsers without JavaScript.
-	c.OnHTML("noscript", func(e *colly.HTMLElement) {
-		doc, err := goquery.NewDocumentFromReader(strings.NewReader(e.Text))
-		if err != nil {
-			return
+	if depth == maxFragmentDepth {
+		return
+	}
+
+	for n := range root.Descendants() {
+		var fragment string
+
+		switch {
+		case n.Type == html.CommentNode:
+			fragment = n.Data
+		case n.Type == html.ElementNode && n.Namespace == "" && n.DataAtom == atom.Noscript:
+			fragment = goquery.NewDocumentFromNode(n).Text()
+		default:
+			continue
 		}
 
-		doc.Find("meta[http-equiv]").Each(func(_ int, meta *goquery.Selection) {
-			if refresh, ok := metaRefreshURL(meta.AttrOr("http-equiv", ""), meta.AttrOr("content", "")); ok {
-				visitHTMLLink(refresh, event, e)
-			}
-		})
-	})
+		// Without tags there are no links (e.g. in the <!--[--> markers of Vue).
+		if !strings.Contains(fragment, "<") {
+			continue
+		}
 
-	c.OnHTML("object[data]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("data"), event, e)
-	})
-
-	c.OnHTML("applet[code]", func(e *colly.HTMLElement) {
-		visitHTMLLink(e.Attr("code"), event, e)
-	})
+		if fragmentRoot, err := html.Parse(strings.NewReader(fragment)); err == nil {
+			visitHTMLLinks(fragmentRoot, event, e, depth+1)
+		}
+	}
 }
 
 // registerXMLEvents registers the associated functions for each
