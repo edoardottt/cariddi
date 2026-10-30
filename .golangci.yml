@@ -16,7 +16,7 @@ linters:
     - godot
     - godox
     - goheader
-    - gomodguard
+    - gomodguard_v2
     - goprintffuncname
     - govet
     - ineffassign

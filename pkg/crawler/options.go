@@ -49,15 +49,12 @@ type Scan struct {
 	ErrorsFlag       bool
 	InfoFlag         bool
 	Intensive        bool
-	Plain            bool
 	Rua              bool
 	SecretsFlag      bool
 	Ignore           string
-	IgnoreTxt        string
 	JSON             bool
 	Proxy            string
 	Target           string
-	Txt              string
 	UserAgent        string
 	FileType         int
 	Headers          map[string]string
@@ -73,6 +70,7 @@ type Scan struct {
 	// Storage
 	SecretsSlice   []string
 	EndpointsSlice []string
+	IgnoreTxtSlice []string
 }
 
 type Event struct {
@@ -81,9 +79,7 @@ type Event struct {
 	Scope        *urlUtils.Scope
 	Ignore       bool
 	Debug        bool
-	JSON         bool
 	IgnoreSlice  []string
-	URLs         *[]string
 	// MaxDepth is the maximum depth to crawl (0 means no limit).
 	// With a max depth, the pages are crawled depth by depth (see New).
 	MaxDepth int

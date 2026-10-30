@@ -112,94 +112,61 @@ type Input struct {
 // as input and scan them, then it returns
 // an Input struct.
 func ScanFlag() Input {
-	versionPtr := flag.Bool("version", false, "Print the version.")
-	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")
-	concurrencyPtr := flag.Int("c", DefaultConcurrency, "Concurrency level.")
-	helpPtr := flag.Bool("h", false, "Print the help.")
-	examplesPtr := flag.Bool("examples", false, "Print the examples.")
-	plainPtr := flag.Bool("plain", false, "Print only results.")
-	JSONPtr := flag.Bool("json", false, "Print the output as JSON in stdout.")
-	outputHTMLPtr := flag.String("oh", "", "Write the output into an HTML file.")
-	outputTXTPtr := flag.String("ot", "", "Write the output into a TXT file.")
-	ignorePtr := flag.String("i", "", "Ignore the URL containing at least one of the elements of this array.")
-	ignoreTXTPtr := flag.String("it", "", "Ignore the URL containing at least one of the lines of this file.")
-	cachePtr := flag.Bool("cache", false, "Use the .cariddi_cache folder as cache.")
-	timeoutPtr := flag.Int("t", TimeoutRequest, "Set timeout for the requests.")
-	intensivePtr := flag.Bool("intensive", false, "Crawl searching for resources matching the root domain and its subdomains.")
-	ruaPtr := flag.Bool("rua", false, "Use a random browser user agent on every request.")
-	proxyPtr := flag.String("proxy", "", "Set a Proxy, http and socks5 supported "+
+	var flags Input
+
+	flag.BoolVar(&flags.Version, "version", false, "Print the version.")
+	flag.IntVar(&flags.Delay, "d", 0, "Delay between a page crawled and another.")
+	flag.IntVar(&flags.Concurrency, "c", DefaultConcurrency, "Concurrency level.")
+	flag.BoolVar(&flags.Help, "h", false, "Print the help.")
+	flag.BoolVar(&flags.Examples, "examples", false, "Print the examples.")
+	flag.BoolVar(&flags.Plain, "plain", false, "Print only results.")
+	flag.BoolVar(&flags.JSON, "json", false, "Print the output as JSON in stdout.")
+	flag.StringVar(&flags.HTMLout, "oh", "", "Write the output into an HTML file.")
+	flag.StringVar(&flags.TXTout, "ot", "", "Write the output into a TXT file.")
+	flag.StringVar(&flags.Ignore, "i", "", "Ignore the URL containing at least one of the elements of this array.")
+	flag.StringVar(&flags.IgnoreTXT, "it", "", "Ignore the URL containing at least one of the lines of this file.")
+	flag.BoolVar(&flags.Cache, "cache", false, "Use the .cariddi_cache folder as cache.")
+	flag.IntVar(&flags.Timeout, "t", TimeoutRequest, "Set timeout for the requests.")
+	flag.BoolVar(&flags.Intensive, "intensive", false, "Crawl searching for resources matching the root domain and its subdomains.")
+	flag.BoolVar(&flags.Rua, "rua", false, "Use a random browser user agent on every request.")
+	flag.StringVar(&flags.Proxy, "proxy", "", "Set a Proxy, http and socks5 supported "+
 		"(default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables).")
 
-	secretsPtr := flag.Bool("s", false, "Hunt for secrets.")
-	secretsFilePtr := flag.String("sf", "", "Use an external file (txt, one per line)"+
+	flag.BoolVar(&flags.Secrets, "s", false, "Hunt for secrets.")
+	flag.StringVar(&flags.SecretsFile, "sf", "", "Use an external file (txt, one per line)"+
 		" to use custom regexes for secrets hunting.")
 
-	endpointsPtr := flag.Bool("e", false, "Hunt for juicy endpoints.")
-	endpointsFilePtr := flag.String("ef", "", "Use an external file (txt, one per line)"+
+	flag.BoolVar(&flags.Endpoints, "e", false, "Hunt for juicy endpoints.")
+	flag.StringVar(&flags.EndpointsFile, "ef", "", "Use an external file (txt, one per line)"+
 		" to use custom parameters for endpoints hunting.")
 
-	extensionsPtr := flag.Int("ext", 0, "Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).")
+	flag.IntVar(&flags.Extensions, "ext", 0, "Hunt for juicy file extensions. Integer from 1(juicy) to 7(not juicy).")
 
-	headersPtr := flag.String("headers", "", "Use custom headers for each request "+
+	flag.StringVar(&flags.Headers, "headers", "", "Use custom headers for each request "+
 		"E.g. -headers \"Cookie: auth=yes;;Client: type=2\".")
-	headersFilePtr := flag.String("headersfile", "", "Read from an external file "+
+	flag.StringVar(&flags.HeadersFile, "headersfile", "", "Read from an external file "+
 		"custom headers (same format of headers flag, or one per line).")
 
-	errorsPtr := flag.Bool("err", false, "Hunt for errors in websites.")
+	flag.BoolVar(&flags.Errors, "err", false, "Hunt for errors in websites.")
 
-	infoPtr := flag.Bool("info", false, "Hunt for useful informations in websites.")
+	flag.BoolVar(&flags.Info, "info", false, "Hunt for useful informations in websites.")
 
-	debugPtr := flag.Bool("debug", false, "Print debug information while crawling.")
+	flag.BoolVar(&flags.Debug, "debug", false, "Print debug information while crawling.")
 
-	userAgentPtr := flag.String("ua", "", "Use a custom User Agent.")
+	flag.StringVar(&flags.UserAgent, "ua", "", "Use a custom User Agent.")
 
-	storeRespPtr := flag.Bool("sr", false, "Store HTTP responses.")
+	flag.BoolVar(&flags.StoreResp, "sr", false, "Store HTTP responses.")
 
-	maxDepth := flag.Int("md", 0, "Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).")
+	flag.IntVar(&flags.MaxDepth, "md", 0, "Maximum depth to crawl: 1 follows the links of the target, 2 also their links (0 = no limit).")
 
-	var ignoreExtensions StringSlice
-
-	flag.Var(&ignoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning")
+	flag.Var(&flags.IgnoreExtensions, "ie", "Comma-separated list of extensions to ignore while scanning")
 
 	flag.Parse()
 
 	// Default Extensions to filter
-	if ignoreExtensions == nil {
-		_ = ignoreExtensions.Set(DefaultIgnoreExtensions)
+	if flags.IgnoreExtensions == nil {
+		_ = flags.IgnoreExtensions.Set(DefaultIgnoreExtensions)
 	}
 
-	result := Input{
-		*versionPtr,
-		*delayPtr,
-		*concurrencyPtr,
-		*helpPtr,
-		*examplesPtr,
-		*plainPtr,
-		*JSONPtr,
-		*outputHTMLPtr,
-		*outputTXTPtr,
-		*ignorePtr,
-		*ignoreTXTPtr,
-		*cachePtr,
-		*timeoutPtr,
-		*intensivePtr,
-		*ruaPtr,
-		*proxyPtr,
-		*secretsPtr,
-		*secretsFilePtr,
-		*endpointsPtr,
-		*endpointsFilePtr,
-		*extensionsPtr,
-		*headersPtr,
-		*headersFilePtr,
-		*errorsPtr,
-		*infoPtr,
-		*debugPtr,
-		*userAgentPtr,
-		*storeRespPtr,
-		*maxDepth,
-		ignoreExtensions,
-	}
-
-	return result
+	return flags
 }

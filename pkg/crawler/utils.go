@@ -49,16 +49,6 @@ const (
 	idleConnTimeout = 90 * time.Second
 )
 
-// RetrieveBody retrieves the body (in the response) of a url.
-func RetrieveBody(target *string) string {
-	sb, err := GetRequest(*target)
-	if err == nil && sb != "" {
-		return sb
-	}
-
-	return ""
-}
-
 // IgnoreMatch checks if the URL should be ignored or not.
 func IgnoreMatch(url string, ignoreSlice *[]string) bool {
 	for _, ignore := range *ignoreSlice {

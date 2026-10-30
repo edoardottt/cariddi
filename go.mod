@@ -2,6 +2,8 @@ module github.com/edoardottt/cariddi
 
 go 1.25.0
 
+toolchain go1.25.14
+
 require (
 	github.com/fatih/color v1.19.0
 	github.com/gocolly/colly/v2 v2.3.0

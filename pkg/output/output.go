@@ -82,14 +82,20 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 	// if secrets flag enabled save also secrets
 	if flags.Secrets && len(finalSecret) > 0 {
 		SecretFilename := fileUtils.CreateOutputFile(flags.TXTout, SecretsFile, "txt")
+
+		lines := make([]string, 0, len(finalSecret))
 		for _, elem := range finalSecret {
-			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Secret.Name, elem.Match, elem.URL), SecretFilename)
+			lines = append(lines, fmt.Sprintf("%s - %s in %s", elem.Secret.Name, elem.Match, elem.URL))
 		}
+
+		WriteAllTxt(lines, SecretFilename)
 	}
 
 	// if endpoints flag enabled save also endpoints
 	if flags.Endpoints && len(finalEndpoints) > 0 {
 		EndpointFilename := fileUtils.CreateOutputFile(flags.TXTout, EndpointsFile, "txt")
+
+		var lines []string
 
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
@@ -106,33 +112,47 @@ func TxtOutput(flags input.Input, finalResults []string, finalSecret []scanner.S
 					}
 				}
 
-				AppendOutputToTxt(fmt.Sprintf("%s in %s", sb.String(), elem.URL), EndpointFilename)
+				lines = append(lines, fmt.Sprintf("%s in %s", sb.String(), elem.URL))
 			}
 		}
+
+		WriteAllTxt(lines, EndpointFilename)
 	}
 
 	// if extensions flag enabled save also secrets
 	if hasValidExtensionFlag(flags.Extensions) && len(finalExtensions) > 0 {
 		ExtensionsFilename := fileUtils.CreateOutputFile(flags.TXTout, ExtensionsFile, "txt")
+
+		lines := make([]string, 0, len(finalExtensions))
 		for _, elem := range finalExtensions {
-			AppendOutputToTxt(fmt.Sprintf("%s in %s", elem.Filetype.Extension, elem.URL), ExtensionsFilename)
+			lines = append(lines, fmt.Sprintf("%s in %s", elem.Filetype.Extension, elem.URL))
 		}
+
+		WriteAllTxt(lines, ExtensionsFilename)
 	}
 
 	// if errors flag enabled save also errors
 	if flags.Errors && len(finalErrors) > 0 {
 		ErrorsFilename := fileUtils.CreateOutputFile(flags.TXTout, ErrorsFile, "txt")
+
+		lines := make([]string, 0, len(finalErrors))
 		for _, elem := range finalErrors {
-			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Error.ErrorName, elem.Match, elem.URL), ErrorsFilename)
+			lines = append(lines, fmt.Sprintf("%s - %s in %s", elem.Error.ErrorName, elem.Match, elem.URL))
 		}
+
+		WriteAllTxt(lines, ErrorsFilename)
 	}
 
 	// if info flag enabled save also infos
 	if flags.Info && len(finalInfos) > 0 {
 		InfosFilename := fileUtils.CreateOutputFile(flags.TXTout, InfosFile, "txt")
+
+		lines := make([]string, 0, len(finalInfos))
 		for _, elem := range finalInfos {
-			AppendOutputToTxt(fmt.Sprintf("%s - %s in %s", elem.Info.Name, elem.Match, elem.URL), InfosFilename)
+			lines = append(lines, fmt.Sprintf("%s - %s in %s", elem.Info.Name, elem.Match, elem.URL))
 		}
+
+		WriteAllTxt(lines, InfosFilename)
 	}
 }
 

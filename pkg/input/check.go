@@ -36,7 +36,6 @@ import (
 	"slices"
 	"strings"
 
-	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	"golang.org/x/net/http/httpproxy"
 )
 
@@ -204,10 +203,6 @@ func CheckFlags(flags Input) {
 	if flags.Plain && flags.Debug {
 		fmt.Println("You cannot use both plain and debug mode.")
 		os.Exit(1)
-	}
-
-	if flags.IgnoreTXT != "" {
-		_ = fileUtils.ReadFile(flags.IgnoreTXT)
 	}
 
 	if flags.Timeout < 0 {

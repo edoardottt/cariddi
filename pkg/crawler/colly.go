@@ -39,7 +39,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	fileUtils "github.com/edoardottt/cariddi/internal/file"
 	sliceUtils "github.com/edoardottt/cariddi/internal/slice"
 	urlUtils "github.com/edoardottt/cariddi/internal/url"
 	"github.com/edoardottt/cariddi/pkg/input"
@@ -97,10 +96,10 @@ func New(ctx context.Context, scan *Scan) *Results {
 
 	// if ignoreTxt -> produce the slice (trimmed as for -i: the
 	// spaces around a line would never match a URL)
-	if scan.IgnoreTxt != "" {
+	if len(scan.IgnoreTxtSlice) > 0 {
 		ignoreBool = true
 
-		for _, line := range fileUtils.ReadFile(scan.IgnoreTxt) {
+		for _, line := range scan.IgnoreTxtSlice {
 			ignoreSlice = append(ignoreSlice, strings.TrimSpace(line))
 		}
 	}
@@ -145,9 +144,7 @@ func New(ctx context.Context, scan *Scan) *Results {
 		Scope:        scope,
 		Ignore:       ignoreBool,
 		Debug:        scan.Debug,
-		JSON:         scan.JSON,
 		IgnoreSlice:  ignoreSlice,
-		URLs:         &results.URLs,
 		MaxDepth:     scan.MaxDepth,
 	}
 

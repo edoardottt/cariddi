@@ -29,37 +29,26 @@ package output
 import (
 	"log"
 	"os"
-	"strings"
 
 	fileUtils "github.com/edoardottt/cariddi/internal/file"
 )
 
-// AppendOutputToTxt opens the output file and append
-// the string taken as input.
-func AppendOutputToTxt(output string, filename string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, fileUtils.Permission0644)
-	if err != nil {
-		log.Println(err)
-	}
-
-	if _, err := file.WriteString(output + "\n"); err != nil {
-		log.Fatal(err)
-	}
-
-	file.Close()
-}
-
 // WriteAllTxt opens the output file and append all the strings
 // taken as input in one-shot operation.
 func WriteAllTxt(output []string, filename string) {
-	var buf strings.Builder
-
+	// One allocation of the exact size and one write.
+	size := 0
 	for _, elem := range output {
-		buf.WriteString(elem)
-		buf.WriteString("\n")
+		size += len(elem) + 1
 	}
 
-	if err := os.WriteFile(filename, []byte(buf.String()), fileUtils.Permission0644); err != nil {
+	buf := make([]byte, 0, size)
+	for _, elem := range output {
+		buf = append(buf, elem...)
+		buf = append(buf, '\n')
+	}
+
+	if err := os.WriteFile(filename, buf, fileUtils.Permission0644); err != nil {
 		log.Fatal(err)
 	}
 }

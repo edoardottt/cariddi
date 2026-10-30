@@ -74,7 +74,6 @@ func main() {
 		Delay:            flags.Delay,
 		Concurrency:      flags.Concurrency,
 		Ignore:           flags.Ignore,
-		IgnoreTxt:        flags.IgnoreTXT,
 		Cache:            flags.Cache,
 		JSON:             flags.JSON,
 		Timeout:          flags.Timeout,
@@ -82,7 +81,6 @@ func main() {
 		Rua:              flags.Rua,
 		Proxy:            flags.Proxy,
 		SecretsFlag:      flags.Secrets,
-		Plain:            flags.Plain,
 		EndpointsFlag:    flags.Endpoints,
 		FileType:         flags.Extensions,
 		ErrorsFlag:       flags.Errors,
@@ -109,6 +107,12 @@ func main() {
 		config.SecretsSlice = fileUtils.ReadFile(flags.SecretsFile)
 	}
 
+	// If it is needed, read the strings to ignore
+	// from the specified file.
+	if flags.IgnoreTXT != "" {
+		config.IgnoreTxtSlice = fileUtils.ReadFile(flags.IgnoreTXT)
+	}
+
 	finalResults := []string{}
 	finalSecret := []scanner.SecretMatched{}
 	finalEndpoints := []scanner.EndpointMatched{}
@@ -133,9 +137,8 @@ func main() {
 	targets := input.ScanTargets(flags.Debug)
 
 	// Create output files if needed (txt / html).
-	config.Txt = ""
 	if flags.TXTout != "" {
-		config.Txt = fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
+		fileUtils.CreateOutputFile(flags.TXTout, "results", "txt")
 	}
 
 	var ResultHTML = ""

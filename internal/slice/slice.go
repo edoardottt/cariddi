@@ -27,14 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package slice
 
 import (
-	"math/rand"
-	"net/http"
 	"strings"
-	"time"
-)
-
-const (
-	coupleSize = 2
 )
 
 // RemoveDuplicateValues removes duplicates from a slice
@@ -70,49 +63,6 @@ func CheckInputArray(input string) []string {
 	}
 
 	return RemoveDuplicateValues(result)
-}
-
-// CheckCookies checks if the string provided to the
-// -cookie option is valid.
-// format: "name1:value1;name2:value2"
-// It returns a slice of Cookies.
-func CheckCookies(input string) []*http.Cookie {
-	if input == "" {
-		return []*http.Cookie{}
-	}
-	// Split and get different pairs of (name,value)
-	pairs := strings.Split(input, ";")
-	if len(pairs) == 0 {
-		return []*http.Cookie{}
-	}
-
-	result := make([]*http.Cookie, 0, len(pairs))
-
-	for _, pair := range pairs {
-		couple := strings.Split(pair, ":")
-		if len(couple) != coupleSize {
-			continue
-		}
-
-		result = append(result, &http.Cookie{Name: couple[0], Value: couple[1]})
-	}
-
-	return result
-}
-
-// RandSeq produces a random sequence of letters.
-func RandSeq(n int) string {
-	source := rand.NewSource(time.Now().UnixNano())
-	rng := rand.New(source)
-
-	b := make([]rune, n)
-	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	for i := range b {
-		b[i] = letters[rng.Intn(len(letters))]
-	}
-
-	return string(b)
 }
 
 // Contains checks if a string str is contained in the input slice.

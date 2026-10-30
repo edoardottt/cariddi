@@ -29,9 +29,7 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -120,17 +118,22 @@ func ReadFile(inputFile string) []string {
 	}
 
 	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
 
 	var text []string
 
 	for scanner.Scan() {
-		if strings.TrimSpace(scanner.Text()) != "" {
-			text = append(text, scanner.Text())
+		if line := scanner.Text(); strings.TrimSpace(line) != "" {
+			text = append(text, line)
 		}
 	}
 
 	file.Close()
+
+	// E.g. a line too long or a directory: the lines read so far
+	// are not the whole file.
+	if err := scanner.Err(); err != nil {
+		log.Fatalf("failed to read %s: %v", inputFile, err)
+	}
 
 	return text
 }
@@ -149,43 +152,13 @@ func ElementExists(path string) (bool, error) {
 	return false, err
 }
 
-// ReadHTTPRequestFromFile reads from a file an HTTP
-// request and returns a *http.Request object.
-func ReadHTTPRequestFromFile(inputFile string) (*http.Request, error) {
-	f, err := os.Open(inputFile)
-	if err != nil {
-		fmt.Println("Cannot open input file.")
-		os.Exit(1)
-	}
-	defer f.Close()
-
-	buf := bufio.NewReader(f)
-
-	req, err := http.ReadRequest(buf)
-	if err != nil {
-		fmt.Println("Cannot read request from input file.")
-		return req, err
-	}
-
-	return req, nil
-}
-
 // ReadEntireFile returns the content of the inputted file.
 func ReadEntireFile(inputFile string) []byte {
-	file, err := os.Open(inputFile)
+	b, err := os.ReadFile(inputFile)
 	if err != nil {
-		fmt.Println("Cannot open input file.")
+		fmt.Println("Cannot read input file:", err)
 		os.Exit(1)
 	}
-
-	defer func() {
-		if err = file.Close(); err != nil {
-			fmt.Println("Cannot close input file.")
-			os.Exit(1)
-		}
-	}()
-
-	b, err := io.ReadAll(file)
 
 	return b
 }

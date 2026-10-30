@@ -226,17 +226,6 @@ func HasScheme(input string) bool {
 	return true
 }
 
-// RemovePort removes port from the input string.
-// If it's not present it returns the input.
-func RemovePort(input string) string {
-	res := strings.Index(input, ":")
-	if res >= 0 {
-		return input[:res]
-	}
-
-	return input
-}
-
 // RetrieveParameters takes as input a string and
 // if it's correctly url-formatted returns a slice
 // of strings that are the parameters of the URL.
@@ -281,15 +270,6 @@ func GetPath(input string) (string, error) {
 	}
 
 	return u.Path, nil
-}
-
-// IsEmailURL checks if the input string is a mail URL.
-func IsEmailURL(input string) (bool, string) {
-	if input[:7] == "mailto:" {
-		return true, input[7:]
-	}
-
-	return false, ""
 }
 
 // GetURLExtension extracts the file extension (without the dot) from a URL,

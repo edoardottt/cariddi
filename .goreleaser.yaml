@@ -1,3 +1,5 @@
+version: 2
+
 release:
   header: |
     ## cariddi {{ .Tag }} 🥳

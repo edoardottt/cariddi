@@ -27,7 +27,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package slice_test
 
 import (
-	"net/http"
 	"reflect"
 	"testing"
 
@@ -111,88 +110,6 @@ func TestCheckInputArray(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := sliceUtils.CheckInputArray(tt.input); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CheckInputArray() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestCheckCookies(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  []*http.Cookie
-	}{
-		{
-			name:  "empty input",
-			input: "",
-			want:  []*http.Cookie{},
-		},
-		{
-			name:  "zero pairs",
-			input: "asdd311ue2",
-			want:  []*http.Cookie{},
-		},
-		{
-			name:  "one pair",
-			input: "name:some_value123",
-			want: []*http.Cookie{
-				{
-					Name:  "name",
-					Value: "some_value123",
-				},
-			},
-		},
-		{
-			name:  "several pairs",
-			input: "name1:some_value@1;name_2:some$%_value@",
-			want: []*http.Cookie{
-				{
-					Name:  "name1",
-					Value: "some_value@1",
-				},
-				{
-					Name:  "name_2",
-					Value: "some$%_value@",
-				},
-			},
-		},
-		{
-			name:  "several pairs 2",
-			input: "name1:some_value@1;name_2:some$%_value@;name_3:somevalueeeeee",
-			want: []*http.Cookie{
-				{
-					Name:  "name1",
-					Value: "some_value@1",
-				},
-				{
-					Name:  "name_2",
-					Value: "some$%_value@",
-				},
-				{
-					Name:  "name_3",
-					Value: "somevalueeeeee",
-				},
-			},
-		},
-		{
-			name:  "some pairs are not valid",
-			input: "name1:value:_1;name;2:value2;name_3:value_3",
-			want: []*http.Cookie{
-				{
-					Name:  "2",
-					Value: "value2",
-				},
-				{
-					Name:  "name_3",
-					Value: "value_3",
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := sliceUtils.CheckCookies(tt.input); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CheckCookies() = %v, want %v", got, tt.want)
 			}
 		})
 	}
