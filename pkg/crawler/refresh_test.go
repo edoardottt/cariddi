@@ -129,9 +129,9 @@ func TestNewMetaRefresh(t *testing.T) {
 	})
 
 	results := crawl(t, &crawler.Scan{
-		Target:      server.URL,
-		Concurrency: testConcurrency,
-		Timeout:     input.TimeoutRequest,
+		Target:  server.URL,
+		Threads: testThreads,
+		Timeout: input.TimeoutRequest,
 	})
 
 	for _, target := range targets {

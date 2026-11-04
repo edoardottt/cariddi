@@ -44,8 +44,8 @@ import (
 )
 
 const (
-	testPages       = 200
-	testConcurrency = 20
+	testPages   = 200
+	testThreads = 20
 )
 
 // awsKey returns a distinct, well-formed AWS access key for page i.
@@ -124,7 +124,7 @@ func TestNewFindsEverySecretAndError(t *testing.T) {
 		Target:      server.URL,
 		SecretsFlag: true,
 		ErrorsFlag:  true,
-		Concurrency: testConcurrency,
+		Threads:     testThreads,
 		Timeout:     input.TimeoutRequest,
 	})
 
@@ -171,7 +171,7 @@ func TestNewCustomSecrets(t *testing.T) {
 		Target:       server.URL,
 		SecretsFlag:  true,
 		SecretsSlice: []string{"AKIA0{14}42", "", "   ", "[invalid"},
-		Concurrency:  testConcurrency,
+		Threads:      testThreads,
 		Timeout:      input.TimeoutRequest,
 	})
 
@@ -189,7 +189,7 @@ func TestNewBlankSecretsFile(t *testing.T) {
 		Target:       server.URL,
 		SecretsFlag:  true,
 		SecretsSlice: []string{"", "  ", "\t"},
-		Concurrency:  testConcurrency,
+		Threads:      testThreads,
 		Timeout:      input.TimeoutRequest,
 	})
 
@@ -238,9 +238,9 @@ func TestNewRedirects(t *testing.T) {
 	})
 
 	crawl(t, &crawler.Scan{
-		Target:      server.URL,
-		Concurrency: testConcurrency,
-		Timeout:     input.TimeoutRequest,
+		Target:  server.URL,
+		Threads: testThreads,
+		Timeout: input.TimeoutRequest,
 	})
 
 	if got := landed.Load(); got != 1 {
@@ -270,10 +270,10 @@ func TestNewMaxDepth(t *testing.T) {
 
 	for maxDepth := 1; maxDepth <= 3; maxDepth++ {
 		results := crawl(t, &crawler.Scan{
-			Target:      server.URL,
-			MaxDepth:    maxDepth,
-			Concurrency: testConcurrency,
-			Timeout:     input.TimeoutRequest,
+			Target:   server.URL,
+			MaxDepth: maxDepth,
+			Threads:  testThreads,
+			Timeout:  input.TimeoutRequest,
 		})
 
 		last := fmt.Sprintf("%s/chain/%d", server.URL, maxDepth)
@@ -310,10 +310,10 @@ func TestNewMaxDepthLowestDepth(t *testing.T) {
 	})
 
 	results := crawl(t, &crawler.Scan{
-		Target:      server.URL,
-		MaxDepth:    2,
-		Concurrency: testConcurrency,
-		Timeout:     input.TimeoutRequest,
+		Target:   server.URL,
+		MaxDepth: 2,
+		Threads:  testThreads,
+		Timeout:  input.TimeoutRequest,
 	})
 
 	// The target (depth 0) -> /x/y/hub (depth 1) -> /leaf (depth 2).
@@ -355,9 +355,9 @@ func TestNewSitemapProbe(t *testing.T) {
 			})
 
 			results := crawl(t, &crawler.Scan{
-				Target:      server.URL,
-				Concurrency: testConcurrency,
-				Timeout:     input.TimeoutRequest,
+				Target:  server.URL,
+				Threads: testThreads,
+				Timeout: input.TimeoutRequest,
 			})
 
 			if got := slices.Contains(results.URLs, server.URL+"/sitemap.xml"); got != tt.want {
@@ -399,7 +399,7 @@ func TestNewErrorPages(t *testing.T) {
 		ErrorsFlag:    true,
 		EndpointsFlag: true,
 		FileType:      7,
-		Concurrency:   testConcurrency,
+		Threads:       testThreads,
 		Timeout:       input.TimeoutRequest,
 	})
 
@@ -460,10 +460,10 @@ func TestNewCanceled(t *testing.T) {
 		SecretsFlag: true,
 		// Nothing is printed by the requests left, which can still run
 		// after New returns (when stdout is restored).
-		JSON:        true,
-		Delay:       1,
-		Concurrency: 1,
-		Timeout:     input.TimeoutRequest,
+		JSON:    true,
+		Delay:   1,
+		Threads: 1,
+		Timeout: input.TimeoutRequest,
 	})
 
 	// Waiting for the requests left would take a delay each (20s).
@@ -492,22 +492,22 @@ func TestNewTargets(t *testing.T) {
 	host := strings.TrimPrefix(server.URL, "http://")
 
 	tests := []struct {
-		target    string
-		intensive bool
-		want      []string
+		target     string
+		subdomains bool
+		want       []string
 	}{
 		{target: host + "/?next=https://example.org", want: []string{server.URL + "/?next=https://example.org"}},
 		{target: "HTTP://" + host + "/Index.HTML", want: []string{server.URL + "/Index.HTML"}},
 		{target: "http://"},
-		{target: "https://co.uk/", intensive: true}, // a TLD.
+		{target: "https://co.uk/", subdomains: true}, // a TLD.
 	}
 	for _, tt := range tests {
 		t.Run(tt.target, func(t *testing.T) {
 			results := crawl(t, &crawler.Scan{
-				Target:      tt.target,
-				Intensive:   tt.intensive,
-				Concurrency: testConcurrency,
-				Timeout:     input.TimeoutRequest,
+				Target:     tt.target,
+				Subdomains: tt.subdomains,
+				Threads:    testThreads,
+				Timeout:    input.TimeoutRequest,
 			})
 
 			if !slices.Equal(results.URLs, tt.want) {
@@ -544,9 +544,9 @@ func TestNewRequestsEachURLOnce(t *testing.T) {
 	})
 
 	crawl(t, &crawler.Scan{
-		Target:      server.URL,
-		Concurrency: testConcurrency,
-		Timeout:     input.TimeoutRequest,
+		Target:  server.URL,
+		Threads: testThreads,
+		Timeout: input.TimeoutRequest,
 	})
 
 	requests.Range(func(path, count any) bool {
@@ -612,10 +612,10 @@ func TestNewSitemapIndex(t *testing.T) {
 			})
 
 			results := crawl(t, &crawler.Scan{
-				Target:      server.URL,
-				MaxDepth:    tt.maxDepth,
-				Concurrency: testConcurrency,
-				Timeout:     input.TimeoutRequest,
+				Target:   server.URL,
+				MaxDepth: tt.maxDepth,
+				Threads:  testThreads,
+				Timeout:  input.TimeoutRequest,
 			})
 
 			for _, path := range []string{"/sitemap.xml", "/sitemap-pages.xml"} {

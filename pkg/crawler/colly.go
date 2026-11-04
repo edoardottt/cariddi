@@ -78,32 +78,13 @@ func New(ctx context.Context, scan *Scan) *Results {
 	}
 
 	// The scope tells which URLs can be crawled: only the target host and
-	// port or, in intensive mode, its root domain and all the subdomains.
-	scope, err := urlUtils.NewScope(fmt.Sprintf("%s://%s", protocolTemp, targetTemp), scan.Intensive)
+	// port or, with -subdomains, its root domain and all the subdomains.
+	scope, err := urlUtils.NewScope(fmt.Sprintf("%s://%s", protocolTemp, targetTemp), scan.Subdomains)
 	if err != nil {
-		// Skip the target (e.g. a TLD in intensive mode).
+		// Skip the target (e.g. a TLD with -subdomains).
 		log.Println(err.Error() + ": " + scan.Target)
 
 		return results
-	}
-
-	ignoreSlice := []string{}
-	ignoreBool := false
-
-	// if ignore -> produce the slice
-	if scan.Ignore != "" {
-		ignoreBool = true
-		ignoreSlice = sliceUtils.CheckInputArray(scan.Ignore)
-	}
-
-	// if ignoreTxt -> produce the slice (trimmed as for -i: the
-	// spaces around a line would never match a URL)
-	if len(scan.IgnoreTxtSlice) > 0 {
-		ignoreBool = true
-
-		for _, line := range scan.IgnoreTxtSlice {
-			ignoreSlice = append(ignoreSlice, strings.TrimSpace(line))
-		}
 	}
 
 	// Build the secret regexes only once per target.
@@ -113,11 +94,11 @@ func New(ctx context.Context, scan *Scan) *Results {
 	}
 
 	// The connections kept for reuse serve only the crawl of this target.
-	transport := newTransport(scan.Concurrency, scan.Proxy)
+	transport := newTransport(scan.Threads, scan.Proxy)
 	defer transport.CloseIdleConnections()
 
 	// crawler creation
-	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout,
+	c := CreateColly(scan.Delay, scan.Threads, scan.Timeout,
 		scan.Cache, scan.Rua, transport, scan.UserAgent)
 
 	// When ctx is canceled (CTRL+C) the requests in flight and the queued
@@ -144,9 +125,8 @@ func New(ctx context.Context, scan *Scan) *Results {
 		ProtocolTemp: protocolTemp,
 		TargetTemp:   targetTemp,
 		Scope:        scope,
-		Ignore:       ignoreBool,
 		Debug:        scan.Debug,
-		IgnoreSlice:  ignoreSlice,
+		IgnoreSlice:  scan.Ignore,
 		MaxDepth:     scan.MaxDepth,
 	}
 
@@ -182,6 +162,20 @@ func New(ctx context.Context, scan *Scan) *Results {
 
 		addURL(r.URL.String())
 	})
+
+	// In debug mode, print the requests that failed without a response
+	// (e.g. a DNS error or a timeout). Not printed: the HTTP errors (as a
+	// 404), scanned as the other responses (see ParseHTTPErrorResponse), and
+	// the parsing errors of the pages already scanned (e.g. a .docx is not
+	// valid XML).
+	if scan.Debug {
+		c.OnError(func(r *colly.Response, err error) {
+			// After a CTRL+C every request left fails: that's expected.
+			if ctx.Err() == nil && r.StatusCode == 0 {
+				log.Printf("Request to %s failed: %v", r.Request.URL, err)
+			}
+		})
+	}
 
 	c.OnResponse(func(r *colly.Response) {
 		// Ignore the sitemap probe if it isn't a valid sitemap (as a 404).
@@ -285,7 +279,7 @@ func New(ctx context.Context, scan *Scan) *Results {
 	path, err := urlUtils.GetPath(target)
 	if err == nil && (path == "" || path == "/") {
 		sitemapURL := fmt.Sprintf("%s://%s/sitemap.xml", protocolTemp, targetTemp)
-		if !ignoreBool || !IgnoreMatch(sitemapURL, &ignoreSlice) {
+		if !IgnoreMatch(sitemapURL, &scan.Ignore) {
 			probeCtx := colly.NewContext()
 			probeCtx.Put(sitemapProbeKey, "true")
 

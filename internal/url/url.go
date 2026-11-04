@@ -42,7 +42,7 @@ import (
 
 // Scope defines which URLs can be crawled starting from a target.
 type Scope struct {
-	host       string // target host or, in intensive mode, its root domain.
+	host       string // target host or, with subdomains, its root domain.
 	port       string // target port, "" for the default web ports.
 	anyPort    bool
 	subdomains bool
@@ -129,8 +129,8 @@ func GetRootHost(input string) (string, error) {
 }
 
 // NewScope returns the scope of the target: its host and port or,
-// in intensive mode, its root domain and all the subdomains on any port.
-func NewScope(target string, intensive bool) (*Scope, error) {
+// with subdomains, its root domain and all the subdomains on any port.
+func NewScope(target string, subdomains bool) (*Scope, error) {
 	if !HasScheme(target) {
 		target = "http://" + target
 	}
@@ -145,7 +145,7 @@ func NewScope(target string, intensive bool) (*Scope, error) {
 		return nil, fmt.Errorf("%w", errUtils.ErrDomainFormat)
 	}
 
-	if !intensive {
+	if !subdomains {
 		return &Scope{host: host, port: webPort(u.Port())}, nil
 	}
 

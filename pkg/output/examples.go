@@ -32,11 +32,21 @@ import "fmt"
 func PrintExamples() {
 	Banner()
 	fmt.Println(`
-	cariddi -version (Print the version)
+	cariddi -v (Print the version)
 
 	cariddi -h (Print the help)
 
+	cariddi -h hunt (Print the help of a group of flags)
+
 	cariddi -examples (Print the examples)
+
+	cariddi -u https://example.com (Crawl a URL)
+
+	cariddi -u https://example.com -u https://example.org (Crawl more URLs)
+
+	cariddi -l urls.txt (Crawl the URLs of a file, one per line)
+
+	cat urls | cariddi (Crawl the URLs read from stdin, one per line)
 
 	cat urls | cariddi -s (Hunt for secrets)
 
@@ -48,15 +58,15 @@ func PrintExamples() {
 
 	cat urls | cariddi -ext 2 (Hunt for juicy (level 2 out of 7) files)
 
-	cat urls | cariddi -e -ef endpoints_file (Hunt for custom endpoints)
+	cat urls | cariddi -ef endpoints_file (Hunt for custom endpoints)
 
-	cat urls | cariddi -s -sf secrets_file (Hunt for custom secrets)
+	cat urls | cariddi -sf secrets_file (Hunt for custom secrets)
 
-	cat urls | cariddi -d 2 (2 seconds between a page crawled and another)
+	cat urls | cariddi -rd 2 (2 seconds between a page crawled and another)
 
-	cat urls | cariddi -c 200 (Set the concurrency level to 200)
+	cat urls | cariddi -t 200 (Send up to 200 concurrent requests)
 
-	cat urls | cariddi -plain (Print only the URLs found, without the banner)
+	cat urls | cariddi -silent (Print only the URLs found, without the banner)
 
 	cat urls | cariddi -ot target_name (Results in txt file)
 
@@ -64,13 +74,13 @@ func PrintExamples() {
 
 	cat urls | cariddi -i forum,blog,community,open (Ignore urls containing these words)
 
-	cat urls | cariddi -it ignore_file (Ignore urls containing at least one line in the input file)
+	cat urls | cariddi -i ignore_file (Ignore urls containing at least one line in the input file)
 
 	cat urls | cariddi -cache (Use the .cariddi_cache folder as cache)
 
-	cat urls | cariddi -t 5 (Set the timeout for the requests)
+	cat urls | cariddi -timeout 5 (Set the timeout for the requests)
 
-	cat urls | cariddi -intensive (Crawl searching also subdomains, same as *.target.com)
+	cat urls | cariddi -subs (Crawl searching also subdomains, same as *.target.com)
 
 	cat urls | cariddi -rua (Use a random browser user agent on every request)
 
@@ -78,19 +88,19 @@ func PrintExamples() {
 
 	cat urls | HTTPS_PROXY=http://127.0.0.1:8080 cariddi (Without -proxy, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used)
 
-	cat urls | cariddi -headers "Cookie: auth=admin;type=2;; X-Custom: customHeader" (Use custom headers)
+	cat urls | cariddi -H "Cookie: auth=admin;type=2;; X-Custom: customHeader" (Use custom headers)
 
-	cat urls | cariddi -headersfile headers.txt (Read from an external file custom headers)
+	cat urls | cariddi -H headers.txt (Read from an external file custom headers)
 
 	cat urls | cariddi -debug (Print debug information while crawling)
 
 	cat urls | cariddi -ua "Custom User Agent" (Use a custom User Agent)
 
-	cat urls | cariddi -json (Print the output as JSON in stdout)
+	cat urls | cariddi -j (Print the output as JSON lines in stdout)
 
 	cat urls | cariddi -sr (Store HTTP responses)
 
-	cat urls | cariddi -md 3 (Follow the links up to 3 levels deep)
+	cat urls | cariddi -d 3 (Follow the links up to 3 levels deep)
 
 	cat urls | cariddi -ie pdf,png,jpg (Ignore these extensions while scanning)`)
 }

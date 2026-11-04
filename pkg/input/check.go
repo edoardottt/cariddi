@@ -170,59 +170,29 @@ func CheckFlags(flags Input) {
 		}
 	}
 
-	if flags.EndpointsFile != "" {
-		if !flags.Endpoints {
-			fmt.Println("You can't define an endpoint file and not the endpoint search.")
-			fmt.Println("If you want to scan for custom parameters enter both -e and -ef {filename}.")
-			os.Exit(1)
-		}
-	}
-
 	if flags.SecretsFile != "" {
-		if !flags.Secrets {
-			fmt.Println("You can't define a secrets file and not the secrets search.")
-			fmt.Println("If you want to scan for custom regexes enter both -s and -sf {filename}.")
-			os.Exit(1)
-		}
-
 		checkSecretsFile(flags.SecretsFile)
 	}
 
-	if flags.Plain && !flags.JSON && flags.TXTout == "" && flags.HTMLout == "" {
+	if flags.Silent && !flags.JSON && flags.TXTout == "" && flags.HTMLout == "" {
 		if flags.Secrets || flags.Endpoints || flags.Extensions != 0 || flags.Errors || flags.Info {
-			fmt.Println("In the plain mode cariddi prints only the URLs found on targets.")
+			fmt.Println("In silent mode cariddi prints only the URLs found on targets.")
 			fmt.Println("If you want to see the secrets, endpoints, extensions, errors and info found")
-			fmt.Println("you should define a Txt or/and Html file output, use -json, or remove the plain mode.")
+			fmt.Println("you should define a Txt or/and Html file output, use -jsonl, or remove the silent mode.")
 			fmt.Println("Examples:")
-			fmt.Println("	- cat urls | cariddi -plain -s -ot {target-name}")
+			fmt.Println("	- cat urls | cariddi -silent -s -ot {target-name}")
 			fmt.Println("	- cat urls | cariddi -s")
 			os.Exit(1)
 		}
 	}
 
-	if flags.Plain && flags.Debug {
-		fmt.Println("You cannot use both plain and debug mode.")
+	if flags.Silent && flags.Debug {
+		fmt.Println("You cannot use both silent and debug mode.")
 		os.Exit(1)
 	}
 
 	if flags.Timeout < 0 {
 		fmt.Println("The timeout value must be a positive value.")
-		os.Exit(1)
-	}
-
-	if flags.Ignore != "" && flags.IgnoreTXT != "" {
-		fmt.Println("You should use only one among -i and -it.")
-		fmt.Println("Examples:")
-		fmt.Println("	- cat urls | cariddi -i forum,blog")
-		fmt.Println("	- cat urls | cariddi -it ignore.txt")
-		os.Exit(1)
-	}
-
-	if flags.Headers != "" && flags.HeadersFile != "" {
-		fmt.Println("You should use only one among -headers and -headersfile.")
-		fmt.Println("Examples:")
-		fmt.Println("	- cat urls | cariddi -headers \"Cookie: auth=yes;;Client: type=2\"")
-		fmt.Println("	- cat urls | cariddi -headersfile headers.txt")
 		os.Exit(1)
 	}
 
@@ -235,7 +205,7 @@ func CheckFlags(flags Input) {
 	}
 
 	if flags.MaxDepth < 0 {
-		fmt.Println("MaxDepth cannot be less than 0.")
+		fmt.Println("The depth cannot be less than 0.")
 		os.Exit(1)
 	}
 

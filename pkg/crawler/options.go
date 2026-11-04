@@ -28,7 +28,6 @@ package crawler
 
 import (
 	urlUtils "github.com/edoardottt/cariddi/v2/internal/url"
-	"github.com/edoardottt/cariddi/v2/pkg/input"
 	"github.com/edoardottt/cariddi/v2/pkg/scanner"
 )
 
@@ -43,15 +42,17 @@ type Results struct {
 
 type Scan struct {
 	// Flags
-	Cache            bool
-	Debug            bool
-	EndpointsFlag    bool
-	ErrorsFlag       bool
-	InfoFlag         bool
-	Intensive        bool
-	Rua              bool
-	SecretsFlag      bool
-	Ignore           string
+	Cache         bool
+	Debug         bool
+	EndpointsFlag bool
+	ErrorsFlag    bool
+	InfoFlag      bool
+	Subdomains    bool
+	Rua           bool
+	SecretsFlag   bool
+	// Ignore are the strings that the URLs to crawl can't contain
+	// (a blank string would match every URL).
+	Ignore           []string
 	JSON             bool
 	Proxy            string
 	Target           string
@@ -60,24 +61,22 @@ type Scan struct {
 	Headers          map[string]string
 	StoreResp        bool
 	MaxDepth         int
-	IgnoreExtensions input.StringSlice
+	IgnoreExtensions []string
 
 	// Settings
-	Concurrency int
-	Delay       int
-	Timeout     int
+	Threads int
+	Delay   int
+	Timeout int
 
 	// Storage
 	SecretsSlice   []string
 	EndpointsSlice []string
-	IgnoreTxtSlice []string
 }
 
 type Event struct {
 	ProtocolTemp string
 	TargetTemp   string
 	Scope        *urlUtils.Scope
-	Ignore       bool
 	Debug        bool
 	IgnoreSlice  []string
 	// MaxDepth is the maximum depth to crawl (0 means no limit).

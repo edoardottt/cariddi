@@ -201,20 +201,20 @@ func TestGetRootHost(t *testing.T) {
 
 func TestNewScopeErrors(t *testing.T) {
 	tests := []struct {
-		target    string
-		intensive bool
-		want      error
+		target     string
+		subdomains bool
+		want       error
 	}{
-		{target: "", intensive: false, want: errUtils.ErrDomainFormat},
-		{target: "https://co.uk/", intensive: true, want: errUtils.ErrDomainTLD},
-		{target: "com", intensive: true, want: errUtils.ErrDomainTLD},
-		{target: "https://co.uk/", intensive: false, want: nil},
-		{target: "https://github.io/", intensive: true, want: nil},
+		{target: "", subdomains: false, want: errUtils.ErrDomainFormat},
+		{target: "https://co.uk/", subdomains: true, want: errUtils.ErrDomainTLD},
+		{target: "com", subdomains: true, want: errUtils.ErrDomainTLD},
+		{target: "https://co.uk/", subdomains: false, want: nil},
+		{target: "https://github.io/", subdomains: true, want: nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.target, func(t *testing.T) {
-			if _, err := urlUtils.NewScope(tt.target, tt.intensive); !errors.Is(err, tt.want) {
-				t.Errorf("NewScope(%q, %v) error = %v, want %v", tt.target, tt.intensive, err, tt.want)
+			if _, err := urlUtils.NewScope(tt.target, tt.subdomains); !errors.Is(err, tt.want) {
+				t.Errorf("NewScope(%q, %v) error = %v, want %v", tt.target, tt.subdomains, err, tt.want)
 			}
 		})
 	}
@@ -222,10 +222,10 @@ func TestNewScopeErrors(t *testing.T) {
 
 func TestScopeContains(t *testing.T) {
 	tests := []struct {
-		target    string
-		intensive bool
-		input     string
-		want      bool
+		target     string
+		subdomains bool
+		input      string
+		want       bool
 	}{
 		{target: "https://sub.domain.com:8443/page", input: "https://sub.domain.com:8443/other", want: true},
 		{target: "https://sub.domain.com:8443/page", input: "http://sub.domain.com:8443/", want: true},
@@ -242,32 +242,32 @@ func TestScopeContains(t *testing.T) {
 		{target: "http://xn--bcher-kva.de/", input: "http://BÜCHER.de/x", want: true},
 		{target: "http://[::1]:8080/", input: "http://[::1]:8080/x", want: true},
 		{target: "http://[::1]:8080/", input: "http://[::1]:9090/", want: false},
-		{target: "https://sub.sub.sub.domain.com:8443/page", intensive: true, input: "https://domain.com/", want: true},
-		{target: "https://sub.sub.sub.domain.com:8443/page", intensive: true, input: "https://sub.domain.com/", want: true},
-		{target: "https://sub.sub.sub.domain.com:8443/page", intensive: true, input: "http://a.b.c.domain.com:8080/", want: true},
-		{target: "https://sub.sub.sub.domain.com:8443/page", intensive: true, input: "https://fakedomain.com/", want: false},
-		{target: "https://sub.sub.sub.domain.com:8443/page", intensive: true, input: "https://x.fakedomain.com/", want: false},
-		{target: "https://sub.sub.sub.domain.com:8443/page", intensive: true, input: "https://domain.com.evil.com/", want: false},
-		{target: "https://shop.example.co.uk/", intensive: true, input: "https://www.example.co.uk/", want: true},
-		{target: "https://shop.example.co.uk/", intensive: true, input: "https://other.co.uk/", want: false},
-		{target: "https://shop.bücher.de/", intensive: true, input: "https://www.xn--bcher-kva.de/", want: true},
-		{target: "https://edoardottt.github.io/", intensive: true, input: "https://other.github.io/", want: true},
-		{target: "https://edoardottt.github.io/", intensive: true, input: "https://fakegithub.io/", want: false},
-		{target: "https://edoardottt.github.io/", intensive: true, input: "https://subdomain.fakegithub.io/", want: false},
-		{target: "http://10.0.0.5:8080/", intensive: true, input: "http://10.0.0.5:9090/", want: true},
-		{target: "http://10.0.0.5:8080/", intensive: true, input: "http://10.0.0.50/", want: false},
-		{target: "http://10.0.0.5:8080/", intensive: true, input: "http://x.10.0.0.5/", want: false},
+		{target: "https://sub.sub.sub.domain.com:8443/page", subdomains: true, input: "https://domain.com/", want: true},
+		{target: "https://sub.sub.sub.domain.com:8443/page", subdomains: true, input: "https://sub.domain.com/", want: true},
+		{target: "https://sub.sub.sub.domain.com:8443/page", subdomains: true, input: "http://a.b.c.domain.com:8080/", want: true},
+		{target: "https://sub.sub.sub.domain.com:8443/page", subdomains: true, input: "https://fakedomain.com/", want: false},
+		{target: "https://sub.sub.sub.domain.com:8443/page", subdomains: true, input: "https://x.fakedomain.com/", want: false},
+		{target: "https://sub.sub.sub.domain.com:8443/page", subdomains: true, input: "https://domain.com.evil.com/", want: false},
+		{target: "https://shop.example.co.uk/", subdomains: true, input: "https://www.example.co.uk/", want: true},
+		{target: "https://shop.example.co.uk/", subdomains: true, input: "https://other.co.uk/", want: false},
+		{target: "https://shop.bücher.de/", subdomains: true, input: "https://www.xn--bcher-kva.de/", want: true},
+		{target: "https://edoardottt.github.io/", subdomains: true, input: "https://other.github.io/", want: true},
+		{target: "https://edoardottt.github.io/", subdomains: true, input: "https://fakegithub.io/", want: false},
+		{target: "https://edoardottt.github.io/", subdomains: true, input: "https://subdomain.fakegithub.io/", want: false},
+		{target: "http://10.0.0.5:8080/", subdomains: true, input: "http://10.0.0.5:9090/", want: true},
+		{target: "http://10.0.0.5:8080/", subdomains: true, input: "http://10.0.0.50/", want: false},
+		{target: "http://10.0.0.5:8080/", subdomains: true, input: "http://x.10.0.0.5/", want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.target+" "+tt.input, func(t *testing.T) {
-			scope, err := urlUtils.NewScope(tt.target, tt.intensive)
+			scope, err := urlUtils.NewScope(tt.target, tt.subdomains)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			if got := scope.Contains(tt.input); got != tt.want {
-				t.Errorf("scope of %s (intensive: %v) contains %s = %v, want %v",
-					tt.target, tt.intensive, tt.input, got, tt.want)
+				t.Errorf("scope of %s (subdomains: %v) contains %s = %v, want %v",
+					tt.target, tt.subdomains, tt.input, got, tt.want)
 			}
 		})
 	}

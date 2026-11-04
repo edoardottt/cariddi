@@ -42,18 +42,18 @@ import (
 )
 
 func main() {
+	// With -h or -help, ScanFlag prints the help and exits:
+	// the banner comes first.
+	if input.HelpRequested(os.Args[1:]) {
+		output.Banner()
+	}
+
 	// Scan flags.
 	flags := input.ScanFlag()
 
 	// Print version and exit.
 	if flags.Version {
 		output.Banner()
-		os.Exit(0)
-	}
-
-	// Print help and exit.
-	if flags.Help {
-		output.PrintHelp()
 		os.Exit(0)
 	}
 
@@ -64,7 +64,7 @@ func main() {
 	}
 
 	// If it's possible print the cariddi banner.
-	if !flags.Plain {
+	if !flags.Silent {
 		output.Banner()
 	}
 
@@ -72,12 +72,11 @@ func main() {
 	// passed via the CLI
 	config := &crawler.Scan{
 		Delay:            flags.Delay,
-		Concurrency:      flags.Concurrency,
-		Ignore:           flags.Ignore,
+		Threads:          flags.Threads,
 		Cache:            flags.Cache,
 		JSON:             flags.JSON,
 		Timeout:          flags.Timeout,
-		Intensive:        flags.Intensive,
+		Subdomains:       flags.Subdomains,
 		Rua:              flags.Rua,
 		Proxy:            flags.Proxy,
 		SecretsFlag:      flags.Secrets,
@@ -108,10 +107,8 @@ func main() {
 	}
 
 	// If it is needed, read the strings to ignore
-	// from the specified file.
-	if flags.IgnoreTXT != "" {
-		config.IgnoreTxtSlice = fileUtils.ReadFile(flags.IgnoreTXT)
-	}
+	// (from the files too).
+	config.Ignore = input.GetIgnore(flags.Ignore)
 
 	finalResults := []string{}
 	finalSecret := []scanner.SecretMatched{}
@@ -120,21 +117,12 @@ func main() {
 	finalErrors := []scanner.ErrorMatched{}
 	finalInfos := []scanner.InfoMatched{}
 
-	// Read headers if needed
-	if flags.HeadersFile != "" || flags.Headers != "" {
-		var headersInput string
-		if flags.HeadersFile != "" {
-			headersInput = string(fileUtils.ReadEntireFile(flags.HeadersFile))
-		} else {
-			headersInput = flags.Headers
-		}
+	// Read headers if needed (from the files too).
+	config.Headers = input.GetHeaders(flags.Headers)
 
-		config.Headers = input.GetHeaders(headersInput)
-	}
-
-	// Read the targets from standard input, once the flags and the files
-	// they name are checked: an error doesn't wait for the whole input.
-	targets := input.ScanTargets(flags.Debug)
+	// Read the targets (-u, -l and standard input), once the flags and the
+	// files they name are checked: an error doesn't wait for the whole input.
+	targets := input.ScanTargets(flags.URLs, flags.List, flags.Debug)
 
 	// Create output files if needed (txt / html).
 	if flags.TXTout != "" {
@@ -189,14 +177,14 @@ func main() {
 	}
 
 	// If needed print secrets.
-	if !flags.JSON && !flags.Plain && len(finalSecret) != 0 {
+	if !flags.JSON && !flags.Silent && len(finalSecret) != 0 {
 		for _, elem := range finalSecret {
 			output.EncapsulateCustomGreen(elem.Secret.Name, fmt.Sprintf("%s in %s", elem.Match, elem.URL))
 		}
 	}
 
 	// If needed print endpoints.
-	if !flags.JSON && !flags.Plain && len(finalEndpoints) != 0 {
+	if !flags.JSON && !flags.Silent && len(finalEndpoints) != 0 {
 		for _, elem := range finalEndpoints {
 			for _, parameter := range elem.Parameters {
 				finalString := "" + parameter.Parameter
@@ -213,21 +201,21 @@ func main() {
 	}
 
 	// If needed print extensions.
-	if !flags.JSON && !flags.Plain && len(finalExtensions) != 0 {
+	if !flags.JSON && !flags.Silent && len(finalExtensions) != 0 {
 		for _, elem := range finalExtensions {
 			output.EncapsulateCustomGreen(elem.Filetype.Extension, fmt.Sprintf("%s matched!", elem.URL))
 		}
 	}
 
 	// If needed print errors.
-	if !flags.JSON && !flags.Plain && len(finalErrors) != 0 {
+	if !flags.JSON && !flags.Silent && len(finalErrors) != 0 {
 		for _, elem := range finalErrors {
 			output.EncapsulateCustomGreen(elem.Error.ErrorName, fmt.Sprintf("%s in %s", elem.Match, elem.URL))
 		}
 	}
 
 	// If needed print infos.
-	if !flags.JSON && !flags.Plain && len(finalInfos) != 0 {
+	if !flags.JSON && !flags.Silent && len(finalInfos) != 0 {
 		for _, elem := range finalInfos {
 			output.EncapsulateCustomGreen(elem.Info.Name, fmt.Sprintf("%s in %s", elem.Match, elem.URL))
 		}

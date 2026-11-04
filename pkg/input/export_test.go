@@ -24,16 +24,26 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 */
 
-package output
+package input
 
-import (
-	"os"
+import "io"
 
-	"github.com/edoardottt/cariddi/v2/pkg/input"
-)
+// This file exposes internals to the tests (package input_test).
 
-// PrintHelp prints the help.
-func PrintHelp() {
-	Banner()
-	input.PrintUsage(os.Stdout)
+// MaxTargetLength is the maximum length of an input line (see maxTargetLength).
+const MaxTargetLength = maxTargetLength
+
+// ParseHeaders returns the headers contained in input (see parseHeaders).
+func ParseHeaders(input string) map[string]string {
+	return parseHeaders(input)
+}
+
+// ScanFlagArgs scans the flags in args (see scanFlag).
+func ScanFlagArgs(args []string) (Input, []string) {
+	return scanFlag(args)
+}
+
+// ReadTargets returns the targets read from r (see readTargets).
+func ReadTargets(r io.Reader) []string {
+	return readTargets(r, "the test input", false)
 }

@@ -64,7 +64,7 @@ func IgnoreMatch(url string, ignoreSlice *[]string) bool {
 // in scope and not ignored.
 func canVisit(event *Event, absoluteURL string) bool {
 	return event.Scope.Contains(absoluteURL) &&
-		(!event.Ignore || !IgnoreMatch(absoluteURL, &event.IgnoreSlice))
+		!IgnoreMatch(absoluteURL, &event.IgnoreSlice)
 }
 
 // nextLinks collects the links to crawl at the next depth, each one once.
