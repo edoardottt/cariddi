@@ -86,6 +86,10 @@ func PrintExamples() {
 
 	cat urls | cariddi -proxy http://127.0.0.1:8080 (Set a Proxy: http, https, socks5 and socks5h supported)
 
+	cat urls | cariddi -proxy http://127.0.0.1:8080 -proxy socks5://127.0.0.1:1080 (Use more proxies: each request uses the next one in turn)
+
+	cat urls | cariddi -proxy proxies.txt (Use the proxies of a file, one per line, in turn)
+
 	cat urls | HTTPS_PROXY=http://127.0.0.1:8080 cariddi (Without -proxy, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used)
 
 	cat urls | cariddi -H "Cookie: auth=admin;type=2;; X-Custom: customHeader" (Use custom headers)

@@ -208,16 +208,4 @@ func CheckFlags(flags Input) {
 		fmt.Println("The depth cannot be less than 0.")
 		os.Exit(1)
 	}
-
-	if flags.Proxy != "" && !CheckProxy(flags.Proxy) {
-		fmt.Println("The proxy must be a URL with scheme http, https, socks5 or socks5h.")
-		fmt.Println("Examples:")
-		fmt.Println("	- cat urls | cariddi -proxy http://127.0.0.1:8080")
-		fmt.Println("	- cat urls | cariddi -proxy socks5://127.0.0.1:1080")
-		os.Exit(1)
-	}
-
-	if flags.Proxy == "" {
-		checkProxyEnvironment()
-	}
 }

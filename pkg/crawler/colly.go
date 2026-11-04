@@ -29,6 +29,7 @@ package crawler
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -36,6 +37,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -94,12 +96,12 @@ func New(ctx context.Context, scan *Scan) *Results {
 	}
 
 	// The connections kept for reuse serve only the crawl of this target.
-	transport := newTransport(scan.Threads, scan.Proxy)
+	transport, roundTripper := newTransport(scan.Threads, scan.Proxies)
 	defer transport.CloseIdleConnections()
 
 	// crawler creation
 	c := CreateColly(scan.Delay, scan.Threads, scan.Timeout,
-		scan.Cache, scan.Rua, transport, scan.UserAgent)
+		scan.Cache, scan.Rua, roundTripper, scan.UserAgent)
 
 	// When ctx is canceled (CTRL+C) the requests in flight and the queued
 	// ones fail at once, so the crawl ends with the results found so far.
@@ -389,12 +391,14 @@ func CreateColly(delayTime, concurrency, timeout int,
 	return c
 }
 
-// newTransport returns the HTTP transport of a crawl, using proxy if set
-// or else the proxy environment variables.
-// It keeps an idle connection for each parallel request, so connections
-// are reused: by default only 2 per host are kept, so most of the
-// parallel requests opened a new connection.
-func newTransport(concurrency int, proxy string) *http.Transport {
+// newTransport returns the HTTP transport of a crawl, using the proxies if
+// set or else the proxy environment variables, and the round tripper
+// sending the requests: the transport itself or, with more than one proxy,
+// a proxyRotator using it.
+// It keeps an idle connection for each parallel request (and proxy), so
+// connections are reused: by default only 2 per host are kept, so most of
+// the parallel requests opened a new connection.
+func newTransport(concurrency int, proxies []string) (*http.Transport, http.RoundTripper) {
 	idleConns := max(concurrency, 1)
 
 	transport := &http.Transport{
@@ -407,19 +411,84 @@ func newTransport(concurrency int, proxy string) *http.Transport {
 		IdleConnTimeout:     idleConnTimeout,
 	}
 
-	// Use a Proxy if needed: it has the priority over the environment
-	// variables and it's used for every request (NO_PROXY doesn't apply).
-	if proxy != "" {
+	// Use the proxies if needed: they have the priority over the environment
+	// variables and they're used for every request (NO_PROXY doesn't apply).
+	proxyURLs := make([]*url.URL, 0, len(proxies))
+
+	for _, proxy := range proxies {
 		proxyParsed, err := url.Parse(proxy)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		transport.Proxy = http.ProxyURL(proxyParsed)
+		proxyURLs = append(proxyURLs, proxyParsed)
 	}
 
-	return transport
+	switch len(proxyURLs) {
+	case 0:
+		return transport, transport
+	case 1:
+		transport.Proxy = http.ProxyURL(proxyURLs[0])
+
+		return transport, transport
+	default:
+		transport.Proxy = rotatedProxy
+		// Each proxy can keep the idle connections of a single proxy. With
+		// the total limited to concurrency, the oldest idle connection,
+		// closed to keep a new one, would often be the one of the next
+		// proxy in turn: with more proxies than parallel requests, every
+		// request would open a new connection.
+		transport.MaxIdleConns = idleConns * len(proxyURLs)
+
+		return transport, &proxyRotator{transport: transport, proxies: proxyURLs}
+	}
+}
+
+// nextProxy counts the requests sent through the proxies in turn (see
+// proxyRotator). It's shared by the crawls of all the targets: starting
+// again from the first proxy for each target, the first requests of every
+// target (the sitemap probe and the target) would always use the same proxies.
+var nextProxy atomic.Uint64 //nolint: gochecknoglobals
+
+// proxyKey is the context key of the proxy chosen for a request.
+type proxyKey struct{}
+
+// errNoProxy is the error of a request without the proxy chosen (see rotatedProxy).
+var errNoProxy = errors.New("no proxy chosen for the request")
+
+// proxyRotator sends each request through the next proxy, in turn (round
+// robin), and adds that proxy to the errors: with -debug, the requests failed
+// show the proxy used (e.g. down, refusing the connections or never answering).
+// The connections are still reused: the transport keeps them by proxy.
+type proxyRotator struct {
+	transport *http.Transport
+	proxies   []*url.URL
+}
+
+// RoundTrip sends req through the next proxy (a redirect is a request
+// of its own: it uses the next proxy too).
+func (p *proxyRotator) RoundTrip(req *http.Request) (*http.Response, error) {
+	proxy := p.proxies[(nextProxy.Add(1)-1)%uint64(len(p.proxies))]
+
+	resp, err := p.transport.RoundTrip(req.WithContext(context.WithValue(req.Context(), proxyKey{}, proxy)))
+	if err != nil {
+		// Redacted hides the password of the proxy.
+		return nil, fmt.Errorf("proxy %s: %w", proxy.Redacted(), err)
+	}
+
+	return resp, nil
+}
+
+// rotatedProxy returns the proxy chosen for req by proxyRotator. Without
+// one the request fails: it must never be sent directly to the target.
+func rotatedProxy(req *http.Request) (*url.URL, error) {
+	proxy, ok := req.Context().Value(proxyKey{}).(*url.URL)
+	if !ok {
+		return nil, errNoProxy
+	}
+
+	return proxy, nil
 }
 
 // maxFragmentDepth is the number of levels of comments and <noscript>

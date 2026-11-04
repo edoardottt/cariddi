@@ -24,8 +24,6 @@
   <a href="#license-">License</a>
 </p>
 
-<!--[![asciicast](https://asciinema.org/a/415989.svg)](https://asciinema.org/a/415989)-->
-
 <p align="center">
   <img src="https://github.com/edoardottt/images/blob/main/cariddi/cariddi.gif">
 </p>
@@ -114,15 +112,16 @@ http://testphp.vulnweb.com/
 
 ```console
 cariddi -l urls.txt
+cat urls.txt | cariddi
 ```
 
-The URLs can also be read from stdin (one per line), e.g. `cat urls.txt | cariddi`. The URLs given with `-u`, `-l` and stdin are all crawled.
+On Windows:
 
-For Windows:
-
-- use `.\cariddi.exe -l urls.txt`
-- or pipe the URLs with `powershell.exe -Command "cat urls.txt | .\cariddi.exe"` inside the Command prompt
-- or just `cat urls.txt | cariddi.exe` using PowerShell
+```console
+.\cariddi.exe -l urls.txt
+powershell.exe -Command "cat urls.txt | .\cariddi.exe"
+`cat urls.txt | cariddi.exe` # using PowerShell
+```
 
 ### Basics
 
@@ -155,6 +154,8 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 ### Configuration
 
 - `cat urls.txt | cariddi -proxy http://127.0.0.1:8080` (Set a Proxy: http, https, socks5 and socks5h supported)
+- `cat urls.txt | cariddi -proxy http://127.0.0.1:8080 -proxy socks5://127.0.0.1:1080` (Use more proxies: each request uses the next one in turn)
+- `cat urls.txt | cariddi -proxy proxies.txt` (Use the proxies of a file, one per line, in turn)
 - `cat urls.txt | HTTPS_PROXY=http://127.0.0.1:8080 cariddi` (Without -proxy, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used)
 - `cat urls.txt | cariddi -d 3` (Follow the links up to 3 levels deep)
 - `cat urls.txt | cariddi -rd 2` (2 seconds between a page crawled and another)
@@ -167,6 +168,8 @@ Default: png, svg, jpg, jpeg, bmp, jfif, gif, webp, woff, woff2, ttf, tiff, tif,
 - `cat urls.txt | cariddi -H headers.txt` (Read from an external file custom headers)
 - `cat urls.txt | cariddi -ua "Custom User Agent"` (Use a custom User Agent)
 - `cat urls.txt | cariddi -rua` (Use a random browser user agent on every request)
+
+With more than one proxy, each request uses the next one in turn: the requests are spread among more IPs, but `-t` and `-rd` apply to all of them together and the cookies are shared. Use working proxies: a request through a proxy that fails is lost, with the links of its page (`-debug` shows the requests failed and the proxy used).
 
 ### Output
 
@@ -197,7 +200,7 @@ CONFIGURATION:
    -H, -headers string[]    Use custom headers for each request (e.g. -H "Cookie: auth=yes;;Client: type=2"), or read them from a file (one per line). Repeatable.
    -ua, -user-agent string  Use a custom User Agent.
    -rua, -random-agent      Use a random browser user agent on every request.
-   -proxy string            Set a Proxy to be used (http, https, socks5 and socks5h supported). Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
+   -proxy string[]          Set a Proxy to be used (http, https, socks5 and socks5h supported), or read them from a file (one per line). Repeatable: each request uses the next proxy in turn. Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
    -cache                   Use the .cariddi_cache folder as cache.
 
 SCOPE:

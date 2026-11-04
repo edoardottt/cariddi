@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 package crawler
 
 import (
+	"net/http"
 	"net/url"
 
 	"github.com/edoardottt/cariddi/v2/pkg/scanner"
@@ -42,4 +43,9 @@ func MetaRefreshURL(httpEquiv, content string) (string, bool) {
 // HuntExtensions hunts for the extension of a URL (see huntExtensions).
 func HuntExtensions(u *url.URL, severity int) scanner.FileTypeMatched {
 	return huntExtensions(u, severity)
+}
+
+// NewTransport returns the transport of a crawl and its round tripper (see newTransport).
+func NewTransport(concurrency int, proxies []string) (*http.Transport, http.RoundTripper) {
+	return newTransport(concurrency, proxies)
 }

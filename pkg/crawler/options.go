@@ -54,7 +54,6 @@ type Scan struct {
 	// (a blank string would match every URL).
 	Ignore           []string
 	JSON             bool
-	Proxy            string
 	Target           string
 	UserAgent        string
 	FileType         int
@@ -62,6 +61,10 @@ type Scan struct {
 	StoreResp        bool
 	MaxDepth         int
 	IgnoreExtensions []string
+	// Proxies are the proxies to use: with more than one, each request
+	// uses the next one in turn. Without any, the proxy environment
+	// variables are used.
+	Proxies []string
 
 	// Settings
 	Threads int

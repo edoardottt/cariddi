@@ -250,3 +250,60 @@ func GetIgnore(values []string) []string {
 
 	return sliceUtils.RemoveDuplicateValues(result)
 }
+
+// GetProxies returns the proxies provided as input using the proxy flag.
+// Each value is a proxy or a file containing proxies, one per line (trimmed,
+// the blank lines are skipped). The order is kept: the requests use the
+// proxies in turn, so a proxy given twice gets twice the requests. An empty
+// value adds nothing (e.g. -proxy "$EMPTY").
+// An invalid proxy or a file without proxies makes it exit: the requests
+// would fail, or not use the proxies.
+// Without proxies, it checks the proxy environment variables, used instead.
+func GetProxies(values []string) []string {
+	var result []string
+
+	for _, value := range values {
+		if value == "" {
+			continue
+		}
+
+		if !isFile(value) {
+			if !CheckProxy(value) {
+				fmt.Printf("The proxy %q is not a file nor a URL with scheme http, https, socks5 or socks5h.\n", value)
+				fmt.Println("Examples:")
+				fmt.Println("	- cat urls | cariddi -proxy http://127.0.0.1:8080")
+				fmt.Println("	- cat urls | cariddi -proxy socks5://127.0.0.1:1080")
+				fmt.Println("	- cat urls | cariddi -proxy proxies.txt")
+				os.Exit(1)
+			}
+
+			result = append(result, value)
+
+			continue
+		}
+
+		// ReadFile skips the blank lines.
+		lines := fileUtils.ReadFile(value)
+		if len(lines) == 0 {
+			fmt.Printf("The proxies file %s doesn't contain any proxy (one per line).\n", value)
+			os.Exit(1)
+		}
+
+		for _, line := range lines {
+			proxy := strings.TrimSpace(line)
+			if !CheckProxy(proxy) {
+				fmt.Printf("The proxies file %s contains an invalid proxy: %q.\n", value, proxy)
+				fmt.Println("Each line must be a URL with scheme http, https, socks5 or socks5h (e.g. socks5://127.0.0.1:1080).")
+				os.Exit(1)
+			}
+
+			result = append(result, proxy)
+		}
+	}
+
+	if len(result) == 0 {
+		checkProxyEnvironment()
+	}
+
+	return result
+}

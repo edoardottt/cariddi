@@ -78,7 +78,6 @@ func main() {
 		Timeout:          flags.Timeout,
 		Subdomains:       flags.Subdomains,
 		Rua:              flags.Rua,
-		Proxy:            flags.Proxy,
 		SecretsFlag:      flags.Secrets,
 		EndpointsFlag:    flags.Endpoints,
 		FileType:         flags.Extensions,
@@ -119,6 +118,9 @@ func main() {
 
 	// Read headers if needed (from the files too).
 	config.Headers = input.GetHeaders(flags.Headers)
+
+	// Read the proxies if needed (from the files too).
+	config.Proxies = input.GetProxies(flags.Proxies)
 
 	// Read the targets (-u, -l and standard input), once the flags and the
 	// files they name are checked: an error doesn't wait for the whole input.

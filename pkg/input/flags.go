@@ -66,9 +66,11 @@ type Input struct {
 	UserAgent string
 	// Rua uses a random browser user agent on every request.
 	Rua bool
-	// Proxy set a Proxy to be used (http, https, socks5 and socks5h supported).
+	// Proxies are the proxies to use (http, https, socks5 and socks5h supported):
+	// each element is a proxy or a file containing proxies, one per line (see
+	// GetProxies). With more than one, each request uses the next one in turn.
 	// If not set, the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables are used.
-	Proxy string
+	Proxies []string
 	// Cache uses the .cariddi_cache folder as cache.
 	Cache bool
 
@@ -210,8 +212,11 @@ func newFlagSet(flags *Input) *goflags.FlagSet {
 				"or read them from a file (one per line). Repeatable.", goflags.StringSliceOptions),
 		flagSet.StringVarP(&flags.UserAgent, "user-agent", "ua", "", "Use a custom User Agent."),
 		flagSet.BoolVarP(&flags.Rua, "random-agent", "rua", false, "Use a random browser user agent on every request."),
-		flagSet.StringVar(&flags.Proxy, "proxy", "", "Set a Proxy to be used (http, https, socks5 and socks5h supported). "+
-			"Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables."),
+		// The values are used as they are: GetProxies reads the files.
+		flagSet.StringSliceVar((*goflags.StringSlice)(&flags.Proxies), "proxy", nil,
+			"Set a Proxy to be used (http, https, socks5 and socks5h supported), or read them from a file (one per line). "+
+				"Repeatable: each request uses the next proxy in turn. "+
+				"Default: the HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.", goflags.StringSliceOptions),
 		flagSet.BoolVar(&flags.Cache, "cache", false, "Use the .cariddi_cache folder as cache."),
 	)
 

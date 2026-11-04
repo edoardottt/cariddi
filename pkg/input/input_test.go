@@ -116,6 +116,30 @@ func TestGetIgnore(t *testing.T) {
 	}
 }
 
+func TestGetProxies(t *testing.T) {
+	// Without proxies, the environment variables are checked.
+	for _, name := range []string{"HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy"} {
+		t.Setenv(name, "")
+	}
+
+	file := writeFile(t, "  http://127.0.0.1:8080  \r\n\nsocks5://127.0.0.1:1080\r\nhttp://127.0.0.1:8080\n")
+
+	// The order and the duplicates are kept: the proxies are used in turn.
+	// An empty value adds nothing.
+	got := input.GetProxies([]string{"", "socks5h://user:pass@127.0.0.1:1081", file})
+	want := []string{
+		"socks5h://user:pass@127.0.0.1:1081", "http://127.0.0.1:8080", "socks5://127.0.0.1:1080", "http://127.0.0.1:8080",
+	}
+
+	if !slices.Equal(got, want) {
+		t.Errorf("GetProxies = %q, want %q", got, want)
+	}
+
+	if got := input.GetProxies([]string{""}); len(got) != 0 {
+		t.Errorf("GetProxies of an empty value = %q, want none", got)
+	}
+}
+
 func TestReadTargets(t *testing.T) {
 	// With its line break, this line fills the read buffer.
 	limit := strings.Repeat("a", input.MaxTargetLength-1)
@@ -224,6 +248,14 @@ func TestScanFlag(t *testing.T) {
 			check: func(f input.Input, _ []string) bool {
 				return slices.Equal(f.Headers, []string{"Authorization: Bearer abc#def", "Accept: a,b"}) &&
 					slices.Equal(f.Ignore, []string{"a, b", "#x"})
+			},
+		},
+		{
+			// -proxy is repeatable, and the values are kept as they are: GetProxies reads the files.
+			name: "proxies",
+			args: []string{"-proxy", "http://127.0.0.1:8080", "-proxy", "proxies,1.txt"},
+			check: func(f input.Input, _ []string) bool {
+				return slices.Equal(f.Proxies, []string{"http://127.0.0.1:8080", "proxies,1.txt"})
 			},
 		},
 		{
