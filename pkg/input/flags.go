@@ -46,6 +46,8 @@ type Input struct {
 	Version bool
 	// Delay between a page crawled and another.
 	Delay int
+	// RateLimit is the maximum number of requests per second across all workers.
+	RateLimit int
 	// Concurrency level.
 	Concurrency int
 	// Help prints the help banner.
@@ -112,6 +114,10 @@ type Input struct {
 func ScanFlag() Input {
 	versionPtr := flag.Bool("version", false, "Print the version.")
 	delayPtr := flag.Int("d", 0, "Delay between a page crawled and another.")
+	rateLimitPtr := new(int)
+	flag.IntVar(rateLimitPtr, "rl", 0, "Maximum requests per second across all workers (0 means unlimited).")
+	flag.IntVar(rateLimitPtr, "rate-limit", 0, "Maximum requests per second across all workers (0 means unlimited).")
+
 	concurrencyPtr := flag.Int("c", DefaultConcurrency, "Concurrency level.")
 	helpPtr := flag.Bool("h", false, "Print the help.")
 	examplesPtr := flag.Bool("examples", false, "Print the examples.")
@@ -168,6 +174,7 @@ func ScanFlag() Input {
 	result := Input{
 		*versionPtr,
 		*delayPtr,
+		*rateLimitPtr,
 		*concurrencyPtr,
 		*helpPtr,
 		*examplesPtr,

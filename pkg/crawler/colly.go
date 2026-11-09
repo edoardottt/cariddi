@@ -100,7 +100,7 @@ func New(scan *Scan) *Results {
 	}
 
 	// crawler creation
-	c := CreateColly(scan.Delay, scan.Concurrency, scan.Timeout, scan.MaxDepth,
+	c := CreateCollyWithRateLimit(scan.Delay, scan.RateLimit, scan.Concurrency, scan.Timeout, scan.MaxDepth,
 		scan.Cache, scan.Intensive, scan.Rua,
 		scan.Proxy, scan.UserAgent, scan.Target)
 
@@ -270,11 +270,27 @@ func New(scan *Scan) *Results {
 func CreateColly(delayTime, concurrency, timeout, maxDepth int,
 	cache, intensive, rua bool,
 	proxy string, userAgent string, target string) *colly.Collector {
+	return CreateCollyWithRateLimit(delayTime, 0, concurrency, timeout, maxDepth,
+		cache, intensive, rua, proxy, userAgent, target)
+}
+
+// CreateCollyWithRateLimit creates a collector with a global requests-per-second limit.
+func CreateCollyWithRateLimit(delayTime, rateLimit, concurrency, timeout, maxDepth int,
+	cache, intensive, rua bool,
+	proxy string, userAgent string, target string) *colly.Collector {
 	c := colly.NewCollector(
 		colly.Async(true),
 	)
 	c.IgnoreRobotsTxt = true
 	c.AllowURLRevisit = false
+
+	if rateLimit > 0 {
+		limiter := newRequestRateLimiter(rateLimit)
+
+		c.OnRequest(func(_ *colly.Request) {
+			limiter.Wait()
+		})
+	}
 
 	err := c.Limit(
 		&colly.LimitRule{
