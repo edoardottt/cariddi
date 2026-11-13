@@ -5,6 +5,7 @@
 output-cariddi/
 .cariddi_cache/
 *.snap
+missing-secrets.md
 
 # Binaries for programs and plugins
 *.exe

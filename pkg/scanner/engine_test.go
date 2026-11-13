@@ -30,7 +30,6 @@ import (
 	"math/rand"
 	"regexp"
 	"regexp/syntax"
-	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -101,6 +100,29 @@ func TestEngineEdgeCases(t *testing.T) {
 		{"word boundary before run", `\b[a-z.]+\.example\.com`, "Xfoo.example.com 1bar.example.com x.example.com"},
 		// (?i)ß also matches the 3 bytes ẞ: the length bound must account for it.
 		{"wider case folding", `(?i)ßßßßßßßßkey`, "xxxxxxxxxxẞẞẞẞẞẞẞẞkey ßßßßßßßßKEY"},
+		// A class matches runes as long as its largest one (2, 3 and 4 bytes
+		// here): the length bound must account for them.
+		{
+			"wider class runes", `[\x{E0}-\x{FF}]{8}[\x{800}-\x{FFFF}]{8}[^ ]{8}key`,
+			"x " + strings.Repeat("à", 8) + strings.Repeat("€", 8) + strings.Repeat("\U00010428", 8) + "key",
+		},
+		// A keyword in a run of matchable bytes shorter than the shortest match
+		// (7 bytes, with the empty \b branch) is skipped: matches in runs of
+		// exactly 7 bytes (also at the start and at the end of the text) must
+		// still be found.
+		{
+			"keyword in a short run", `[0-9]{2}key[0-9]{2}(?:_[0-9]{2}|\b)`,
+			"12key34 1key23 12key3 key .12key34. 123key456 12key34_56 KEY 56key78",
+		},
+		// A keyword with a byte that no match contains is skipped (s, k, the long
+		// s and the Kelvin sign for a case sensitive SK), not the matches next
+		// to it.
+		{"keyword with a byte out of the matches", `SK[0-9a-f]{4}`, "SK12ab sk34cd Sk56ef sK78ab \u017FK90cd S\u212A12ab xSK34cd SK56ef"},
+		// A keyword in the run of matchable bytes read for a previous one is
+		// decided as the previous one: the second key of "keykey1234" is kept,
+		// the second key of "keykey" is skipped; the next key, one byte after
+		// that run, is not in it.
+		{"keywords in the same run", `key[0-9]{4}`, "keykey1234 keykey key1234"},
 	}
 
 	for _, tt := range tests {
@@ -145,8 +167,8 @@ func TestEngineTooManyVariants(t *testing.T) {
 
 // TestEngineNoRegexes checks an engine without regexes.
 func TestEngineNoRegexes(t *testing.T) {
-	if got := scanner.NewEngine(nil).FindAll(keyText); len(got) != 0 {
-		t.Fatalf("got %q, want no results", got)
+	if got := scanner.NewEngine(nil).FindAllIndex(keyText); len(got) != 0 {
+		t.Fatalf("got %v, want no results", got)
 	}
 }
 
@@ -208,9 +230,9 @@ func TestEngineConcurrentUse(t *testing.T) {
 			text := texts[i%len(texts)]
 			want := fullScan(regexes, text)
 
-			for j, got := range e.FindAll(text) {
-				if !slices.Equal(got, want[j]) {
-					t.Errorf("regex %d on %q: got %q, want %q", j, text, got, want[j])
+			for j, got := range e.FindAllIndex(text) {
+				if !sameLocs(got, want[j]) {
+					t.Errorf("regex %d on %q: got %v, want %v", j, text, got, want[j])
 				}
 			}
 		}()
@@ -249,7 +271,7 @@ func TestEngineRandomRegexes(t *testing.T) {
 
 			windows += countWindows(e, text)
 
-			for _, m := range e.FindAll(text) {
+			for _, m := range e.FindAllIndex(text) {
 				matches += len(m)
 			}
 		}

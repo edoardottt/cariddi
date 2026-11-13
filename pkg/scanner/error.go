@@ -219,9 +219,9 @@ func NewErrorScanner(errs []Error) *ErrorScanner {
 func (s *ErrorScanner) Scan(target, body string) []ErrorMatched {
 	var results []ErrorMatched
 
-	for i, matches := range s.engine.FindAll(body) {
-		for _, match := range matches {
-			results = append(results, ErrorMatched{Error: s.errs[i], URL: target, Match: match})
+	for i, locs := range s.engine.FindAllIndex(body) {
+		for _, loc := range locs {
+			results = append(results, ErrorMatched{Error: s.errs[i], URL: target, Match: body[loc[0]:loc[1]]})
 		}
 	}
 

@@ -47,7 +47,7 @@ func secretsFullScan(secrets []scanner.Secret, body string) []scanner.SecretMatc
 
 	for _, secret := range secrets {
 		for _, match := range secret.Regex.FindAllStringSubmatch(body, -1) {
-			isFalsePositive := false
+			isFalsePositive := scanner.URIFalsePositive(secret.Name, match[0])
 
 			for _, fp := range secret.FalsePositives {
 				if strings.Contains(strings.ToLower(match[0]), fp) {

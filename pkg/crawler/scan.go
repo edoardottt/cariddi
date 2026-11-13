@@ -30,7 +30,6 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-	"sync"
 
 	urlUtils "github.com/edoardottt/cariddi/v2/internal/url"
 	"github.com/edoardottt/cariddi/v2/pkg/scanner"
@@ -134,31 +133,5 @@ func huntErrors(target, body string) []scanner.ErrorMatched {
 
 // huntInfos hunts for infos.
 func huntInfos(target, body string) []scanner.InfoMatched {
-	var (
-		infosSlice []scanner.InfoMatched
-		wg         sync.WaitGroup
-		mu         sync.Mutex
-	)
-
-	for _, infoItem := range scanner.GetInfoRegexes() {
-		wg.Add(1)
-
-		go func(infoItem scanner.Info) {
-			defer wg.Done()
-
-			matches := infoItem.FindAll(body)
-
-			for _, match := range matches {
-				mu.Lock()
-
-				infosSlice = append(infosSlice, scanner.InfoMatched{Info: infoItem, URL: target, Match: match})
-
-				mu.Unlock()
-			}
-		}(infoItem)
-	}
-
-	wg.Wait()
-
-	return scanner.RemoveDuplicateInfos(infosSlice)
+	return scanner.RemoveDuplicateInfos(scanner.GetInfoScanner().Scan(target, body))
 }

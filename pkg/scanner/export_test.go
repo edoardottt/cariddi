@@ -76,3 +76,13 @@ func SecretScannerEngine(s *SecretScanner) *Engine {
 func ErrorScannerEngine(s *ErrorScanner) *Engine {
 	return s.engine
 }
+
+// InfoScannerEngine returns the engine of s.
+func InfoScannerEngine(s *InfoScanner) *Engine {
+	return s.engine
+}
+
+// URIFalsePositive is uriFalsePositive.
+func URIFalsePositive(name, match string) bool {
+	return uriFalsePositive(name, match)
+}

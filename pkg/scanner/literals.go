@@ -38,10 +38,12 @@ import (
 // without running it:
 //   - requiredKeywords: literals such that every match contains one of them;
 //   - maxMatchLen: an upper bound on the length of every match;
+//   - minMatchLen: a lower bound on the length of every match;
 //   - newAlphabet: the bytes that can appear inside a match.
 // Every answer is conservative: when in doubt, the analysis gives up
-// (no keywords, unbounded length, every byte allowed) and the regex is
-// simply run on the whole body, as before.
+// (no keywords, unbounded length, no minimum length, every byte allowed)
+// and the engine skips less work, up to running the regex on the whole
+// body, as before.
 
 const (
 	// minKeywordLen is the minimum keyword length. Even a one byte keyword
@@ -385,7 +387,21 @@ func maxMatchLen(re *syntax.Regexp) int {
 		}
 
 		return total
-	case syntax.OpCharClass, syntax.OpAnyChar, syntax.OpAnyCharNotNL:
+	case syntax.OpCharClass:
+		// The longest rune of a class is its largest one: the UTF-8 length
+		// grows with the rune (an invalid byte is read as U+FFFD, 1 byte).
+		largest := rune(-1)
+
+		for i := 1; i < len(re.Rune); i += 2 {
+			largest = max(largest, re.Rune[i])
+		}
+
+		if n := utf8.RuneLen(largest); n > 0 {
+			return n
+		}
+
+		return utf8.UTFMax // no rune, or a surrogate (never read from a text).
+	case syntax.OpAnyChar, syntax.OpAnyCharNotNL:
 		return utf8.UTFMax
 	case syntax.OpCapture, syntax.OpQuest:
 		return maxMatchLen(re.Sub[0])
@@ -424,6 +440,41 @@ func maxMatchLen(re *syntax.Regexp) int {
 		return longest
 	default: // OpStar, OpPlus, OpNoMatch.
 		return -1
+	}
+}
+
+// minMatchLen returns a lower bound, in bytes, on the length of any
+// match of re.
+func minMatchLen(re *syntax.Regexp) int {
+	switch re.Op { //nolint: exhaustive // other operators are handled by default.
+	case syntax.OpLiteral:
+		return len(re.Rune) // every rune is at least 1 byte long.
+	case syntax.OpCharClass, syntax.OpAnyChar, syntax.OpAnyCharNotNL:
+		return 1
+	case syntax.OpCapture, syntax.OpPlus:
+		return minMatchLen(re.Sub[0])
+	case syntax.OpRepeat:
+		return re.Min * minMatchLen(re.Sub[0])
+	case syntax.OpConcat:
+		total := 0
+
+		for _, sub := range re.Sub {
+			total += minMatchLen(sub)
+		}
+
+		return total
+	case syntax.OpAlternate:
+		shortest := -1
+
+		for _, sub := range re.Sub {
+			if n := minMatchLen(sub); shortest < 0 || n < shortest {
+				shortest = n
+			}
+		}
+
+		return max(shortest, 0)
+	default: // OpEmptyMatch, the anchors and boundaries, OpStar, OpQuest, OpNoMatch.
+		return 0
 	}
 }
 

@@ -72,16 +72,19 @@ func iterations(t *testing.T) int {
 }
 
 // fullScan is the reference: every regex run on the whole text.
-func fullScan(regexes []*regexp.Regexp, text string) [][]string {
-	result := make([][]string, len(regexes))
+func fullScan(regexes []*regexp.Regexp, text string) [][][]int {
+	result := make([][][]int, len(regexes))
 
 	for i, re := range regexes {
-		for _, match := range re.FindAllStringSubmatch(text, -1) {
-			result[i] = append(result[i], match[0])
-		}
+		result[i] = re.FindAllStringIndex(text, -1)
 	}
 
 	return result
+}
+
+// sameLocs reports whether a and b are the same match positions.
+func sameLocs(a, b [][]int) bool {
+	return slices.EqualFunc(a, b, slices.Equal[[]int])
 }
 
 // checkEngine fails if e and the full scan of regexes find different matches in text.
@@ -89,15 +92,15 @@ func checkEngine(t *testing.T, e *scanner.Engine, regexes []*regexp.Regexp, text
 	t.Helper()
 
 	want := fullScan(regexes, text)
-	got := e.FindAll(text)
+	got := e.FindAllIndex(text)
 
 	if len(got) != len(want) {
 		t.Fatalf("got %d results, want %d", len(got), len(want))
 	}
 
 	for i := range want {
-		if !slices.Equal(want[i], got[i]) {
-			t.Fatalf("regex %q on text %q:\nwant %q\ngot  %q", regexes[i], text, want[i], got[i])
+		if !sameLocs(want[i], got[i]) {
+			t.Fatalf("regex %q on text %q:\nwant %v\ngot  %v", regexes[i], text, want[i], got[i])
 		}
 	}
 }

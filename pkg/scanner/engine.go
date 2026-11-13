@@ -44,14 +44,18 @@ const (
 
 // Engine finds the matches of a list of regular expressions in texts.
 //
-// FindAll returns exactly what regexp.FindAllString(text, -1) returns for
-// each regex, but it skips most of the work:
+// FindAllIndex returns exactly what regexp.FindAllStringIndex(text, -1)
+// returns for each regex, but it skips most of the work:
 //  1. every match of a regex contains one of its keywords (derived from the
 //     regex itself, e.g. "adafruit", ignoring case): if none is in the text,
 //     the regex can't match, so it is skipped;
 //  2. otherwise, matches can only be near the keywords found (within the
 //     maximum match length, or within the run of bytes the regex can match),
-//     so the regex only runs on those small windows of the text.
+//     so the regex only runs on those small windows of the text;
+//  3. for a regex with bounded matches, a keyword found where no match fits
+//     is ignored: it has a byte that no match contains, or the run of bytes
+//     that a match can contain around it is shorter than the shortest match
+//     (e.g. the dot of "this.value" can't be part of an IPv4 address).
 //
 // Regexes without keywords are run on the whole text, as usual.
 // The regexes must be compiled with regexp.Compile or regexp.MustCompile.
@@ -65,6 +69,7 @@ type engineRule struct {
 	re       *regexp.Regexp
 	keywords []int32   // ids of the keywords of the rule, nil if unknown.
 	maxLen   int       // upper bound on the match length in bytes, -1 if unbounded.
+	minLen   int       // lower bound on the match length in bytes.
 	alphabet *alphabet // bytes a match can contain, nil if unknown or any.
 }
 
@@ -118,9 +123,8 @@ func NewEngine(regexes []*regexp.Regexp) *Engine {
 
 			if !hasTextAnchors(tree) {
 				rule.maxLen = maxMatchLen(tree)
-				if rule.maxLen < 0 {
-					rule.alphabet = newAlphabet(tree)
-				}
+				rule.minLen = minMatchLen(tree)
+				rule.alphabet = newAlphabet(tree)
 			}
 		}
 
@@ -132,11 +136,11 @@ func NewEngine(regexes []*regexp.Regexp) *Engine {
 	return e
 }
 
-// FindAll returns, for each regex (in the order given to NewEngine),
-// what its FindAllString(text, -1) returns.
-func (e *Engine) FindAll(text string) [][]string {
+// FindAllIndex returns, for each regex (in the order given to NewEngine),
+// what its FindAllStringIndex(text, -1) returns.
+func (e *Engine) FindAllIndex(text string) [][][]int {
 	hits, truncated := e.findKeywords(text)
-	results := make([][]string, len(e.rules))
+	results := make([][][]int, len(e.rules))
 
 	var wg sync.WaitGroup
 
@@ -154,7 +158,7 @@ func (e *Engine) FindAll(text string) [][]string {
 			defer wg.Done()
 
 			if mode == scanFull {
-				results[i] = rule.re.FindAllString(text, -1)
+				results[i] = rule.re.FindAllStringIndex(text, -1)
 			} else {
 				results[i] = rule.findInWindows(text, hits, e.matcher.keywords)
 			}
@@ -197,7 +201,7 @@ func (r *engineRule) plan(hits [][]int, truncated []bool) scanMode {
 	}
 }
 
-// findInWindows returns the same matches as FindAllString on the whole
+// findInWindows returns the same matches as FindAllStringIndex on the whole
 // text, running the regex only on windows around the keyword occurrences.
 //
 // Every match contains a keyword occurrence. For a bounded rule (every match
@@ -209,19 +213,29 @@ func (r *engineRule) plan(hits [][]int, truncated []bool) scanMode {
 // each side, so the engine sees the same context as in the full text.
 // Windows are aligned to rune boundaries and merged when they overlap.
 //
+// A bounded rule skips the occurrences that no match can contain (see
+// runCache.skip). The reasoning above still holds: a match consists of
+// matchable bytes and is at least minLen bytes long, so the occurrence it
+// contains is not skipped, both in the full text and in a window.
+//
 // The occurrences are visited in order and every window is scanned as soon
 // as the next occurrence can't extend it: nothing is copied or stored, so
 // the memory doesn't depend on how many occurrences the text contains.
-func (r *engineRule) findInWindows(text string, hits [][]int, keywords []string) []string {
+func (r *engineRule) findInWindows(text string, hits [][]int, keywords []string) [][]int {
 	var (
-		matches []string
+		matches [][]int
 		cur     window
 		open    bool
+		runs    runCache
 	)
 
 	for o := range r.occurrences(hits, keywords) {
 		// Occurrences inside the current run window have the same window.
 		if r.maxLen < 0 && open && o.end <= cur.hi {
+			continue
+		}
+
+		if r.maxLen >= 0 && r.alphabet != nil && runs.skip(r, text, o) {
 			continue
 		}
 
@@ -254,11 +268,11 @@ func (r *engineRule) findInWindows(text string, hits [][]int, keywords []string)
 	return matches
 }
 
-// appendMatches appends to matches the matches of the rule in the window w.
-func (r *engineRule) appendMatches(matches []string, text string, w window) []string {
-	part := text[w.lo:w.hi]
-	for _, loc := range r.re.FindAllStringIndex(part, -1) {
-		matches = append(matches, part[loc[0]:loc[1]])
+// appendMatches appends to matches the matches of the rule in the window w,
+// as positions in text.
+func (r *engineRule) appendMatches(matches [][]int, text string, w window) [][]int {
+	for _, loc := range r.re.FindAllStringIndex(text[w.lo:w.hi], -1) {
+		matches = append(matches, []int{w.lo + loc[0], w.lo + loc[1]})
 	}
 
 	return matches
@@ -314,6 +328,53 @@ func (h *hitHeap) Pop() any {
 	*h = old[:len(old)-1]
 
 	return c
+}
+
+// runCache remembers the runs of matchable bytes last read by skip, so that
+// the occurrences close to each other don't read the same bytes again.
+type runCache struct {
+	long  window // at least minLen matchable bytes.
+	short window // a whole run of matchable bytes, shorter than minLen.
+}
+
+// skip reports whether no match of r can contain the occurrence o: o has a
+// byte that a match can't contain, or the run of bytes that a match can
+// contain around o is shorter than the shortest match. It reads at most
+// minLen bytes around o, those after o first: the occurrences are checked in
+// order, so the next ones are likely among the bytes read.
+func (c *runCache) skip(r *engineRule, text string, o occurrence) bool {
+	switch {
+	case c.short.lo <= o.start && o.start < c.short.hi:
+		return true // o is in the short run, or it has the excluded byte after it.
+	case c.long.lo <= o.start && o.end <= c.long.hi:
+		return false
+	}
+
+	for i := o.start; i < o.end; i++ {
+		if r.alphabet.excluded(text[i]) {
+			return true
+		}
+	}
+
+	hi := o.end
+	for hi < len(text) && hi-o.start < r.minLen && !r.alphabet.excluded(text[hi]) {
+		hi++
+	}
+
+	lo := o.start
+	for lo > 0 && hi-lo < r.minLen && !r.alphabet.excluded(text[lo-1]) {
+		lo--
+	}
+
+	if hi-lo < r.minLen {
+		c.short = window{lo, hi} // both loops stopped at an end of the run.
+
+		return true
+	}
+
+	c.long = window{lo, hi}
+
+	return false
 }
 
 // runWindow returns the run of matchable bytes around o, plus the
